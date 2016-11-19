@@ -22,7 +22,7 @@ public class Histogram {
         this.scaleWidth = 256;
 
         this.channels = img.getColorModel().getNumColorComponents();
-        this.maxLevelsValue = img.getHeight();
+        this.maxLevelsValue = 0;
 
         data = new ArrayList<>(channels);
         for(int ch=0;ch<channels;++ch) {
@@ -108,13 +108,15 @@ public class Histogram {
         for(int ch=0; ch<data.size(); ++ch) {
             switch(ch) {
                 case 0:
-                    if ( data.size() > 1 ) { channelColor = Color.RED; };
+                    if ( data.size() > 1 ) { channelColor = Color.RED; hgr.setXORMode(Color.RED); }
                     break;
                 case 1:
                     channelColor = Color.GREEN;
+                    hgr.setXORMode(Color.RED);
                     break;
                 case 2:
                     channelColor = Color.BLUE;
+                    hgr.setXORMode(Color.GREEN);
                     break;
             }
             hgr.setColor(channelColor);
@@ -137,6 +139,7 @@ public class Histogram {
 
             //draw labels
             if( ch == data.size() - 1 ) {
+
 
                 //draw horizontal axis labels
                 {
@@ -200,6 +203,48 @@ public class Histogram {
                     hgr.drawRect( levelTickX, maxDrawingLevel, levelTickSize , 1);
                 }
 
+            }
+        }
+
+        for(int ch=0; ch<data.size(); ++ch) {
+            switch (ch) {
+                case 0:
+                    if (data.size() > 1) {
+                        channelColor = Color.RED;
+                    }
+                    break;
+                case 1:
+                    channelColor = Color.GREEN;
+                    break;
+                case 2:
+                    channelColor = Color.BLUE;
+                    break;
+            }
+            hgr.setColor(channelColor);
+
+            Integer[] series = data.get(ch);
+
+            double yScale = (chartAreaHeight + 0.0) / maxLevelsValue;
+//                System.out.println("Scale " + yScale + ", Image height " + histImageHeight + ", maxLevels " + maxLevelsValue);
+
+            int oldbarX = 0;
+            int oldbarY = 0;
+
+            for (int level = 0; level < series.length; ++level) {
+                int barWidth = 1;
+                int barHeight = (int) (series[level] * yScale);
+                int barX = mariginLeft + level;
+                int barY = mariginTop + chartAreaHeight - barHeight;
+
+                if(level==0) {
+                    hgr.drawOval(barX, barY, 1, 1);
+                } else {
+                    hgr.drawLine(oldbarX, oldbarY, barX, barY);
+                }
+                oldbarX = barX;
+                oldbarY = barY;
+
+//                    System.out.printf("Level:Value %d:%d\n", barX, series[level]);
             }
         }
 

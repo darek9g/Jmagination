@@ -28,18 +28,6 @@ public final class ConstantsInitializers {
     public static final int GUI_CHART_X_GRID_POINTS = 7;
     public static final int GUI_CHART_Y_GRID_POINTS = 15;
 
-
-    public static final int RGB_RED_MASK = 0x00ff0000;
-    public static final int RGB_RED_SHIFT = 2 * 8;
-
-    public static final int RGB_GREEN_MASK = 0x0000ff00;
-    public static final int RGB_GREEN_SHIFT = 1 * 8;
-
-    public static final int RGB_BLUE_MASK = 0x000000ff;
-    public static final int RGB_BLUE_SHIFT = 0 * 8;
-
-
-
     private ConstantsInitializers() {
         throw new AssertionError();
     }
