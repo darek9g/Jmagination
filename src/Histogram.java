@@ -66,7 +66,6 @@ public class Histogram {
                     ++data.get(ch)[level];
                     if( data.get(ch)[level] > maxLevelsValue ) {
                         maxLevelsValue = data.get(ch)[level];
-//                            System.out.println("Increasing max level record at " + level);
                     }
 
                 }
@@ -156,12 +155,12 @@ public class Histogram {
                     int levelTickSize = hgr.getFont().getSize() / 2;
 
                     int divPoints = ConstantsInitializers.GUI_CHART_X_GRID_POINTS;
-                    int valueDelta = (maxLevel - minLevel) / divPoints;
-                    int drawingDelta = ( maxDrawingLevel - minDrawingLevel) / divPoints;
+                    int valueDelta = (maxLevel - minLevel) / ( divPoints + 1 );
+                    int drawingDelta = ( maxDrawingLevel - minDrawingLevel) / ( divPoints + 1);
 
                     hgr.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
 
-                    for (int step = 0; step < divPoints; ++step) {
+                    for (int step = 0; step <= divPoints; ++step) {
                         hgr.drawString(String.valueOf(minLevel + step * valueDelta), levelLabelX + 1,  levelLabelY);
                         hgr.drawRect( levelLabelX, levelTickY, 1, levelTickSize);
 
@@ -187,12 +186,12 @@ public class Histogram {
                     int levelTickSize = hgr.getFont().getSize() / 2;
 
                     int divPoints = ConstantsInitializers.GUI_CHART_Y_GRID_POINTS;
-                    int valueDelta = (maxLevel - minLevel) / divPoints;
-                    int drawingDelta = ( maxDrawingLevel - minDrawingLevel) / divPoints;
+                    int valueDelta = (maxLevel - minLevel) / ( divPoints + 1 );
+                    int drawingDelta = ( maxDrawingLevel - minDrawingLevel) / ( divPoints + 1 );
 
                     hgr.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
 
-                    for (int step = 0; step < divPoints; ++step) {
+                    for (int step = 0; step <= divPoints; ++step) {
                         hgr.drawString(String.valueOf(minLevel + step * valueDelta), levelLabelX,  levelLabelY + 1);
                         hgr.drawRect( levelTickX, levelLabelY, levelTickSize, 1);
 
@@ -300,12 +299,12 @@ public class Histogram {
             int levelTickSize = hgr.getFont().getSize() / 2;
 
             int divPoints = ConstantsInitializers.GUI_CHART_X_GRID_POINTS;
-            int valueDelta = (maxLevel - minLevel) / divPoints;
-            int drawingDelta = ( maxDrawingLevel - minDrawingLevel) / divPoints;
+            int valueDelta = (maxLevel - minLevel) / ( divPoints + 1 );
+            int drawingDelta = ( maxDrawingLevel - minDrawingLevel) / ( divPoints + 1);
 
             hgr.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
 
-            for (int step = 0; step < divPoints; ++step) {
+            for (int step = 0; step <= divPoints; ++step) {
                 hgr.drawString(String.valueOf(minLevel + step * valueDelta), levelLabelX + 1,  levelLabelY);
                 hgr.drawRect( levelLabelX, levelTickY, 1, levelTickSize);
 
@@ -331,12 +330,12 @@ public class Histogram {
             int levelTickSize = hgr.getFont().getSize() / 2;
 
             int divPoints = ConstantsInitializers.GUI_CHART_Y_GRID_POINTS;
-            int valueDelta = (maxLevel - minLevel) / divPoints;
-            int drawingDelta = ( maxDrawingLevel - minDrawingLevel) / divPoints;
+            int valueDelta = (maxLevel - minLevel) / (divPoints + 1);
+            int drawingDelta = ( maxDrawingLevel - minDrawingLevel) / (divPoints + 1) ;
 
             hgr.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
 
-            for (int step = 0; step < divPoints; ++step) {
+            for (int step = 0; step <= divPoints; ++step) {
                 hgr.drawString(String.valueOf(minLevel + step * valueDelta), levelLabelX,  levelLabelY + 1);
                 hgr.drawRect( levelTickX, levelLabelY, levelTickSize, 1);
 

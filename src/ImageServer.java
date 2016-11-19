@@ -1,11 +1,9 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
 import java.io.File;
 import java.io.IOException;
 
@@ -109,8 +107,6 @@ public class ImageServer extends JComponent{
         Rectangle  gcBounds = gdc.getBounds();
         Dimension gcDimension = new Dimension(gcBounds.getSize());
 
-
-//        System.out.println("Window width " + gcDimension.getWidth() + ", Window height " + gcDimension.getHeight());
         window.setMaximumSize(gcDimension);
 
         window.setResizable(false);
