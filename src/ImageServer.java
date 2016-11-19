@@ -25,7 +25,7 @@ public class ImageServer extends JComponent{
     BufferedImage img;
 
     BufferedImage hist;
-    Operations.Histogram histogram;
+    Histogram histogram;
 
     Jmagination master;
 
@@ -82,9 +82,12 @@ public class ImageServer extends JComponent{
         GUIStyler.PresenterTabImage imageTab = new GUIStyler.PresenterTabImage(img);
         tpanel.addTab("Image", imageTab);
 
+        GUIStyler.PresenterTabProperties propertiesTab = new GUIStyler.PresenterTabProperties(img);
+        tpanel.addTab("Properties", propertiesTab);
 
 
-        histogram = new Operations.Histogram(img);
+
+        histogram = new Histogram(img);
         GUIStyler.PresenterTabImage historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg());
         tpanel.addTab("Histogram", historgamTab);
 
@@ -122,7 +125,7 @@ public class ImageServer extends JComponent{
         return img;
     };
 
-    public Operations.Histogram getHistogram() {
+    public Histogram getHistogram() {
         return histogram;
     }
 
