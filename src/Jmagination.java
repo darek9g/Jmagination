@@ -12,6 +12,8 @@ import java.util.ArrayList;
  */
 public class Jmagination extends JComponent {
 
+    // test branching
+
     JFrame window;
     ArrayList<ImageServer> images;
     GUIStyler.JButtonS jButtonForNewImage;
