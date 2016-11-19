@@ -88,7 +88,7 @@ public class ImageServer extends JComponent{
 
 
         histogram = new Histogram(img);
-        GUIStyler.PresenterTabImage historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg());
+        GUIStyler.PresenterTabImage historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg2());
         tpanel.addTab("Histogram", historgamTab);
 
         GUIStyler.PresenterTabOperations operationsTab = new GUIStyler.PresenterTabOperations(operationManager);

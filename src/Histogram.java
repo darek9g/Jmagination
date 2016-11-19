@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by darek on 19.11.2016.
@@ -108,15 +109,13 @@ public class Histogram {
         for(int ch=0; ch<data.size(); ++ch) {
             switch(ch) {
                 case 0:
-                    if ( data.size() > 1 ) { channelColor = Color.RED; hgr.setXORMode(Color.RED); }
+                    if ( data.size() > 1 ) { channelColor = new Color(255,0,0,240); }
                     break;
                 case 1:
-                    channelColor = Color.GREEN;
-                    hgr.setXORMode(Color.RED);
+                    channelColor = new Color(0,255,0,190);
                     break;
                 case 2:
-                    channelColor = Color.BLUE;
-                    hgr.setXORMode(Color.GREEN);
+                    channelColor = new Color(0,0,255,140);
                     break;
             }
             hgr.setColor(channelColor);
@@ -132,6 +131,8 @@ public class Histogram {
                 int barX = mariginLeft + level;
                 int barY = mariginTop + chartAreaHeight - barHeight;
 
+
+                hgr.setColor(channelColor);
                 hgr.fillRect( barX, barY, barWidth, barHeight );
 
 //                    System.out.printf("Level:Value %d:%d\n", barX, series[level]);
@@ -206,7 +207,7 @@ public class Histogram {
             }
         }
 
-        for(int ch=0; ch<data.size(); ++ch) {
+/*        for(int ch=0; ch<data.size(); ++ch) {
             switch (ch) {
                 case 0:
                     if (data.size() > 1) {
@@ -225,7 +226,6 @@ public class Histogram {
             Integer[] series = data.get(ch);
 
             double yScale = (chartAreaHeight + 0.0) / maxLevelsValue;
-//                System.out.println("Scale " + yScale + ", Image height " + histImageHeight + ", maxLevels " + maxLevelsValue);
 
             int oldbarX = 0;
             int oldbarY = 0;
@@ -244,13 +244,180 @@ public class Histogram {
                 oldbarX = barX;
                 oldbarY = barY;
 
-//                    System.out.printf("Level:Value %d:%d\n", barX, series[level]);
             }
-        }
+        }*/
 
         return hist;
 
     }
 
 
+    public BufferedImage createImg2() {
+
+        int mariginLeft = ConstantsInitializers.GUI_CHART_MARIGIN_LEFT_SIZE_PX;
+        int mariginRight = ConstantsInitializers.GUI_CHART_MARIGIN_RIGHT_SIZE_PX;
+        int mariginTop = ConstantsInitializers.GUI_CHART_MARIGIN_TOP_SIZE_PX;
+        int mariginBottom = ConstantsInitializers.GUI_CHART_MARIGIN_BOTTOM_SIZE_PX;
+
+        int histImageWidth = scaleWidth + mariginLeft + mariginRight;
+        int histImageHeight = img.getHeight();
+
+        int chartAreaWidth = histImageWidth - ( mariginLeft + mariginRight );
+        int chartAreaHeight = histImageHeight - ( mariginTop + mariginBottom);
+
+        BufferedImage hist = new BufferedImage(histImageWidth,histImageHeight,BufferedImage.TYPE_INT_ARGB);
+        Graphics hgr = hist.createGraphics();
+
+        // draw background and frame
+        hgr.setColor(ConstantsInitializers.GUI_CHARTS_BG_COLOR);
+        hgr.fillRect(0,0,histImageWidth,histImageHeight);
+        hgr.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
+        hgr.drawRect(0,0,histImageWidth-1,histImageHeight-1);
+
+        // draw chart area
+
+        hgr.setColor(ConstantsInitializers.GUI_CHARTS_FG_COLOR);
+        hgr.fillRect(mariginLeft, mariginTop, chartAreaWidth, chartAreaHeight);
+
+        hgr.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
+        hgr.drawRect(mariginLeft, mariginTop, chartAreaWidth, chartAreaHeight);
+
+
+
+        int seriesLength = data.get(0).length;
+
+        //draw horizontal axis labels
+        {
+            int minLevel = 0;
+            int maxLevel = seriesLength - 1;
+
+            int minDrawingLevel = mariginLeft;
+            int maxDrawingLevel = mariginLeft + chartAreaWidth;
+
+            int levelLabelX = mariginLeft;
+            int levelLabelY = mariginTop + chartAreaHeight + hgr.getFont().getSize();
+            int levelTickY = mariginTop + chartAreaHeight;
+            int levelTickSize = hgr.getFont().getSize() / 2;
+
+            int divPoints = ConstantsInitializers.GUI_CHART_X_GRID_POINTS;
+            int valueDelta = (maxLevel - minLevel) / divPoints;
+            int drawingDelta = ( maxDrawingLevel - minDrawingLevel) / divPoints;
+
+            hgr.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
+
+            for (int step = 0; step < divPoints; ++step) {
+                hgr.drawString(String.valueOf(minLevel + step * valueDelta), levelLabelX + 1,  levelLabelY);
+                hgr.drawRect( levelLabelX, levelTickY, 1, levelTickSize);
+
+                levelLabelX += drawingDelta;
+            }
+
+            //last label
+            hgr.drawString(String.valueOf(maxLevel), maxDrawingLevel + 1, levelLabelY);
+            hgr.drawRect( maxDrawingLevel, levelTickY, 1, levelTickSize);
+        }
+
+        //draw vertical axis labels
+        {
+            int minLevel = 0;
+            int maxLevel = maxLevelsValue;
+
+            int minDrawingLevel = mariginTop + chartAreaHeight;
+            int maxDrawingLevel = mariginTop;
+
+            int levelLabelX = mariginLeft + chartAreaWidth + hgr.getFont().getSize();
+            int levelLabelY = minDrawingLevel;
+            int levelTickX = mariginLeft + chartAreaWidth;
+            int levelTickSize = hgr.getFont().getSize() / 2;
+
+            int divPoints = ConstantsInitializers.GUI_CHART_Y_GRID_POINTS;
+            int valueDelta = (maxLevel - minLevel) / divPoints;
+            int drawingDelta = ( maxDrawingLevel - minDrawingLevel) / divPoints;
+
+            hgr.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
+
+            for (int step = 0; step < divPoints; ++step) {
+                hgr.drawString(String.valueOf(minLevel + step * valueDelta), levelLabelX,  levelLabelY + 1);
+                hgr.drawRect( levelTickX, levelLabelY, levelTickSize, 1);
+
+                levelLabelY += drawingDelta;
+            }
+
+            //last label
+            hgr.drawString(String.valueOf(maxLevel), levelLabelX, maxDrawingLevel + 1);
+            hgr.drawRect( levelTickX, maxDrawingLevel, levelTickSize , 1);
+        }
+
+        double yScale = ( chartAreaHeight + 0.0 ) / maxLevelsValue;
+
+        for(int level = 0; level < seriesLength; ++level) {
+
+            Color channelColor = Color.DARK_GRAY;
+
+            ArrayList<ColorStrip> bar = new ArrayList<>();
+
+            for(int ch=0; ch<data.size(); ++ch) {
+                switch (ch) {
+                    case 0:
+                        if(data.size()>1) {
+                            channelColor = new Color(200, 0, 0, 255);
+                        }
+                        break;
+                    case 1:
+                        channelColor = new Color(0, 200, 0, 255);
+                        break;
+                    case 2:
+                        channelColor = new Color(0, 0, 200, 255);
+                        break;
+                }
+                hgr.setColor(channelColor);
+                bar.add(new ColorStrip(data.get(ch)[level], channelColor));
+            }
+
+            Collections.sort(bar);
+            Collections.reverse(bar);
+
+            int barWidth = 1;
+
+            for(ColorStrip cs: bar) {
+                int barHeight = (int) ( cs.size * yScale );
+                int barX = mariginLeft + level;
+                int barY = mariginTop + chartAreaHeight - barHeight;
+
+                hgr.setColor(cs.color);
+                hgr.fillRect( barX, barY, barWidth, barHeight );
+            }
+
+
+        }
+
+
+        return hist;
+
+    }
+}
+
+class ColorStrip implements Comparable<ColorStrip>{
+    int size;
+    Color color;
+
+    public ColorStrip(int size, Color color) {
+        this.size = size;
+        this.color = color;
+    }
+
+
+    @Override
+    public int compareTo(ColorStrip o) {
+        if(size==o.size) {
+            return 0;
+        }
+        else {
+            if(size>o.size) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+    }
 }
