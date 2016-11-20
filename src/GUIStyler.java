@@ -369,6 +369,84 @@ public class GUIStyler {
 
     }
 
+    public static class PresenterTabOperations2 extends PresenterTab {
+
+        JPanel controlsPanel;
+        JPanel parametersPanel;
+
+        HashMap<JButton, Operations.Operation> activatorPanelMap;
+        JButton lastKey = null;
+
+        Operations.OperationManager operationManager;
+
+        public PresenterTabOperations2(Operations.OperationManager operationManager) {
+            super();
+            this.operationManager = operationManager;
+            setLayout(new GridBagLayout());
+            activatorPanelMap = new HashMap<>();
+
+            controlsPanel = new JPanel();
+            controlsPanel.setLayout(new BoxLayout(controlsPanel,BoxLayout.Y_AXIS));
+            controlsPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
+
+            parametersPanel = new JPanel();
+            //parametersPanel.setLayout(new BoxLayout(parametersPanel,BoxLayout.LINE_AXIS));
+            parametersPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
+
+            drawControls();
+
+            add(controlsPanel,new GUIStyler.ParamsGrid(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
+            add(parametersPanel,new GUIStyler.ParamsGrid(1, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
+        }
+
+        private void drawControls() {
+
+            ActionListener al = new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    JButton jb = (JButton)e.getSource();
+                    if(jb == lastKey) {
+                        return;
+                    }
+
+                    Operations.Operation op_old = activatorPanelMap.get(lastKey);
+                    lastKey = jb;
+                    if(op_old != null) {
+                        parametersPanel.remove(op_old.getConfiguratorPanel());
+                    }
+
+                    Operations.Operation op = activatorPanelMap.get(jb);
+                    parametersPanel.add(op.getConfiguratorPanel());
+
+                    getParent().repaint();
+                }
+            };
+
+
+            boolean init = true;
+            for (Operations.Operation op: operationManager.getNewOperations()) {
+                JButton jbCmd = new JButton(op.getLabel());
+                jbCmd.setMinimumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
+                jbCmd.setMaximumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
+                jbCmd.setPreferredSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
+                jbCmd.setOpaque(true);
+                controlsPanel.add(jbCmd);
+
+                activatorPanelMap.put(jbCmd, op);
+
+                jbCmd.addActionListener(al);
+                if(init == true) {
+                    init = false;
+
+
+                    parametersPanel.add(op.getConfiguratorPanel());
+                    lastKey=jbCmd;
+                }
+            }
+        }
+
+    }
+
 
     public static class PresenterTabImage extends PresenterTab {
 
@@ -445,10 +523,135 @@ public class GUIStyler {
             setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
 
             Dimension dim = new Dimension(img.getWidth(), img.getHeight());
+
             setMinimumSize(dim);
             setPreferredSize(dim);
             addMouseMotionListener(this);
             addMouseListener(this);
+        }
+
+        public void resizeMaximize(JComponent container) {
+            Dimension dim = container.getSize();
+            setPreferredSize(dim);
+        }
+
+
+        public void setOriginCmd(String command) {
+
+            double paneWidth = getSize().getWidth();
+            double paneHeight = getSize().getHeight();
+            double imgWidth = img.getWidth();
+            double imgHeight = img.getHeight();
+
+            double oriX = origin.getX();
+            double oriY = origin.getY();
+
+            switch(command) {
+                case PresenterTabImage.CMD_TL:
+                    origin.setLocation(0,0);
+                    break;
+                case PresenterTabImage.CMD_TR:
+                    origin.setLocation( paneWidth - imgWidth, 0 );
+                    break;
+                case PresenterTabImage.CMD_CE:
+                    origin.setLocation( paneWidth / 2 - imgWidth / 2, paneHeight / 2 - imgHeight / 2 );
+                    break;
+                case PresenterTabImage.CMD_BL:
+                    origin.setLocation( 0 , paneHeight - imgHeight );
+                    break;
+                case PresenterTabImage.CMD_BR:
+                    origin.setLocation( paneWidth - imgWidth , paneHeight - imgHeight );
+                    break;
+                case PresenterTabImage.CMD_AT:
+                    origin.setLocation( oriX , 0 );
+                    break;
+                case PresenterTabImage.CMD_AB:
+                    origin.setLocation( oriX , paneHeight - imgHeight );
+                    break;
+                case PresenterTabImage.CMD_AL:
+                    origin.setLocation( 0 , oriY );
+                    break;
+                case PresenterTabImage.CMD_AR:
+                    origin.setLocation( paneWidth - imgWidth , oriY );
+                    break;
+            }
+            repaint();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.drawImage(img, (int)origin.getX(), (int)origin.getY(), null);
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            origin.setLocation( origin.getX() + e.getPoint().getX() - scrollView.getMouseInitialPosition().getX(), origin.getY() + e.getPoint().getY() - scrollView.getMouseInitialPosition().getY());
+//            System.out.printf("Drag: %s\n",origin.toString());
+            repaint();
+            scrollView.setMouseInitialPosition(e.getPoint());
+            scrollView.updateSymbols(origin);
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            scrollView = new ScrollView(this.getSize(),new Dimension(img.getWidth(), img.getHeight()), e.getPoint(), new Point( (int) (e.getX() - origin.getX()) , (int) (e.getY() - origin.getY()) ));
+            scrollView.updateSymbols(origin);
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            scrollView.closeWindow();
+            scrollView = null;
+
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+            setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
+    }
+
+
+    public static class ImagePanel2 extends JPanel implements MouseListener, MouseMotionListener{
+
+        BufferedImage img;
+        Point origin = new Point(0,0);
+
+        ScrollView scrollView;
+
+        public ImagePanel2(BufferedImage img) {
+            super();
+            this.img = img;
+
+            setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
+
+            Dimension dim = new Dimension(img.getWidth(), img.getHeight());
+
+            setMinimumSize(dim);
+            setPreferredSize(dim);
+            addMouseMotionListener(this);
+            addMouseListener(this);
+        }
+        public void resizeMaximize(JComponent container) {
+            Dimension dim = container.getSize();
+            setPreferredSize(dim);
         }
 
         public void setOriginCmd(String command) {
@@ -542,6 +745,7 @@ public class GUIStyler {
 
         }
     }
+
 
     public static class ScrollView extends JComponent {
 
