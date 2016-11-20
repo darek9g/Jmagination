@@ -442,6 +442,8 @@ public class GUIStyler {
             super();
             this.img = img;
 
+            setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
+
             Dimension dim = new Dimension(img.getWidth(), img.getHeight());
             setMinimumSize(dim);
             setPreferredSize(dim);

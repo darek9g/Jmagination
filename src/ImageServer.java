@@ -59,6 +59,8 @@ public class ImageServer extends JComponent{
         window.setLocation(MouseInfo.getPointerInfo().getLocation());
         window.setVisible(true);
 
+
+
     }
 
     ImageServer(ImageServer parent, Jmagination master) {
@@ -98,6 +100,8 @@ public class ImageServer extends JComponent{
         window.pack();
 
         repaint();
+
+        master.loadImageToWorkspace(this);
     }
 
     public void setDrawingCapabilities() {

@@ -82,11 +82,7 @@ public class Operations {
 
             BufferedImage srcImage = srcImageServer.getImg();
 
-            ColorModel cm = srcImage.getColorModel();
-            boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-            WritableRaster raster = srcImage.copyData(null);
-            return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-
+            return duplicateImageFunction(srcImage);
         }
 
         @Override
@@ -119,6 +115,13 @@ public class Operations {
 
             return panel;
         }
+    }
+
+    public static BufferedImage duplicateImageFunction(BufferedImage srcImage) {
+        ColorModel cm = srcImage.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = srcImage.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
     public static class convertToGray extends Operation{

@@ -82,6 +82,9 @@ public class Jmagination extends JComponent {
         repaint();
     }
 
+    public void loadImageToWorkspace(ImageServer imageServer) {
+        workspace.setImageserver(imageServer);
+    }
 
     public static void main(String[] args) {
         Jmagination j_obj = new Jmagination();
