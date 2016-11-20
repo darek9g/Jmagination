@@ -18,6 +18,8 @@ public class Jmagination extends JComponent {
     ArrayList<ImageServer> images;
     GUIStyler.JButtonS jButtonForNewImage;
 
+    Workspace workspace;
+
 
     public Jmagination() {
         images = new ArrayList<>();
@@ -61,6 +63,8 @@ public class Jmagination extends JComponent {
 
 
         window.setVisible(true);
+
+        workspace = new Workspace();
 
     }
 
