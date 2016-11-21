@@ -57,9 +57,10 @@ public class Workspace{
         operationsPanel=new GUIStyler.PresenterTabOperations2(srcImageServer.operationManager);
         operationsPanel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
 
-        fillMainPanel();
 
         rebuildPanel();
+
+        fillMainPanel();
 
         System.out.println(mainPanel.getSize());
 
@@ -97,7 +98,6 @@ public class Workspace{
 
 
     private void fillMainPanel() {
-        Dimension mainPanelSize = mainPanel.getSize();
 
         Dimension operationsPanelSize = operationsPanel.getSize();
         Dimension histogramPanelSize = histogramPanel.getSize();
@@ -106,15 +106,27 @@ public class Workspace{
         double leftPanelHeight = operationsPanelSize.getHeight() + histogramPanelSize.getHeight();
 
         Dimension newOperationsPanelSize = new Dimension((int)leftPaneWidth, (int) operationsPanelSize.getHeight());
+        System.out.println("newOperatoinsPanelSize :" + newOperationsPanelSize);
+
         Dimension newHistogramPanelSize = new Dimension((int)leftPaneWidth, (int) histogramPanelSize.getHeight());
+        System.out.println("newHistogramPanelSize :" + newHistogramPanelSize);
 
         Dimension newMainPanelSize = new Dimension((int)leftPaneWidth, (int) leftPanelHeight);
 
+        operationsPanel.setPreferredSize(newOperationsPanelSize);
+        operationsPanel.setMinimumSize(newOperationsPanelSize);
+        histogramPanel.setPreferredSize(newHistogramPanelSize);
+        histogramPanel.setMinimumSize(newHistogramPanelSize);
+//        mainPanel.setSize(newMainPanelSize);
 
-        operationsPanel.setMaximumSize(newOperationsPanelSize);
-        histogramPanel.setMaximumSize(newHistogramPanelSize);
+        Dimension mainPanelSize = mainPanel.getSize();
+        Dimension windowSize = window.getSize();
+        Dimension newImagePanelSize = new Dimension( (int) (windowSize.getWidth()-leftPaneWidth), (int) leftPanelHeight);
 
-        mainPanel.setSize(newMainPanelSize);
+        imagePanel.setPreferredSize(newImagePanelSize);
+        imagePanel.setMinimumSize(newImagePanelSize);
+
+        System.out.println("newImagePanelSize :" + newImagePanelSize);
 
         window.pack();
         window.repaint();

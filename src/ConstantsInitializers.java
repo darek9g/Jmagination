@@ -10,6 +10,7 @@ public final class ConstantsInitializers {
     public static final Dimension GUI_IMAGEWINDOW_SIZE = new Dimension(640,480);
 
     public static final int GUI_WORKSPACEWINDOW_GAP_SIZE = 0;
+    public static final Dimension GUI_WORKSCACE_OPER_PANEL_SIZE = new Dimension();
 
     public static final Color GUI_DRAWING_BG_COLOR = new Color(50, 44, 58);
     public static final Color GUI_CONTROLS_BG_COLOR = new Color(200, 221, 242);
