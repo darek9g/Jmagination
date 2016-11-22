@@ -19,7 +19,7 @@ public class Workspace{
     public Workspace() {
         window = new JFrame("Workspace");
         window.setPreferredSize(ConstantsInitializers.GUI_IMAGEWINDOW_SIZE);
-        //window.setMinimumSize(ConstantsInitializers.GUI_IMAGEWINDOW_SIZE);
+        window.setMinimumSize(ConstantsInitializers.GUI_IMAGEWINDOW_SIZE);
         window.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
 
         layout = new SpringLayout();
@@ -49,13 +49,15 @@ public class Workspace{
         BufferedImage img = Operations.duplicateImageFunction(srcImageServer.getImg());
 
         imagePanel = new GUIStyler.ImagePanel2(img);
-        imagePanel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        imagePanel.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
 
         histogramPanel = new GUIStyler.ImagePanel(srcImageServer.getHistogram().createImg2());
-        histogramPanel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        histogramPanel.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
 
         operationsPanel=new GUIStyler.PresenterTabOperations2(srcImageServer.operationManager);
-        operationsPanel.setBorder(BorderFactory.createLineBorder(Color.CYAN));
+        operationsPanel.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
+        operationsPanel.setMinimumSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
+        operationsPanel.setPreferredSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
 
 
         rebuildPanel();
@@ -83,7 +85,9 @@ public class Workspace{
         layout.putConstraint(SpringLayout.WEST, imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.EAST, operationsPanel);
         layout.putConstraint(SpringLayout.WEST, imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.EAST, histogramPanel);
         layout.putConstraint(SpringLayout.EAST, imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.EAST, mainPanel);
-        layout.putConstraint(SpringLayout.VERTICAL_CENTER , imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.VERTICAL_CENTER, mainPanel);
+//        layout.putConstraint(SpringLayout.VERTICAL_CENTER , imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.VERTICAL_CENTER, mainPanel);
+        layout.putConstraint(SpringLayout.NORTH , imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.NORTH, mainPanel);
+        layout.putConstraint(SpringLayout.SOUTH , imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.SOUTH, mainPanel);
 
 
         window.pack();
@@ -111,7 +115,6 @@ public class Workspace{
         Dimension newHistogramPanelSize = new Dimension((int)leftPaneWidth, (int) histogramPanelSize.getHeight());
         System.out.println("newHistogramPanelSize :" + newHistogramPanelSize);
 
-        Dimension newMainPanelSize = new Dimension((int)leftPaneWidth, (int) leftPanelHeight);
 
         operationsPanel.setPreferredSize(newOperationsPanelSize);
         operationsPanel.setMinimumSize(newOperationsPanelSize);
@@ -126,10 +129,18 @@ public class Workspace{
         imagePanel.setPreferredSize(newImagePanelSize);
         imagePanel.setMinimumSize(newImagePanelSize);
 
+
+        Dimension newMainPanelSize = new Dimension((int) (leftPaneWidth + newImagePanelSize.getWidth()), (int) leftPanelHeight);
+        System.out.println("newMainPanelSize :" + newMainPanelSize);
+
         System.out.println("newImagePanelSize :" + newImagePanelSize);
 
         window.pack();
         window.repaint();
+
+        System.out.println("window.getPreferredSize() :" + window.getPreferredSize());
+        window.setMinimumSize(newMainPanelSize);
+        window.setPreferredSize(newMainPanelSize);
 
     }
 

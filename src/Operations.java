@@ -92,7 +92,7 @@ public class Operations {
 
         private JPanel buildConfigurationPanel() {
             JPanel panel = new JPanel(new GridBagLayout());
-            panel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
+            panel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
             JLabel title = new JLabel("Duplicate");
 
             int panelX = 0;
@@ -148,7 +148,7 @@ public class Operations {
 
         private JPanel buildConfigurationPanel() {
             JPanel panel = new JPanel(new GridBagLayout());
-            panel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
+            panel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
 
             int panelX = 0;
             int panelY = 0;
@@ -201,7 +201,7 @@ public class Operations {
 
         private JPanel buildConfigurationPanel() {
             JPanel panel = new JPanel(new GridBagLayout());
-            panel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
+            panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
             JLabel title = new JLabel("Equalize histogram");
 
             int panelX = 0;
@@ -257,7 +257,7 @@ public class Operations {
 
         private JPanel buildConfigurationPanel() {
             JPanel panel = new JPanel(new GridBagLayout());
-            panel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
+            panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
             JLabel title = new JLabel("Normalize histogram");
 
             int panelX = 0;

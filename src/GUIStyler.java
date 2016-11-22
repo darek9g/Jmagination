@@ -392,11 +392,33 @@ public class GUIStyler {
             parametersPanel = new JPanel();
             //parametersPanel.setLayout(new BoxLayout(parametersPanel,BoxLayout.LINE_AXIS));
             parametersPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
+            parametersPanel.setVisible(false);
+
+            JButton cancelButton = new JButton("Cancel");
+            cancelButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    deSelectCommand();
+                }
+            });
+            parametersPanel.add(cancelButton);
 
             drawControls();
 
-            add(controlsPanel,new GUIStyler.ParamsGrid(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
-            add(parametersPanel,new GUIStyler.ParamsGrid(1, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
+            //add(controlsPanel,new GUIStyler.ParamsGrid(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
+            //add(parametersPanel,new GUIStyler.ParamsGrid(1, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
+            add(controlsPanel);
+            add(parametersPanel);
+        }
+
+        private void selectCommand() {
+            controlsPanel.setVisible(false);
+            parametersPanel.setVisible(true);
+        }
+
+        private void deSelectCommand() {
+            controlsPanel.setVisible(true);
+            parametersPanel.setVisible(false);
         }
 
         private void drawControls() {
@@ -405,9 +427,6 @@ public class GUIStyler {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JButton jb = (JButton)e.getSource();
-                    if(jb == lastKey) {
-                        return;
-                    }
 
                     Operations.Operation op_old = activatorPanelMap.get(lastKey);
                     lastKey = jb;
@@ -419,6 +438,7 @@ public class GUIStyler {
                     parametersPanel.add(op.getConfiguratorPanel());
 
                     getParent().repaint();
+                    selectCommand();
                 }
             };
 
