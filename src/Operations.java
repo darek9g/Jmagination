@@ -8,8 +8,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -18,23 +16,24 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Operations {
 
 
+    public static ArrayList<Operation> registerOperationsForImageServer(ImageServer imageServer, Jmagination jmagination) {
+        ArrayList<Operation>availableOperations = new ArrayList<Operation>();
+
+        availableOperations.add(new duplicate(imageServer, jmagination));
+        availableOperations.add(new convertToGray(imageServer, jmagination));
+        availableOperations.add(new normalizeHistogram(imageServer, jmagination));
+        availableOperations.add(new equalizeHistogram(imageServer, jmagination));
+
+        return availableOperations;
+    }
+
     public static class OperationManager {
 
-        ArrayList<Operation> newOperations;
         ArrayList<Operation> doneOperations;
 
-        public OperationManager(ImageServer imageServer, Jmagination master) {
-            newOperations = new ArrayList<Operation>();
+        public OperationManager() {
+
             doneOperations = new ArrayList<Operation>();
-
-            newOperations.add(new duplicate(imageServer, master));
-            newOperations.add(new convertToGray(imageServer, master));
-            newOperations.add(new normalizeHistogram(imageServer, master));
-            newOperations.add(new equalizeHistogram(imageServer, master));
-        }
-
-        public ArrayList<Operation> getNewOperations() {
-            return newOperations;
         }
     }
 
@@ -42,14 +41,14 @@ public class Operations {
 
         ImageServer srcImageServer;
         String label = "Dummy";
-        Jmagination master;
+        Jmagination jmagination;
 
-        public Operation(Jmagination master) {
-            this.master = master;
+        public Operation(Jmagination jmagination) {
+            this.jmagination = jmagination;
         }
 
-        public Operation(ImageServer srcImageServer, Jmagination master) {
-            this(master);
+        public Operation(ImageServer srcImageServer, Jmagination jmagination) {
+            this(jmagination);
             this.srcImageServer = srcImageServer;
         }
 
@@ -62,7 +61,7 @@ public class Operations {
         public abstract JPanel getConfiguratorPanel();
 
         public void Run() {
-            master.addImage(new ImageServer(RunOperation(srcImageServer),"from ", master));
+            jmagination.addImage(new ImageServer(RunOperation(srcImageServer),srcImageServer, jmagination));
         }
     }
 
@@ -70,8 +69,8 @@ public class Operations {
 
         JPanel configurationPanel;
 
-        public duplicate(ImageServer srcImageServer, Jmagination master) {
-            super(srcImageServer, master);
+        public duplicate(ImageServer srcImageServer, Jmagination jmagination) {
+            super(srcImageServer, jmagination);
             this.label = "Duplicate";
             configurationPanel = buildConfigurationPanel();
 
@@ -128,8 +127,8 @@ public class Operations {
 
         JPanel configurationPanel;
 
-        public convertToGray(ImageServer srcImageServer, Jmagination master) {
-            super(srcImageServer, master);
+        public convertToGray(ImageServer srcImageServer, Jmagination jmagination) {
+            super(srcImageServer, jmagination);
             this.label = "Convert to gray";
             configurationPanel = buildConfigurationPanel();
 
@@ -177,8 +176,8 @@ public class Operations {
 
         JPanel configurationPanel;
 
-        public equalizeHistogram(ImageServer srcImageServer, Jmagination master) {
-            super(srcImageServer, master);
+        public equalizeHistogram(ImageServer srcImageServer, Jmagination jmagination) {
+            super(srcImageServer, jmagination);
             this.label = "Equalize Histogram";
             configurationPanel = buildConfigurationPanel();
 
@@ -233,8 +232,8 @@ public class Operations {
         String[] runModes = { "Average", "Random", "By neighborhood(3x3)"};
         JComboBox<String> modeSelect = new JComboBox<>(runModes);
 
-        public normalizeHistogram(ImageServer srcImageServer, Jmagination master) {
-            super(srcImageServer, master);
+        public normalizeHistogram(ImageServer srcImageServer, Jmagination jmagination) {
+            super(srcImageServer, jmagination);
             this.label = "Normalize Histogram";
             configurationPanel = buildConfigurationPanel();
 

@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -291,6 +292,7 @@ public class GUIStyler {
         }
     }
 
+/*
     public static class PresenterTabOperations extends PresenterTab {
 
         JPanel controlsPanel;
@@ -368,6 +370,7 @@ public class GUIStyler {
         }
 
     }
+*/
 
     public static class PresenterTabOperations2 extends PresenterTab {
 
@@ -377,11 +380,8 @@ public class GUIStyler {
         HashMap<JButton, Operations.Operation> activatorPanelMap;
         JButton lastKey = null;
 
-        Operations.OperationManager operationManager;
-
-        public PresenterTabOperations2(Operations.OperationManager operationManager) {
+        public PresenterTabOperations2(ArrayList<Operations.Operation> availableOperations) {
             super();
-            this.operationManager = operationManager;
             setLayout(new GridBagLayout());
             activatorPanelMap = new HashMap<>();
 
@@ -390,7 +390,7 @@ public class GUIStyler {
             controlsPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
 
             parametersPanel = new JPanel();
-            //parametersPanel.setLayout(new BoxLayout(parametersPanel,BoxLayout.LINE_AXIS));
+            parametersPanel.setLayout(new BorderLayout());
             parametersPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
             parametersPanel.setVisible(false);
 
@@ -401,9 +401,9 @@ public class GUIStyler {
                     deSelectCommand();
                 }
             });
-            parametersPanel.add(cancelButton);
+            parametersPanel.add(cancelButton,BorderLayout.NORTH);
 
-            drawControls();
+            drawControls(availableOperations);
 
             //add(controlsPanel,new GUIStyler.ParamsGrid(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
             //add(parametersPanel,new GUIStyler.ParamsGrid(1, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
@@ -421,7 +421,7 @@ public class GUIStyler {
             parametersPanel.setVisible(false);
         }
 
-        private void drawControls() {
+        private void drawControls(ArrayList<Operations.Operation> availableOperations) {
 
             ActionListener al = new ActionListener() {
                 @Override
@@ -435,7 +435,7 @@ public class GUIStyler {
                     }
 
                     Operations.Operation op = activatorPanelMap.get(jb);
-                    parametersPanel.add(op.getConfiguratorPanel());
+                    parametersPanel.add(op.getConfiguratorPanel(),BorderLayout.SOUTH);
 
                     getParent().repaint();
                     selectCommand();
@@ -444,7 +444,7 @@ public class GUIStyler {
 
 
             boolean init = true;
-            for (Operations.Operation op: operationManager.getNewOperations()) {
+            for (Operations.Operation op: availableOperations) {
                 JButton jbCmd = new JButton(op.getLabel());
                 jbCmd.setMinimumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
                 jbCmd.setMaximumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);

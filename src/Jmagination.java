@@ -19,9 +19,14 @@ public class Jmagination extends JComponent {
     GUIStyler.JButtonS jButtonForNewImage;
 
     Workspace workspace;
+    Operations.OperationManager operationManager;
+
+    int nextImageServerId;
 
 
     public Jmagination() {
+        nextImageServerId = 0;
+        System.out.println("Id " + nextImageServerId);
         images = new ArrayList<>();
         window = new JFrame("Jmagination");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,6 +38,8 @@ public class Jmagination extends JComponent {
         jButtonForNewImage = new GUIStyler.JButtonS("New buffer");
 
         Jmagination selfHandle = this;
+
+        this.operationManager = new Operations.OperationManager();
 
         jButtonForNewImage.addActionListener(new ActionListener() {
             @Override
@@ -64,7 +71,7 @@ public class Jmagination extends JComponent {
 
         window.setVisible(true);
 
-        workspace = new Workspace();
+        workspace = new Workspace(selfHandle);
 
     }
 
@@ -80,6 +87,10 @@ public class Jmagination extends JComponent {
         images.remove(imageServer);
         window.getContentPane().remove(imageServer.getCallUpButton());
         repaint();
+    }
+
+    public int nextId() {
+        return nextImageServerId++;
     }
 
     public void loadImageToWorkspace(ImageServer imageServer) {

@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import static java.awt.color.ColorSpace.CS_GRAY;
 
 /**
  * Created by darek on 26.10.16.
@@ -15,14 +14,13 @@ import static java.awt.color.ColorSpace.CS_GRAY;
 public class ImageServer extends JComponent{
 
     JFrame window;
-    String id;
+    int id;
     ImageServer parent;
     GUIStyler.JButtonS callUpButton;
     GUIStyler.Presenter tpanel = new GUIStyler.Presenter();
 
     BufferedImage img;
 
-    BufferedImage hist;
     Histogram histogram;
 
     Jmagination master;
@@ -31,15 +29,18 @@ public class ImageServer extends JComponent{
 
 
     ImageServer(Jmagination master) {
+        this.id = master.nextId();
+
+
         window = new JFrame("Empty buffer");
         window.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         window.setContentPane(tpanel);
 
         this.parent = null;
 
-        this.operationManager = new Operations.OperationManager(this, master);
 
-        callUpButton = new GUIStyler.JButtonS(id);
+
+        callUpButton = new GUIStyler.JButtonS(String.valueOf(this.id));
 
         this.master = master;
 
@@ -63,39 +64,38 @@ public class ImageServer extends JComponent{
 
     }
 
-    ImageServer(ImageServer parent, Jmagination master) {
-        this(master);
-        this.parent = parent;
-    }
-
     ImageServer(BufferedImage img, String filePath, Jmagination master) {
         this(master);
         this.img = img;
-//        System.out.println("Color colors: " + img.getColorModel().getColorSpace().getNumComponents() );
 
-        //BufferedImage imgG = Operations.convertToGrayFunction(img);
+        configure("Id: " + this.id + " from file: " + filePath);
+    }
 
-        //img = imgG;
+    ImageServer(BufferedImage img, ImageServer parent, Jmagination master) {
+        this(master);
+        this.img = img;
 
-//        System.out.println("Gray colors: " + img.getColorModel().getColorSpace().getNumComponents() );
+        this.parent = parent;
 
+        configure("Id: " + this.id + " from image " + parent.getId());
+    }
+
+    private void configure(String description) {
         GUIStyler.PresenterTabImage imageTab = new GUIStyler.PresenterTabImage(img);
         tpanel.addTab("Image", imageTab);
 
         GUIStyler.PresenterTabProperties propertiesTab = new GUIStyler.PresenterTabProperties(img);
         tpanel.addTab("Properties", propertiesTab);
 
-
-
         histogram = new Histogram(img);
         GUIStyler.PresenterTabImage historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg2());
         tpanel.addTab("Histogram", historgamTab);
 
-        GUIStyler.PresenterTabOperations operationsTab = new GUIStyler.PresenterTabOperations(operationManager);
+        GUIStyler.PresenterTabOperations2 operationsTab = new GUIStyler.PresenterTabOperations2(Operations.registerOperationsForImageServer(this, master));
         tpanel.addTab("Operations", operationsTab);
 
-        window.setTitle(filePath);
-        callUpButton.setText(filePath);
+        window.setTitle("Id: " + id);
+        callUpButton.setText(description);
 
         window.pack();
 
@@ -115,6 +115,10 @@ public class ImageServer extends JComponent{
 
         window.setResizable(false);
 
+    }
+
+    public int getId() {
+        return id;
     }
 
     public GUIStyler.JButtonS getCallUpButton() {
