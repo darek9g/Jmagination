@@ -14,15 +14,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class OperationNormalizeHistogram extends Operations.Operation {
 
-    JPanel configurationPanel;
     String[] runModes = { "Average", "Random", "By neighborhood(3x3)"};
     JComboBox<String> modeSelect = new JComboBox<>(runModes);
 
     public OperationNormalizeHistogram(ImageServer srcImageServer, Jmagination jmagination) {
         super(srcImageServer, jmagination);
         this.label = "Normalize Histogram";
-        configurationPanel = buildConfigurationPanel();
-
     }
 
     @Override
@@ -36,12 +33,8 @@ public class OperationNormalizeHistogram extends Operations.Operation {
     }
 
     @Override
-    public JPanel getConfiguratorPanel() {
-        return configurationPanel;
-    }
-
-    private JPanel buildConfigurationPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
+    public void drawConfigurationPanel(JPanel panel) {
+        panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
         JLabel title = new JLabel("Normalize histogram");
 
@@ -69,7 +62,6 @@ public class OperationNormalizeHistogram extends Operations.Operation {
             }
         });
 
-        return panel;
     }
 
     public static BufferedImage normalizeHistogramFunction(BufferedImage srcImage, Histogram histogram, String runMode) {

@@ -10,13 +10,9 @@ import java.awt.image.BufferedImage;
 
 public class OperationConvertToGray extends Operations.Operation {
 
-    JPanel configurationPanel;
-
     public OperationConvertToGray(ImageServer srcImageServer, Jmagination jmagination) {
         super(srcImageServer, jmagination);
         this.label = "Convert to gray";
-        configurationPanel = buildConfigurationPanel();
-
     }
 
     @Override
@@ -26,12 +22,8 @@ public class OperationConvertToGray extends Operations.Operation {
     }
 
     @Override
-    public JPanel getConfiguratorPanel() {
-        return configurationPanel;
-    }
-
-    private JPanel buildConfigurationPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
+    public void drawConfigurationPanel(JPanel panel) {
+        panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
 
         int panelX = 0;
@@ -53,7 +45,6 @@ public class OperationConvertToGray extends Operations.Operation {
             }
         });
 
-        return panel;
     }
 
     public static BufferedImage convertToGrayFunction(BufferedImage colorImg) {

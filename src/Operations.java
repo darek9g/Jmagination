@@ -58,7 +58,7 @@ public class Operations {
 
         public abstract BufferedImage RunOperation(ImageServer srcImageServer);
 
-        public abstract JPanel getConfiguratorPanel();
+        public abstract void drawConfigurationPanel(JPanel panel);
 
         public void Run() {
             jmagination.addImage(new ImageServer(RunOperation(srcImageServer),srcImageServer, jmagination));

@@ -16,8 +16,6 @@ public class OperationDuplicate extends Operations.Operation {
     public OperationDuplicate(ImageServer srcImageServer, Jmagination jmagination) {
         super(srcImageServer, jmagination);
         this.label = "Duplicate";
-        configurationPanel = buildConfigurationPanel();
-
     }
 
     @Override
@@ -29,12 +27,8 @@ public class OperationDuplicate extends Operations.Operation {
     }
 
     @Override
-    public JPanel getConfiguratorPanel() {
-        return configurationPanel;
-    }
-
-    private JPanel buildConfigurationPanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
+    public void drawConfigurationPanel(JPanel panel) {
+        panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
         JLabel title = new JLabel("Duplicate");
 
@@ -55,8 +49,6 @@ public class OperationDuplicate extends Operations.Operation {
                 Run();
             }
         });
-
-        return panel;
     }
 
     public static BufferedImage duplicateImageFunction(BufferedImage srcImage) {
