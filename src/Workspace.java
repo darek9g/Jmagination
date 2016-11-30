@@ -53,7 +53,7 @@ public class Workspace{
         mainPanel.remove(histogramPanel);*/
         mainPanel.removeAll();
 
-        BufferedImage img = Operations.duplicateImageFunction(srcImageServer.getImg());
+        BufferedImage img = OperationDuplicate.duplicateImageFunction(srcImageServer.getImg());
 
         imagePanel = new GUIStyler.ImagePanel2(img);
         imagePanel.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
