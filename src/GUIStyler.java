@@ -376,9 +376,11 @@ public class GUIStyler {
 
         JPanel controlsPanel;
         JPanel parametersPanel;
+        JPanel operationsParametersPanel;
 
         HashMap<JButton, Operations.Operation> activatorPanelMap;
-        JButton lastKey = null;
+
+        JButton cancelButton;
 
         public PresenterTabOperations2(ArrayList<Operations.Operation> availableOperations) {
             super();
@@ -394,7 +396,7 @@ public class GUIStyler {
             parametersPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
             parametersPanel.setVisible(false);
 
-            JButton cancelButton = new JButton("Cancel");
+            cancelButton = new JButton("Select another opertaion");
             cancelButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -403,12 +405,14 @@ public class GUIStyler {
             });
             parametersPanel.add(cancelButton,BorderLayout.NORTH);
 
-            drawControls(availableOperations);
+            operationsParametersPanel = new JPanel();
+            parametersPanel.add(operationsParametersPanel, BorderLayout.CENTER);
 
-            //add(controlsPanel,new GUIStyler.ParamsGrid(0, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
-            //add(parametersPanel,new GUIStyler.ParamsGrid(1, 0, 1, 1, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0, 0));
+            drawControls(availableOperations, operationsParametersPanel);
+
             add(controlsPanel);
             add(parametersPanel);
+
         }
 
         private void selectCommand() {
@@ -421,21 +425,20 @@ public class GUIStyler {
             parametersPanel.setVisible(false);
         }
 
-        private void drawControls(ArrayList<Operations.Operation> availableOperations) {
+        private void drawControls(ArrayList<Operations.Operation> availableOperations, JPanel panel) {
 
             ActionListener al = new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     JButton jb = (JButton)e.getSource();
 
-                    Operations.Operation op_old = activatorPanelMap.get(lastKey);
-                    lastKey = jb;
-                    if(op_old != null) {
-                        parametersPanel.remove(op_old.getConfiguratorPanel());
+                    panel.removeAll();
+                    for(Component c: panel.getComponents()) {
+                        if(c != cancelButton) panel.remove(c);
                     }
 
                     Operations.Operation op = activatorPanelMap.get(jb);
-                    parametersPanel.add(op.getConfiguratorPanel(),BorderLayout.SOUTH);
+                    op.drawConfigurationPanel(panel);
 
                     getParent().repaint();
                     selectCommand();
@@ -458,9 +461,7 @@ public class GUIStyler {
                 if(init == true) {
                     init = false;
 
-
-                    parametersPanel.add(op.getConfiguratorPanel());
-                    lastKey=jbCmd;
+                    op.drawConfigurationPanel(panel);
                 }
             }
         }
