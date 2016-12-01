@@ -22,14 +22,21 @@ public class OperationNormalizeHistogram extends Operations.Operation {
         this.label = "Normalize Histogram";
     }
 
+    public OperationNormalizeHistogram(ImageServer srcImageServer, Jmagination jmagination, String modeSelected) {
+        super(srcImageServer, jmagination);
+        for(String s: runModes) {
+            if(modeSelected == s) {
+                modeSelect.setSelectedItem(modeSelected);
+            }
+        }
+    }
+
     @Override
     public BufferedImage RunOperation(ImageServer srcImageServer) {
 
         BufferedImage srcImage = srcImageServer.getImg();
         Histogram histogram = srcImageServer.getHistogram();
         return normalizeHistogramFunction(srcImage, histogram, (String) modeSelect.getSelectedItem());
-
-
     }
 
     @Override
@@ -47,11 +54,7 @@ public class OperationNormalizeHistogram extends Operations.Operation {
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-
-
         panel.add(modeSelect, new GUIStyler.ParamsGrid(panelX,panelY++));
-
-
 
         JButton apply  = new JButton("Apply");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
@@ -62,6 +65,11 @@ public class OperationNormalizeHistogram extends Operations.Operation {
             }
         });
 
+    }
+
+    @Override
+    public Operations.Operation Clone() {
+        return new OperationNormalizeHistogram(null, jmagination, (String) modeSelect.getSelectedItem());
     }
 
     public static BufferedImage normalizeHistogramFunction(BufferedImage srcImage, Histogram histogram, String runMode) {

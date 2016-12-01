@@ -47,6 +47,11 @@ public class OperationConvertToGray extends Operations.Operation {
 
     }
 
+    @Override
+    public Operations.Operation Clone() {
+        return new OperationConvertToGray(null, jmagination);
+    }
+
     public static BufferedImage convertToGrayFunction(BufferedImage colorImg) {
 
         BufferedImage grayImg = new BufferedImage(colorImg.getWidth(), colorImg.getHeight(), BufferedImage.TYPE_BYTE_GRAY);

@@ -63,7 +63,12 @@ public class Operations {
         public void Run() {
             jmagination.addImage(new ImageServer(RunOperation(srcImageServer),srcImageServer, jmagination));
         }
+
+        public abstract Operation Clone();
+
     }
+
+
 
     private Operations() {
         throw new AssertionError();

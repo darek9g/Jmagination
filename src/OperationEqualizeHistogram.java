@@ -55,6 +55,11 @@ public class OperationEqualizeHistogram extends Operations.Operation {
         });
     }
 
+    @Override
+    public Operations.Operation Clone() {
+        return new OperationEqualizeHistogram(null, jmagination);
+    }
+
     public static BufferedImage equalizeHistogramFunction(BufferedImage srcImage, Histogram histogram) {
 
         BufferedImage resultImg;

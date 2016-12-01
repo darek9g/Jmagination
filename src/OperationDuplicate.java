@@ -51,6 +51,11 @@ public class OperationDuplicate extends Operations.Operation {
         });
     }
 
+    @Override
+    public Operations.Operation Clone() {
+        return new OperationDuplicate(null, jmagination);
+    }
+
     public static BufferedImage duplicateImageFunction(BufferedImage srcImage) {
         ColorModel cm = srcImage.getColorModel();
         boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
