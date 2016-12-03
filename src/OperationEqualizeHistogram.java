@@ -11,13 +11,15 @@ import java.util.ArrayList;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationEqualizeHistogram extends Operations.Operation {
+public class OperationEqualizeHistogram extends Operation {
 
     JPanel configurationPanel;
 
     public OperationEqualizeHistogram(ImageServer srcImageServer, Jmagination jmagination) {
         super(srcImageServer, jmagination);
         this.label = "Equalize Histogram";
+        categories.add("LAB 1");
+        categories.add("MULTIPOINT");
     }
 
     @Override
@@ -56,7 +58,7 @@ public class OperationEqualizeHistogram extends Operations.Operation {
     }
 
     @Override
-    public Operations.Operation Clone() {
+    public Operation Clone() {
         return new OperationEqualizeHistogram(null, jmagination);
     }
 

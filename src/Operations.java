@@ -1,5 +1,3 @@
-import com.sun.corba.se.spi.orb.Operation;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -36,39 +34,6 @@ public class Operations {
             doneOperations = new ArrayList<Operation>();
         }
     }
-
-    public static abstract class Operation {
-
-        ImageServer srcImageServer;
-        String label = "Dummy";
-        Jmagination jmagination;
-
-        public Operation(Jmagination jmagination) {
-            this.jmagination = jmagination;
-        }
-
-        public Operation(ImageServer srcImageServer, Jmagination jmagination) {
-            this(jmagination);
-            this.srcImageServer = srcImageServer;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public abstract BufferedImage RunOperation(ImageServer srcImageServer);
-
-        public abstract void drawConfigurationPanel(JPanel panel);
-
-        public void Run() {
-            jmagination.addImage(new ImageServer(RunOperation(srcImageServer),srcImageServer, jmagination));
-        }
-
-        public abstract Operation Clone();
-
-    }
-
-
 
     private Operations() {
         throw new AssertionError();

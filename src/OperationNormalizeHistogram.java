@@ -12,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationNormalizeHistogram extends Operations.Operation {
+public class OperationNormalizeHistogram extends Operation {
 
     String[] runModes = { "Average", "Random", "By neighborhood(3x3)"};
     JComboBox<String> modeSelect = new JComboBox<>(runModes);
@@ -20,6 +20,8 @@ public class OperationNormalizeHistogram extends Operations.Operation {
     public OperationNormalizeHistogram(ImageServer srcImageServer, Jmagination jmagination) {
         super(srcImageServer, jmagination);
         this.label = "Normalize Histogram";
+        categories.add("LAB 1");
+        categories.add("MULTIPOINT");
     }
 
     public OperationNormalizeHistogram(ImageServer srcImageServer, Jmagination jmagination, String modeSelected) {
@@ -68,7 +70,7 @@ public class OperationNormalizeHistogram extends Operations.Operation {
     }
 
     @Override
-    public Operations.Operation Clone() {
+    public Operation Clone() {
         return new OperationNormalizeHistogram(null, jmagination, (String) modeSelect.getSelectedItem());
     }
 

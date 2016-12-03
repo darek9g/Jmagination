@@ -58,7 +58,7 @@ public class ImageServer extends JComponent{
         setDrawingCapabilities();
 
         window.setLocation(MouseInfo.getPointerInfo().getLocation());
-        window.setVisible(true);
+        window.setVisible(false);
 
 
 
@@ -91,7 +91,7 @@ public class ImageServer extends JComponent{
         GUIStyler.PresenterTabImage historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg2());
         tpanel.addTab("Histogram", historgamTab);
 
-        GUIStyler.PresenterTabOperations2 operationsTab = new GUIStyler.PresenterTabOperations2(Operations.registerOperationsForImageServer(this, master));
+        GUIStyler.PresenterTabOperations operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this, master));
         tpanel.addTab("Operations", operationsTab);
 
         window.setTitle("Id: " + id);

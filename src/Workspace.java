@@ -24,7 +24,7 @@ public class Workspace{
 
         this.jmagination = jmagination;
 
-        window = new JFrame("Workspace");
+        window = new JFrame("Jmagination Workspace");
         window.setPreferredSize(ConstantsInitializers.GUI_IMAGEWINDOW_SIZE);
         window.setMinimumSize(ConstantsInitializers.GUI_IMAGEWINDOW_SIZE);
         window.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
@@ -38,6 +38,49 @@ public class Workspace{
 
         this.srcImageServer = null;
 
+
+        imagePanel = new JPanel();
+        imagePanel.setLayout(new BorderLayout());
+        imagePanel.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
+
+        JLabel imagePanelLabel = new JLabel("Image");
+        imagePanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imagePanel.add(imagePanelLabel, BorderLayout.NORTH);
+
+        JPanel imagePanelCentral = new GUIStyler.ImagePanel2(this.srcImageServer.getImg());
+        imagePanel.add(imagePanelCentral, BorderLayout.CENTER);
+
+        histogramPanel = new JPanel();
+        histogramPanel.setLayout(new BorderLayout());
+
+        JLabel histogramPanelLabel = new JLabel("Histogram");
+        histogramPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        histogramPanelLabel.setFont(ConstantsInitializers.GUI_FONT_TITLE);
+        histogramPanel.add(histogramPanelLabel, BorderLayout.NORTH);
+
+        JPanel histogramPanelCentral = new GUIStyler.ImagePanel2(srcImageServer.getHistogram().createImg2());
+        histogramPanelCentral.setBackground(ConstantsInitializers.GUI_CHARTS_BG_COLOR);
+        histogramPanelCentral.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
+
+        histogramPanel.add(histogramPanelCentral, BorderLayout.CENTER);
+
+        JPanel operationsPanelCentral=new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer, jmagination));
+
+
+        operationsPanel = new JPanel();
+        operationsPanel.setLayout(new BorderLayout());
+
+        JLabel operationsPanelLabel = new JLabel("Image Operations");
+        operationsPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        operationsPanelLabel.setFont(ConstantsInitializers.GUI_FONT_TITLE);
+        operationsPanel.add(operationsPanelLabel, BorderLayout.NORTH);
+
+        operationsPanel.add(operationsPanelCentral, BorderLayout.CENTER);
+
+        operationsPanel.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
+        operationsPanel.setMinimumSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
+        operationsPanel.setPreferredSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
+
     }
 
     public Workspace(Jmagination jmagination, ImageServer srcImageServer) {
@@ -48,23 +91,11 @@ public class Workspace{
     public void setImageserver(ImageServer srcImageServer) {
         this.srcImageServer = srcImageServer;
 
-        /*mainPanel.remove(imagePanel);
-        mainPanel.remove(operationsPanel);
-        mainPanel.remove(histogramPanel);*/
         mainPanel.removeAll();
 
         BufferedImage img = OperationDuplicate.duplicateImageFunction(srcImageServer.getImg());
 
-        imagePanel = new GUIStyler.ImagePanel2(img);
-        imagePanel.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
 
-        histogramPanel = new GUIStyler.ImagePanel2(srcImageServer.getHistogram().createImg2());
-        histogramPanel.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
-
-        operationsPanel=new GUIStyler.PresenterTabOperations2(Operations.registerOperationsForImageServer(srcImageServer, jmagination));
-        operationsPanel.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
-        operationsPanel.setMinimumSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
-        operationsPanel.setPreferredSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
 
 
         rebuildPanel();
@@ -87,12 +118,10 @@ public class Workspace{
 
         layout.putConstraint(SpringLayout.NORTH, operationsPanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.NORTH, mainPanel);
         layout.putConstraint(SpringLayout.NORTH, histogramPanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.SOUTH, operationsPanel);
-//        layout.putConstraint(SpringLayout.SOUTH, histogramPanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.SOUTH, mainPanel);
 
         layout.putConstraint(SpringLayout.WEST, imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.EAST, operationsPanel);
         layout.putConstraint(SpringLayout.WEST, imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.EAST, histogramPanel);
         layout.putConstraint(SpringLayout.EAST, imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.EAST, mainPanel);
-//        layout.putConstraint(SpringLayout.VERTICAL_CENTER , imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.VERTICAL_CENTER, mainPanel);
         layout.putConstraint(SpringLayout.NORTH , imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.NORTH, mainPanel);
         layout.putConstraint(SpringLayout.SOUTH , imagePanel, ConstantsInitializers.GUI_WORKSPACEWINDOW_GAP_SIZE, SpringLayout.SOUTH, mainPanel);
 
@@ -156,7 +185,6 @@ public class Workspace{
         operationsPanel.setMinimumSize(newOperationsPanelSize);
         histogramPanel.setPreferredSize(newHistogramPanelSize);
         histogramPanel.setMinimumSize(newHistogramPanelSize);
-//        mainPanel.setSize(newMainPanelSize);
 
         Dimension mainPanelSize = mainPanel.getSize();
         Dimension windowSize = window.getSize();

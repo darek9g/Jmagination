@@ -9,13 +9,15 @@ import java.awt.image.WritableRaster;
 /**
  * Created by darek on 30.11.2016.
  */
-public class OperationDuplicate extends Operations.Operation {
+public class OperationDuplicate extends Operation {
 
     JPanel configurationPanel;
 
     public OperationDuplicate(ImageServer srcImageServer, Jmagination jmagination) {
         super(srcImageServer, jmagination);
         this.label = "Duplicate";
+        categories.add("LAB 1");
+        categories.add("GENERAL");
     }
 
     @Override
@@ -52,7 +54,7 @@ public class OperationDuplicate extends Operations.Operation {
     }
 
     @Override
-    public Operations.Operation Clone() {
+    public Operation Clone() {
         return new OperationDuplicate(null, jmagination);
     }
 

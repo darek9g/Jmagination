@@ -8,11 +8,13 @@ import java.awt.image.BufferedImage;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationConvertToGray extends Operations.Operation {
+public class OperationConvertToGray extends Operation {
 
     public OperationConvertToGray(ImageServer srcImageServer, Jmagination jmagination) {
         super(srcImageServer, jmagination);
         this.label = "Convert to gray";
+        categories.add("LAB 1");
+        categories.add("CONVERSION");
     }
 
     @Override
@@ -48,7 +50,7 @@ public class OperationConvertToGray extends Operations.Operation {
     }
 
     @Override
-    public Operations.Operation Clone() {
+    public Operation Clone() {
         return new OperationConvertToGray(null, jmagination);
     }
 

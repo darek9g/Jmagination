@@ -1,11 +1,13 @@
 import com.sun.deploy.panel.JavaPanel;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Created by darek on 27.10.16.
@@ -292,108 +294,38 @@ public class GUIStyler {
         }
     }
 
-/*
     public static class PresenterTabOperations extends PresenterTab {
 
         JPanel controlsPanel;
+        JSplitPane controlsPanelCenter;
         JPanel parametersPanel;
-
-        HashMap<JButton, Operations.Operation> activatorPanelMap;
-        JButton lastKey = null;
-
-        Operations.OperationManager operationManager;
-
-        public PresenterTabOperations(Operations.OperationManager operationManager) {
-            super();
-            this.operationManager = operationManager;
-            setLayout(new BoxLayout(this,BoxLayout.LINE_AXIS));
-            activatorPanelMap = new HashMap<>();
-
-            controlsPanel = new JPanel();
-            controlsPanel.setLayout(new BoxLayout(controlsPanel,BoxLayout.Y_AXIS));
-            controlsPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
-
-            parametersPanel = new JPanel();
-            //parametersPanel.setLayout(new BoxLayout(parametersPanel,BoxLayout.LINE_AXIS));
-            parametersPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
-
-            drawControls();
-
-            add(controlsPanel);
-            add(parametersPanel);
-        }
-
-        private void drawControls() {
-
-            ActionListener al = new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JButton jb = (JButton)e.getSource();
-                    if(jb == lastKey) {
-                        return;
-                    }
-
-                    Operations.Operation op_old = activatorPanelMap.get(lastKey);
-                    lastKey = jb;
-                    if(op_old != null) {
-                        parametersPanel.remove(op_old.getConfiguratorPanel());
-                    }
-
-                    Operations.Operation op = activatorPanelMap.get(jb);
-                    parametersPanel.add(op.getConfiguratorPanel());
-
-                    getParent().repaint();
-                }
-            };
-
-
-            boolean init = true;
-            for (Operations.Operation op: operationManager.getNewOperations()) {
-                JButton jbCmd = new JButton(op.getLabel());
-                jbCmd.setMinimumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
-                jbCmd.setMaximumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
-                jbCmd.setPreferredSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
-                jbCmd.setOpaque(true);
-                controlsPanel.add(jbCmd);
-
-                activatorPanelMap.put(jbCmd, op);
-
-                jbCmd.addActionListener(al);
-                if(init == true) {
-                    init = false;
-
-
-                    parametersPanel.add(op.getConfiguratorPanel());
-                    lastKey=jbCmd;
-                }
-            }
-        }
-
-    }
-*/
-
-    public static class PresenterTabOperations2 extends PresenterTab {
-
-        JPanel controlsPanel;
-        JPanel parametersPanel;
-        JPanel operationsParametersPanel;
-
-        HashMap<JButton, Operations.Operation> activatorPanelMap;
+        JPanel getParametersPanelCenter;
 
         JButton cancelButton;
 
-        public PresenterTabOperations2(ArrayList<Operations.Operation> availableOperations) {
+        public PresenterTabOperations(ArrayList<Operation> availableOperations) {
             super();
+
+            setMinimumSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
+            setPreferredSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
+
             setLayout(new GridBagLayout());
-            activatorPanelMap = new HashMap<>();
 
             controlsPanel = new JPanel();
-            controlsPanel.setLayout(new BoxLayout(controlsPanel,BoxLayout.Y_AXIS));
-            controlsPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
+            controlsPanel.setLayout(new BorderLayout());
+
+            controlsPanelCenter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JPanel(), new JPanel());
+            controlsPanelCenter.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
+//            controlsPanel.setMinimumSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
+//            controlsPanel.setPreferredSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
+
+            controlsPanel.add(controlsPanelCenter, BorderLayout.CENTER);
 
             parametersPanel = new JPanel();
             parametersPanel.setLayout(new BorderLayout());
             parametersPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
+//            parametersPanel.setMinimumSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
+//            parametersPanel.setPreferredSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
             parametersPanel.setVisible(false);
 
             cancelButton = new JButton("Select another opertaion");
@@ -405,10 +337,10 @@ public class GUIStyler {
             });
             parametersPanel.add(cancelButton,BorderLayout.NORTH);
 
-            operationsParametersPanel = new JPanel();
-            parametersPanel.add(operationsParametersPanel, BorderLayout.CENTER);
+            getParametersPanelCenter = new JPanel();
+            parametersPanel.add(getParametersPanelCenter, BorderLayout.CENTER);
 
-            drawControls(availableOperations, operationsParametersPanel);
+            drawControls(availableOperations, getParametersPanelCenter);
 
             add(controlsPanel);
             add(parametersPanel);
@@ -425,45 +357,119 @@ public class GUIStyler {
             parametersPanel.setVisible(false);
         }
 
-        private void drawControls(ArrayList<Operations.Operation> availableOperations, JPanel panel) {
+        private void drawControls(ArrayList<Operation> availableOperations, JPanel panel) {
+
+            JPanel categories = (JPanel) controlsPanelCenter.getLeftComponent();
+            JPanel operations = (JPanel) controlsPanelCenter.getRightComponent();
+            operations.setLayout(new BoxLayout(operations,BoxLayout.Y_AXIS));
+
+
+            DefaultListModel catListModel = new DefaultListModel();
+            JList categoriesList = new JList(catListModel);
+            categoriesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            JScrollPane categoriesScroller = new JScrollPane(categoriesList);
+            categories.add(categoriesScroller);
+
+
+            DefaultListModel opListModel = new DefaultListModel();
+            JList operationsList = new JList(opListModel);
+            operationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            JScrollPane operationsScroller = new JScrollPane(operationsList);
+            operations.add(operationsScroller);
+
+            JButton selectButton = new JButton("Select");
+            operations.add(selectButton);
 
             ActionListener al = new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    JButton jb = (JButton)e.getSource();
 
                     panel.removeAll();
                     for(Component c: panel.getComponents()) {
                         if(c != cancelButton) panel.remove(c);
                     }
 
-                    Operations.Operation op = activatorPanelMap.get(jb);
-                    op.drawConfigurationPanel(panel);
+                    Operation selectedOperation = (Operation) operationsList.getSelectedValue();
+                    selectedOperation.drawConfigurationPanel(panel);
 
                     getParent().repaint();
                     selectCommand();
                 }
             };
 
+            selectButton.addActionListener(al);
+
+            ArrayList<String> tags = new ArrayList<>();
 
             boolean init = true;
-            for (Operations.Operation op: availableOperations) {
-                JButton jbCmd = new JButton(op.getLabel());
-                jbCmd.setMinimumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
-                jbCmd.setMaximumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
-                jbCmd.setPreferredSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
-                jbCmd.setOpaque(true);
-                controlsPanel.add(jbCmd);
+            for (Operation op: availableOperations) {
 
-                activatorPanelMap.put(jbCmd, op);
+                for(String cat: op.getCategories()) {
+                    boolean duplicate = false;
+                    for(String tag: tags) {
+                        if(cat==tag) { duplicate = true; }
+                    }
+                    if(duplicate == false) {tags.add(cat); };
+                }
 
-                jbCmd.addActionListener(al);
-                if(init == true) {
-                    init = false;
+            }
 
-                    op.drawConfigurationPanel(panel);
+            for(String tag: tags) {
+                catListModel.addElement(tag);
+            }
+
+            int initSelectedCategory = 0;
+            categoriesList.setSelectedIndex(initSelectedCategory);
+            String selectedCategory = (String) catListModel.getElementAt(initSelectedCategory);
+
+            for (Operation op: availableOperations) {
+                ArrayList<String> opCat = op.getCategories();
+                for(String cat: opCat) {
+                    if(cat == selectedCategory) {
+                        opListModel.addElement(op);
+                        continue;
+                    }
                 }
             }
+            selectButton.setEnabled(false);
+
+            categoriesList.addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    if(e.getValueIsAdjusting()==false){
+                        JList list = (JList) e.getSource();
+                        String selected = (String) list.getSelectedValue();
+
+                        opListModel.removeAllElements();
+
+                        for (Operation op: availableOperations) {
+                            ArrayList<String> opCat = op.getCategories();
+                            for(String cat: opCat) {
+                                if(cat == selected) {
+                                    opListModel.addElement(op);
+                                }
+                            }
+                        }
+                        selectButton.setEnabled(false);
+
+                    }
+                }
+            });
+
+            operationsList.addListSelectionListener(new ListSelectionListener() {
+                @Override
+                public void valueChanged(ListSelectionEvent e) {
+                    if(e.getValueIsAdjusting()==false){
+                        JList list = (JList) e.getSource();
+                        if(list.getSelectedIndex() == -1) {
+                        } else {
+                            selectButton.setEnabled(true);
+                        }
+                    } else {
+                            selectButton.setEnabled(false);
+                    }
+                }
+            });
         }
 
     }

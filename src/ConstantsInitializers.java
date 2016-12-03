@@ -9,8 +9,12 @@ public final class ConstantsInitializers {
     public static final Dimension GUI_BUTTON_SIZE_SHORT = new Dimension(140,20);
     public static final Dimension GUI_IMAGEWINDOW_SIZE = new Dimension(640,480);
 
+
+    public static final Font GUI_FONT_TITLE = Font.getFont(Font.MONOSPACED);
+//    public static final Font GUI_FONT_TITLE = Font.getFont(Font.MONOSPACED).deriveFont((float) 1.0);
+
     public static final int GUI_WORKSPACEWINDOW_GAP_SIZE = 0;
-    public static final Dimension GUI_WORKSCACE_OPER_PANEL_SIZE = new Dimension(300,300);
+    public static final Dimension GUI_WORKSCACE_OPER_PANEL_SIZE = new Dimension(400,300);
 
     public static final Color GUI_DRAWING_BG_COLOR = new Color(50, 44, 58);
     public static final Color GUI_CONTROLS_BG_COLOR = new Color(50, 44, 58);
