@@ -1,13 +1,9 @@
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import java.awt.*;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import java.io.File;
 
 /**
  * Created by darek on 19.11.2016.
@@ -26,7 +22,7 @@ public class Workspace{
     JSplitPane level1Right;
 
     JPanel managerPanel;
-    JPanel managerPanelCentral;
+    JPanel managerPanelSouth;
     JPanel imagePanel;
     JPanel imagePanelCentral;
     JPanel histogramPanel;
@@ -36,27 +32,29 @@ public class Workspace{
 
     JScrollPane managerScroller;
 
-    Jmagination jmagination;
+    ImageManager imageManager;
 
-    ImageServer top;
-    JTree tree;
+    JButton jButtonForNewImage;
 
-    public Workspace(Jmagination jmagination) {
 
-        this.jmagination = jmagination;
+
+
+
+    public Workspace(ImageManager imageManager) {
+
+        this.imageManager = imageManager;
         this.srcImageServer = null;
 
-        top = new ImageServer(jmagination);
-        tree = new JTree(top);
-/*        tree.setRootVisible(false);
-        tree.setShowsRootHandles(true);*/
-        managerScroller = new JScrollPane(tree);
+        managerScroller = new JScrollPane(imageManager.getTree());
+
+
+        supplyLoadFromFileButton();
 
         buildWindow();
     }
 
-    public Workspace(Jmagination jmagination, ImageServer srcImageServer) {
-        this(jmagination);
+    public Workspace(ImageManager imageManager, ImageServer srcImageServer) {
+        this(imageManager);
 
         buildWindow();
         setImageserver(srcImageServer);
@@ -66,8 +64,6 @@ public class Workspace{
     public void setImageserver(ImageServer srcImageServer) {
         this.srcImageServer = srcImageServer;
 
-        //BufferedImage img = OperationDuplicate.duplicateImageFunction(srcImageServer.getImg());
-
         imagePanelCentral.removeAll();
         imagePanelCentral.add(new GUIStyler.ImagePanel2(this.srcImageServer.getImg()));
 
@@ -75,10 +71,36 @@ public class Workspace{
         histogramPanelCentral.add(new GUIStyler.ImagePanel2(srcImageServer.getHistogram().createImg2()));
 
         operationsPanelCentral.removeAll();
-        operationsPanelCentral.add(new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer, jmagination)));
+        operationsPanelCentral.add(new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer)));
 
         window.pack();
         window.repaint();
+
+    }
+
+    private void supplyLoadFromFileButton() {
+
+        jButtonForNewImage = new JButton("Open file");
+/*        jButtonForNewImage.setPreferredSize(new Dimension(200,100));
+        jButtonForNewImage.setMinimumSize(new Dimension(200,100));*/
+
+        jButtonForNewImage.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                JFileChooser chooser = new JFileChooser();
+                chooser.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
+                chooser.setCurrentDirectory(new File("C:\\Users\\" + System.getProperty("user.name") + "\\Pictures"));
+                int chooserResult = chooser.showOpenDialog(window);
+                if(chooserResult == JFileChooser.APPROVE_OPTION) {
+
+                    BufferedImage loaded = ImageServer.LoadImageFromFile(chooser.getSelectedFile().getAbsolutePath());
+
+                    if(loaded!=null) {
+                        ImageServer iS = new ImageServer(loaded, chooser.getSelectedFile().getAbsolutePath(), imageManager);
+                    }
+                }
+            }
+        });
 
     }
 
@@ -116,19 +138,20 @@ public class Workspace{
         operationsPanel.add(operationsPanelLabel, BorderLayout.NORTH);
 
         // content direct holders
-        managerPanelCentral = new JPanel();
+        managerPanelSouth = new JPanel();
         imagePanelCentral = new JPanel();
         histogramPanelCentral = new JPanel();
         operationsPanelCentral = new JPanel();
 
-        managerPanel.add(managerPanelCentral, BorderLayout.CENTER);
+        managerPanel.add(managerPanelSouth, BorderLayout.CENTER);
         imagePanel.add(imagePanelCentral, BorderLayout.CENTER);
         histogramPanel.add(histogramPanelCentral, BorderLayout.CENTER);
         operationsPanel.add(operationsPanelCentral, BorderLayout.CENTER);
 
 
         // static content
-        managerPanel.add(managerScroller);
+        managerPanel.add(jButtonForNewImage, BorderLayout.SOUTH);
+        managerPanelSouth.add(managerScroller);
 
         level1Left = new JPanel(new BorderLayout());
         level1Left.add(managerPanel);

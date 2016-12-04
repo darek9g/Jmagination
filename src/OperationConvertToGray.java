@@ -10,8 +10,8 @@ import java.awt.image.BufferedImage;
 
 public class OperationConvertToGray extends Operation {
 
-    public OperationConvertToGray(ImageServer srcImageServer, Jmagination jmagination) {
-        super(srcImageServer, jmagination);
+    public OperationConvertToGray(ImageServer srcImageServer) {
+        super(srcImageServer);
         this.label = "Convert to gray";
         categories.add("LAB 1");
         categories.add("CONVERSION");
@@ -51,7 +51,7 @@ public class OperationConvertToGray extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationConvertToGray(null, jmagination);
+        return new OperationConvertToGray(null);
     }
 
     public static BufferedImage convertToGrayFunction(BufferedImage colorImg) {

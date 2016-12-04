@@ -17,15 +17,15 @@ public class OperationNormalizeHistogram extends Operation {
     String[] runModes = { "Average", "Random", "By neighborhood(3x3)"};
     JComboBox<String> modeSelect = new JComboBox<>(runModes);
 
-    public OperationNormalizeHistogram(ImageServer srcImageServer, Jmagination jmagination) {
-        super(srcImageServer, jmagination);
+    public OperationNormalizeHistogram(ImageServer srcImageServer) {
+        super(srcImageServer);
         this.label = "Normalize Histogram";
         categories.add("LAB 1");
         categories.add("MULTIPOINT");
     }
 
-    public OperationNormalizeHistogram(ImageServer srcImageServer, Jmagination jmagination, String modeSelected) {
-        super(srcImageServer, jmagination);
+    public OperationNormalizeHistogram(ImageServer srcImageServer, String modeSelected) {
+        super(srcImageServer);
         for(String s: runModes) {
             if(modeSelected == s) {
                 modeSelect.setSelectedItem(modeSelected);
@@ -71,7 +71,7 @@ public class OperationNormalizeHistogram extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationNormalizeHistogram(null, jmagination, (String) modeSelect.getSelectedItem());
+        return new OperationNormalizeHistogram(null, (String) modeSelect.getSelectedItem());
     }
 
     public static BufferedImage normalizeHistogramFunction(BufferedImage srcImage, Histogram histogram, String runMode) {

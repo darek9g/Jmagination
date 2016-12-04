@@ -13,8 +13,8 @@ public class OperationDuplicate extends Operation {
 
     JPanel configurationPanel;
 
-    public OperationDuplicate(ImageServer srcImageServer, Jmagination jmagination) {
-        super(srcImageServer, jmagination);
+    public OperationDuplicate(ImageServer srcImageServer) {
+        super(srcImageServer);
         this.label = "Duplicate";
         categories.add("LAB 1");
         categories.add("GENERAL");
@@ -55,7 +55,7 @@ public class OperationDuplicate extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationDuplicate(null, jmagination);
+        return new OperationDuplicate(null);
     }
 
     public static BufferedImage duplicateImageFunction(BufferedImage srcImage) {

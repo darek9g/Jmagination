@@ -9,22 +9,17 @@ public abstract class Operation {
 
     ImageServer srcImageServer;
     String label = "Dummy";
-    Jmagination jmagination;
     ArrayList<String> categories = new ArrayList<>();
 
-    public Operation(Jmagination jmagination) {
-        this.jmagination = jmagination;
+    public Operation(ImageServer srcImageServer) {
         categories.add("ALL");
+        this.srcImageServer = srcImageServer;
     }
 
     public ArrayList<String> getCategories () {
         return categories;
     }
 
-    public Operation(ImageServer srcImageServer, Jmagination jmagination) {
-        this(jmagination);
-        this.srcImageServer = srcImageServer;
-    }
 
     public String getLabel() {
         return label;
@@ -39,7 +34,7 @@ public abstract class Operation {
     public abstract void drawConfigurationPanel(JPanel panel);
 
     public void Run() {
-        jmagination.addImage(srcImageServer.createChildImageServer(RunOperation(srcImageServer)));
+        srcImageServer.createChildImageServer(RunOperation(srcImageServer));
     }
 
     public abstract Operation Clone();

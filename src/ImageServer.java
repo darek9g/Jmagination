@@ -1,16 +1,12 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
 
 
 /**
@@ -18,36 +14,28 @@ import java.util.Enumeration;
  */
 public class ImageServer extends DefaultMutableTreeNode {
 
-    JFrame window;
+    ImageManager imageManager;
     int id;
-    //ImageServer parent;
-    //ArrayList<ImageServer> children = new ArrayList<>();
+
+    JFrame window;
 
     GUIStyler.JButtonS callUpButton;
     GUIStyler.Presenter tpanel = new GUIStyler.Presenter();
 
     BufferedImage img;
-
     Histogram histogram;
 
-    Jmagination master;
 
-    Operations.OperationManager operationManager;
-
-
-    ImageServer(Jmagination master) {
-        this.id = master.nextId();
+    ImageServer(ImageManager imageManager) {
+        this.imageManager = imageManager;
+        this.id = imageManager.nextImageId();
 
 
         window = new JFrame("Empty buffer");
         window.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         window.setContentPane(tpanel);
 
-//        this.parent = null;
-
         callUpButton = new GUIStyler.JButtonS(String.valueOf(this.id));
-
-        this.master = master;
 
         callUpButton.addActionListener(new ActionListener() {
             @Override
@@ -63,37 +51,34 @@ public class ImageServer extends DefaultMutableTreeNode {
         setDrawingCapabilities();
 
         window.setLocation(MouseInfo.getPointerInfo().getLocation());
-        window.setVisible(false);
+        window.setVisible(true);
 
     }
 
-    ImageServer(BufferedImage img, String filePath, Jmagination master) {
-        this(master);
+    ImageServer(BufferedImage img, String filePath, ImageManager imageManager) {
+        this(imageManager);
         this.img = img;
 
         configure("Id: " + this.id + " from file: " + filePath);
     }
 
-    public ImageServer createChildImageServer(BufferedImage img, String filePath, Jmagination master) {
-        ImageServer child = new ImageServer(img,  filePath, master);
+    public ImageServer createChildImageServer(BufferedImage img, String filePath, ImageManager imageManager) {
+        ImageServer child = new ImageServer(img,  filePath, imageManager);
         add(child);
         ImageServer p = (ImageServer) child.getParent();
         System.out.println("Parent" + p.getId());
         return child;
     }
 
-    ImageServer(BufferedImage img, ImageServer parent, Jmagination master) {
-        this(master);
+    ImageServer(BufferedImage img, ImageServer parent, ImageManager imageManager) {
+        this(imageManager);
         this.img = img;
-
-//        this.parent = parent;
 
         configure("Id: " + this.id + " from image " + parent.getId());
     }
 
     public ImageServer createChildImageServer(BufferedImage img) {
-        ImageServer child = new ImageServer(img, this, master);
-//        children.add(child);
+        ImageServer child = new ImageServer(img, this, imageManager);
         add(child);
         ImageServer p = (ImageServer) child.getParent();
         System.out.println("Parent" + p.getId());
@@ -111,7 +96,7 @@ public class ImageServer extends DefaultMutableTreeNode {
         GUIStyler.PresenterTabImage historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg2());
         tpanel.addTab("Histogram", historgamTab);
 
-        GUIStyler.PresenterTabOperations operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this, master));
+        GUIStyler.PresenterTabOperations operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this));
         tpanel.addTab("Operations", operationsTab);
 
         window.setTitle("Id: " + id);
@@ -121,7 +106,6 @@ public class ImageServer extends DefaultMutableTreeNode {
 
         window.repaint();
 
-        master.loadImageToWorkspace(this);
     }
 
     public void setDrawingCapabilities() {

@@ -1,19 +1,27 @@
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
 
 /**
  * Created by darek on 04.12.2016.
  */
 public class ImageManager {
 
+    int nextImageServerId;
     DefaultMutableTreeNode top;
+    JTree tree;
+
 
     public ImageManager() {
+
+        nextImageServerId = 0;
         top = new DefaultMutableTreeNode("Images");
+        tree = new JTree(top);
+
+
+
+
+/*        tree.setRootVisible(false);
+        tree.setShowsRootHandles(true);*/
 
 
 /*
@@ -44,4 +52,30 @@ public class ImageManager {
 
 
     }
+
+    public int nextImageId() {
+        return nextImageServerId++;
+    }
+
+    public JTree getTree() {
+        return tree;
+    }
+
+/*    public void addImage(ImageServer imageServer) {
+        images.add(imageServer);
+        window.getContentPane().add(imageServer.getCallUpButton());
+        System.out.println("Button text: " + imageServer.getCallUpButton().getText());
+        window.pack();
+        repaint();
+    }
+
+    public void removeImage(ImageServer imageServer) {
+        images.remove(imageServer);
+    }
+
+
+
+    public void loadImageToWorkspace(ImageServer imageServer) {
+        workspace.setImageserver(imageServer);
+    }*/
 }

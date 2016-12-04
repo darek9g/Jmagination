@@ -15,8 +15,8 @@ public class OperationEqualizeHistogram extends Operation {
 
     JPanel configurationPanel;
 
-    public OperationEqualizeHistogram(ImageServer srcImageServer, Jmagination jmagination) {
-        super(srcImageServer, jmagination);
+    public OperationEqualizeHistogram(ImageServer srcImageServer) {
+        super(srcImageServer);
         this.label = "Equalize Histogram";
         categories.add("LAB 1");
         categories.add("MULTIPOINT");
@@ -59,7 +59,7 @@ public class OperationEqualizeHistogram extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationEqualizeHistogram(null, jmagination);
+        return new OperationEqualizeHistogram(null);
     }
 
     public static BufferedImage equalizeHistogramFunction(BufferedImage srcImage, Histogram histogram) {
