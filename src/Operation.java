@@ -39,7 +39,7 @@ public abstract class Operation {
     public abstract void drawConfigurationPanel(JPanel panel);
 
     public void Run() {
-        jmagination.addImage(new ImageServer(RunOperation(srcImageServer),srcImageServer, jmagination));
+        jmagination.addImage(srcImageServer.createChildImageServer(RunOperation(srcImageServer)));
     }
 
     public abstract Operation Clone();

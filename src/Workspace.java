@@ -1,8 +1,13 @@
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
 /**
  * Created by darek on 19.11.2016.
@@ -29,19 +34,31 @@ public class Workspace{
     JPanel operationsPanel;
     JPanel operationsPanelCentral;
 
+    JScrollPane managerScroller;
+
     Jmagination jmagination;
+
+    ImageServer top;
+    JTree tree;
 
     public Workspace(Jmagination jmagination) {
 
         this.jmagination = jmagination;
         this.srcImageServer = null;
 
-        buildWindow();
+        top = new ImageServer(jmagination);
+        tree = new JTree(top);
+/*        tree.setRootVisible(false);
+        tree.setShowsRootHandles(true);*/
+        managerScroller = new JScrollPane(tree);
 
+        buildWindow();
     }
 
     public Workspace(Jmagination jmagination, ImageServer srcImageServer) {
         this(jmagination);
+
+        buildWindow();
         setImageserver(srcImageServer);
         window.repaint();
     }
@@ -60,6 +77,9 @@ public class Workspace{
         operationsPanelCentral.removeAll();
         operationsPanelCentral.add(new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer, jmagination)));
 
+        window.pack();
+        window.repaint();
+
     }
 
 
@@ -71,10 +91,6 @@ public class Workspace{
         window.setPreferredSize(ConstantsInitializers.GUI_IMAGEWINDOW_SIZE);
         window.setMinimumSize(ConstantsInitializers.GUI_IMAGEWINDOW_SIZE);
         window.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
-
-
-
-
 
         // content panels init
         managerPanel = new JPanel(new BorderLayout());
@@ -111,12 +127,8 @@ public class Workspace{
         operationsPanel.add(operationsPanelCentral, BorderLayout.CENTER);
 
 
-
-
-/*        operationsPanel.setBorder(BorderFactory.createLineBorder(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR));
-        operationsPanel.setMinimumSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
-        operationsPanel.setPreferredSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);*/
-
+        // static content
+        managerPanel.add(managerScroller);
 
         level1Left = new JPanel(new BorderLayout());
         level1Left.add(managerPanel);

@@ -1,21 +1,28 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
 
 /**
  * Created by darek on 26.10.16.
  */
-public class ImageServer extends JComponent{
+public class ImageServer extends DefaultMutableTreeNode {
 
     JFrame window;
     int id;
-    ImageServer parent;
+    //ImageServer parent;
+    //ArrayList<ImageServer> children = new ArrayList<>();
+
     GUIStyler.JButtonS callUpButton;
     GUIStyler.Presenter tpanel = new GUIStyler.Presenter();
 
@@ -36,9 +43,7 @@ public class ImageServer extends JComponent{
         window.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         window.setContentPane(tpanel);
 
-        this.parent = null;
-
-
+//        this.parent = null;
 
         callUpButton = new GUIStyler.JButtonS(String.valueOf(this.id));
 
@@ -60,8 +65,6 @@ public class ImageServer extends JComponent{
         window.setLocation(MouseInfo.getPointerInfo().getLocation());
         window.setVisible(false);
 
-
-
     }
 
     ImageServer(BufferedImage img, String filePath, Jmagination master) {
@@ -71,13 +74,30 @@ public class ImageServer extends JComponent{
         configure("Id: " + this.id + " from file: " + filePath);
     }
 
+    public ImageServer createChildImageServer(BufferedImage img, String filePath, Jmagination master) {
+        ImageServer child = new ImageServer(img,  filePath, master);
+        add(child);
+        ImageServer p = (ImageServer) child.getParent();
+        System.out.println("Parent" + p.getId());
+        return child;
+    }
+
     ImageServer(BufferedImage img, ImageServer parent, Jmagination master) {
         this(master);
         this.img = img;
 
-        this.parent = parent;
+//        this.parent = parent;
 
         configure("Id: " + this.id + " from image " + parent.getId());
+    }
+
+    public ImageServer createChildImageServer(BufferedImage img) {
+        ImageServer child = new ImageServer(img, this, master);
+//        children.add(child);
+        add(child);
+        ImageServer p = (ImageServer) child.getParent();
+        System.out.println("Parent" + p.getId());
+        return child;
     }
 
     private void configure(String description) {
@@ -99,7 +119,7 @@ public class ImageServer extends JComponent{
 
         window.pack();
 
-        repaint();
+        window.repaint();
 
         master.loadImageToWorkspace(this);
     }
@@ -119,6 +139,10 @@ public class ImageServer extends JComponent{
 
     public int getId() {
         return id;
+    }
+
+    public String toString() {
+        return String.valueOf(id);
     }
 
     public GUIStyler.JButtonS getCallUpButton() {

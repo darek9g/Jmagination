@@ -1,4 +1,8 @@
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +26,8 @@ public class Jmagination extends JComponent {
     Operations.OperationManager operationManager;
 
     int nextImageServerId;
+
+
 
 
     public Jmagination() {
@@ -53,7 +59,9 @@ public class Jmagination extends JComponent {
                     BufferedImage loaded = ImageServer.LoadImageFromFile(chooser.getSelectedFile().getAbsolutePath());
 
                     if(loaded!=null) {
-                        addImage(new ImageServer(loaded, chooser.getSelectedFile().getAbsolutePath(), selfHandle));
+//                        ImageServer iS = new ImageServer(loaded, chooser.getSelectedFile().getAbsolutePath(), selfHandle);
+                        ImageServer iS = workspace.top.createChildImageServer(loaded, chooser.getSelectedFile().getAbsolutePath(), selfHandle);
+                        addImage(iS);
                     }
                 }
             }
