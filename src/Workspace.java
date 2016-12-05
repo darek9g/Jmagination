@@ -96,7 +96,7 @@ public class Workspace{
                     BufferedImage loaded = ImageServer.LoadImageFromFile(chooser.getSelectedFile().getAbsolutePath());
 
                     if(loaded!=null) {
-                        ImageServer iS = new ImageServer(loaded, chooser.getSelectedFile().getAbsolutePath(), imageManager);
+                        ImageServer.createLoadedImageServer(loaded, chooser.getSelectedFile().getAbsolutePath(), imageManager);
                     }
                 }
             }

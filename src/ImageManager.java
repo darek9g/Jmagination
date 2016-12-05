@@ -1,5 +1,7 @@
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import java.util.Enumeration;
 
 /**
  * Created by darek on 04.12.2016.
@@ -16,40 +18,8 @@ public class ImageManager {
         nextImageServerId = 0;
         top = new DefaultMutableTreeNode("Images");
         tree = new JTree(top);
-
-
-
-
 /*        tree.setRootVisible(false);
         tree.setShowsRootHandles(true);*/
-
-
-/*
-        jButtonForNewImage = new GUIStyler.JButtonS("New buffer");
-
-        Jmagination selfHandle = this;
-
-        this.operationManager = new Operations.OperationManager();
-
-        jButtonForNewImage.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-                JFileChooser chooser = new JFileChooser();
-                chooser.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
-                chooser.setCurrentDirectory(new File("C:\\Users\\" + System.getProperty("user.name") + "\\Pictures"));
-                int chooserResult = chooser.showOpenDialog(Jmagination.this);
-                if(chooserResult == JFileChooser.APPROVE_OPTION) {
-
-                    BufferedImage loaded = ImageServer.LoadImageFromFile(chooser.getSelectedFile().getAbsolutePath());
-
-                    if(loaded!=null) {
-                        ImageServer iS = workspace.top.createChildImageServer(loaded, chooser.getSelectedFile().getAbsolutePath(), selfHandle);
-                        addImage(iS);
-                    }
-                }
-            }
-        });*/
-
 
     }
 
@@ -61,14 +31,26 @@ public class ImageManager {
         return tree;
     }
 
-/*    public void addImage(ImageServer imageServer) {
-        images.add(imageServer);
-        window.getContentPane().add(imageServer.getCallUpButton());
-        System.out.println("Button text: " + imageServer.getCallUpButton().getText());
-        window.pack();
-        repaint();
+    public void addLoadedImage(ImageServer newImageServer) {
+        top.add(new DefaultMutableTreeNode(newImageServer));
+        DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+        model.reload();
     }
 
+    public void addCreatedImage(ImageServer childImageServer, ImageServer parentImageServer) {
+        DefaultMutableTreeNode theNode = null;
+        for (Enumeration e = top.depthFirstEnumeration(); e.hasMoreElements() && theNode == null;) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
+            if (node.getUserObject() == parentImageServer) {
+                theNode = node;
+                break;
+            }
+        }
+        theNode.add(new DefaultMutableTreeNode(childImageServer));
+        DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+        model.reload();
+    }
+/*
     public void removeImage(ImageServer imageServer) {
         images.remove(imageServer);
     }

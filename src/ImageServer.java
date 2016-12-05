@@ -12,10 +12,11 @@ import java.io.IOException;
 /**
  * Created by darek on 26.10.16.
  */
-public class ImageServer extends DefaultMutableTreeNode {
+public class ImageServer {
 
     ImageManager imageManager;
     int id;
+    String description;
 
     JFrame window;
 
@@ -29,6 +30,7 @@ public class ImageServer extends DefaultMutableTreeNode {
     ImageServer(ImageManager imageManager) {
         this.imageManager = imageManager;
         this.id = imageManager.nextImageId();
+        this.description = "Empty";
 
 
         window = new JFrame("Empty buffer");
@@ -62,30 +64,27 @@ public class ImageServer extends DefaultMutableTreeNode {
         configure("Id: " + this.id + " from file: " + filePath);
     }
 
-    public ImageServer createChildImageServer(BufferedImage img, String filePath, ImageManager imageManager) {
+    public static ImageServer createLoadedImageServer(BufferedImage img, String filePath, ImageManager imageManager) {
         ImageServer child = new ImageServer(img,  filePath, imageManager);
-        add(child);
-        ImageServer p = (ImageServer) child.getParent();
-        System.out.println("Parent" + p.getId());
+        imageManager.addLoadedImage(child);
         return child;
     }
 
-    ImageServer(BufferedImage img, ImageServer parent, ImageManager imageManager) {
+    ImageServer(BufferedImage img, ImageManager imageManager) {
         this(imageManager);
         this.img = img;
 
-        configure("Id: " + this.id + " from image " + parent.getId());
+        configure("Id: " + this.id + " from image " + this.getId());
     }
 
     public ImageServer createChildImageServer(BufferedImage img) {
-        ImageServer child = new ImageServer(img, this, imageManager);
-        add(child);
-        ImageServer p = (ImageServer) child.getParent();
-        System.out.println("Parent" + p.getId());
+        ImageServer child = new ImageServer(img, imageManager);
+        imageManager.addCreatedImage(child, this);
         return child;
     }
 
     private void configure(String description) {
+        this.description = description;
         GUIStyler.PresenterTabImage imageTab = new GUIStyler.PresenterTabImage(img);
         tpanel.addTab("Image", imageTab);
 
@@ -126,7 +125,7 @@ public class ImageServer extends DefaultMutableTreeNode {
     }
 
     public String toString() {
-        return String.valueOf(id);
+        return this.description;
     }
 
     public GUIStyler.JButtonS getCallUpButton() {
