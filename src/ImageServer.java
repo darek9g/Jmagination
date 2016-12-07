@@ -128,6 +128,14 @@ public class ImageServer {
         return this.description;
     }
 
+    public void toogleWindow() {
+        if(window.isVisible()==true) {
+            window.setVisible(false);
+        } else {
+            window.setVisible(true);
+        }
+    }
+
     public GUIStyler.JButtonS getCallUpButton() {
         return callUpButton;
     }
