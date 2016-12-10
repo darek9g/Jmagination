@@ -229,6 +229,8 @@ public class Workspace{
         this.srcImageServer = null;
 
         managerScroller = new JScrollPane(imageManager.getTree());
+        managerScroller.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_managerPanelCentral);
+        managerScroller.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_managerPanelCentral);
 
 
         supplyLoadFromFileButton();
@@ -315,6 +317,14 @@ public class Workspace{
 
         window.pack();
         window.repaint();
+
+        window.pack();
+        Insets windowInsets = window.getInsets();
+        int windowWidth = (int) level0SplitPane.getWidth() + windowInsets.left + windowInsets.right;
+        int windowHeight = (int) level0SplitPane.getHeight() + windowInsets.top + windowInsets.bottom;
+        window.setPreferredSize(new Dimension(windowWidth, windowHeight));
+        window.pack();
+        window.setVisible(true);
 
     }
 
@@ -474,20 +484,38 @@ public class Workspace{
         managerPanelCentral.add(managerScroller);
 
         level1Left = new JPanel(new BorderLayout());
+        level1Left.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
+        level1Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
         level1Left.add(managerPanel);
 
         level1Right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, operationsPanel, histogramPanel);
+        level1Right.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
+        level1Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
 
         level0Left = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, level1Left, level1Right);
+        level0Left.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
+        level0Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
+
         level0Right = new JPanel(new BorderLayout());
+        level0Right.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
+        level0Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
+
+
         level0Right.add(imagePanel);
 
         level0SplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, level0Left, level0Right);
+        level0SplitPane.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
+        level0SplitPane.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
 
 
 
         window.add(level0SplitPane);
 
+        window.pack();
+        Insets windowInsets = window.getInsets();
+        int windowWidth = (int) ConstantsInitializers.GUI_DIMENSION_level0SplitPane.getWidth() + windowInsets.left + windowInsets.right;
+        int windowHeight = (int) ConstantsInitializers.GUI_DIMENSION_level0SplitPane.getHeight() + windowInsets.top + windowInsets.bottom;
+        window.setPreferredSize(new Dimension(windowWidth, windowHeight));
         window.pack();
         window.setVisible(true);
     }
