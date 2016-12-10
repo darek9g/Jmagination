@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
@@ -21,24 +22,7 @@ public class ImageManager {
         nextImageServerId = 0;
         top = new DefaultMutableTreeNode("Images");
         tree = new JTree(top);
-        tree.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
 
-                if(e.getButton()==MouseEvent.BUTTON3) {
-
-                    int selRow = tree.getRowForLocation(e.getX(), e.getY());
-                    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-                    if (selRow != -1 && e.getClickCount() == 1 && selPath != null) {
-                        DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
-                        // do something else
-                        System.out.println("Selected node" + selectedNode.toString());
-                        System.out.println("UserObject: " + selectedNode.getUserObject().toString());
-                        ImageServer imageServer = (ImageServer) selectedNode.getUserObject();
-                        imageServer.toogleWindow();
-                    }
-                }
-            }
-        });
 
 /*        tree.setRootVisible(false);
         tree.setShowsRootHandles(true);*/

@@ -1,7 +1,11 @@
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -51,17 +55,73 @@ public class Workspace{
         supplyLoadFromFileButton();
 
         buildWindow();
+
+
+        JTree imageManagerTree = imageManager.getTree();
+
+
+        Workspace workspace = this;
+        imageManagerTree.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+
+
+                JTree tree = (JTree)e.getSource();
+
+                int selRow = tree.getRowForLocation(e.getX(), e.getY());
+                TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+                if (selRow != -1 && e.getClickCount() == 1 && selPath != null) {
+                    DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
+
+                    System.out.println("Selected node" + selectedNode.toString());
+                    System.out.println("UserObject: " + selectedNode.getUserObject().toString());
+                    ImageServer imageServer = (ImageServer) selectedNode.getUserObject();
+
+                    if(e.getButton() == MouseEvent.BUTTON1) {
+                        if(imageServer.windowIsVisible() == true) {
+                            imageServer.windowToFront();
+                        }
+                    }
+
+                    if(e.getButton() == MouseEvent.BUTTON3) {
+                        JPopupMenu jPopupMenu = new JPopupMenu("Popup menu");
+
+                        JMenuItem jMenuItemShowImage = new JMenuItem("Show/Hide Image");
+                        jMenuItemShowImage.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                imageServer.toogleWindow();
+                            }
+                        });
+
+
+                        jPopupMenu.add(jMenuItemShowImage);
+
+                        JMenuItem jMenuItemPlaceInWorkspace = new JMenuItem("Place in Workspace");
+                        jMenuItemPlaceInWorkspace.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                workspace.setImageServer(imageServer);
+                            }
+                        });
+
+                        jPopupMenu.add(new JMenuItem("Place in workspace"));
+                        jPopupMenu.show(tree, e.getX(), e.getY());
+
+                    }
+                }
+            }
+        });
     }
 
     public Workspace(ImageManager imageManager, ImageServer srcImageServer) {
         this(imageManager);
 
         buildWindow();
-        setImageserver(srcImageServer);
+        setImageServer(srcImageServer);
         window.repaint();
     }
 
-    public void setImageserver(ImageServer srcImageServer) {
+    public void setImageServer(ImageServer srcImageServer) {
         this.srcImageServer = srcImageServer;
 
         imagePanelCentral.removeAll();
@@ -96,7 +156,9 @@ public class Workspace{
                     BufferedImage loaded = ImageServer.LoadImageFromFile(chooser.getSelectedFile().getAbsolutePath());
 
                     if(loaded!=null) {
-                        ImageServer.createLoadedImageServer(loaded, chooser.getSelectedFile().getAbsolutePath(), imageManager);
+                        ImageServer imageServer;
+                        imageServer = ImageServer.createLoadedImageServer(loaded, chooser.getSelectedFile().getAbsolutePath(), imageManager);
+                        setImageServer(imageServer);
                     }
                 }
             }

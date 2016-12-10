@@ -53,7 +53,7 @@ public class ImageServer {
         setDrawingCapabilities();
 
         window.setLocation(MouseInfo.getPointerInfo().getLocation());
-        window.setVisible(true);
+        window.setVisible(false);
 
     }
 
@@ -134,6 +134,14 @@ public class ImageServer {
         } else {
             window.setVisible(true);
         }
+    }
+
+    public boolean windowIsVisible() {
+        return window.isVisible();
+    }
+
+    public  void windowToFront() {
+        window.toFront();
     }
 
     public GUIStyler.JButtonS getCallUpButton() {
