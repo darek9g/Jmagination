@@ -26,15 +26,194 @@ public class Workspace{
     JSplitPane level1Right;
 
     JPanel managerPanel;
+    JPanel managerPanelNorth;
+    JPanel managerPanelCentral;
     JPanel managerPanelSouth;
     JPanel imagePanel;
+    JPanel imagePanelNorth;
     JPanel imagePanelCentral;
+    JPanel imagePanelSouth;
     JPanel histogramPanel;
+    JPanel histogramPanelNorth;
     JPanel histogramPanelCentral;
+    JPanel histogramPanelSouth;
     JPanel operationsPanel;
+    JPanel operationsPanelNorth;
     JPanel operationsPanelCentral;
+    JPanel operationsPanelSouth;
 
     JScrollPane managerScroller;
+
+    /* WINDOW PANELING SCHEMA
+
+        *************************************************************************
+        *                                              *                        *
+        *                                              *                        *
+        *                                      level0SplitPane                  *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        * level0Left                                   * level0Right            *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *                                              *                        *
+        *************************************************************************
+
+
+        *************************************************************************
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                  level0Left                  *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        * left1Left           * left1Right             *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *************************************************************************
+
+
+        *************************************************************************
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                  level0Left                  *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        * left1Left           * left1Right             *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *************************************************************************
+
+
+        *************************************************************************
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     * operationsPanel        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     ******* level1Right ******                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     * histogramPanel         *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *************************************************************************
+
+
+        *************************************************************************
+        * managerPanelNorth   * operationsPanelNorth   * imagePanelNorth        *
+        *************************************************************************
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     * operationsPanelCentral *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     **************************                        *
+        *                     * operationsPanelSouth   *                        *
+        * managerPanelCentral **************************                        *
+        *                     * histogramPanelNorth    *                        *
+        *                     ************************** imagePanelCentral      *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     * histogramPanelCentral  *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *                     *                        *                        *
+        *************************************************************************
+        * managerPanelSouth   * histogramPanelSouth    * imagePanelSouth        *
+        *************************************************************************
+
+     */
+
+    Dimension windowDimension = new Dimension();
+
+    Dimension level0SplitPaneDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
+    Dimension level0LeftDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level0Left);
+    Dimension level0RightDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level0Right);
+
+    Dimension level1LeftDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level1Left);
+    Dimension level1RightDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level1Right);
+
+    Dimension managerPanelDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_managerPanel);
+    Dimension managerPanelNorthDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_managerPanelNorth);
+    Dimension managerPanelCentralDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_managerPanelCentral);
+    Dimension managerPanelSouthDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_managerPanelSouth);
+    Dimension imagePanelDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_imagePanel);
+    Dimension imagePanelNorthDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_imagePanelNorth);
+    Dimension imagePanelCentralDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_imagePanelCentral);
+    Dimension imagePanelSouthDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_imagePanelSouth);
+    Dimension histogramPanelDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_histogramPanel);
+    Dimension histogramPanelNorthDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_histogramPanelNorth);
+    Dimension histogramPanelCentralDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
+    Dimension histogramPanelSouthDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_histogramPanelSouth);
+    Dimension operationsPanelDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_operationsPanel);
+    Dimension operationsPanelNorthDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_operationsPanelNorth);
+    Dimension operationsPanelCentralDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral);
+    Dimension operationsPanelSouthDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_operationsPanelSouth);
+
+    Dimension managerScrollerDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_managerPanelCentral);
 
     ImageManager imageManager;
 
@@ -104,7 +283,7 @@ public class Workspace{
                             }
                         });
 
-                        jPopupMenu.add(new JMenuItem("Place in workspace"));
+                        jPopupMenu.add(jMenuItemPlaceInWorkspace);
                         jPopupMenu.show(tree, e.getX(), e.getY());
 
                     }
@@ -127,11 +306,12 @@ public class Workspace{
         imagePanelCentral.removeAll();
         imagePanelCentral.add(new GUIStyler.ImagePanel2(this.srcImageServer.getImg()));
 
+
         histogramPanelCentral.removeAll();
-        histogramPanelCentral.add(new GUIStyler.ImagePanel2(srcImageServer.getHistogram().createImg2()));
+        histogramPanelCentral.add(new GUIStyler.ImagePanel2(srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral)));
 
         operationsPanelCentral.removeAll();
-        operationsPanelCentral.add(new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer)));
+        operationsPanelCentral.add(new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral));
 
         window.pack();
         window.repaint();
@@ -141,8 +321,6 @@ public class Workspace{
     private void supplyLoadFromFileButton() {
 
         jButtonForNewImage = new JButton("Open file");
-/*        jButtonForNewImage.setPreferredSize(new Dimension(200,100));
-        jButtonForNewImage.setMinimumSize(new Dimension(200,100));*/
 
         jButtonForNewImage.addActionListener(new ActionListener() {
             @Override
@@ -166,14 +344,37 @@ public class Workspace{
 
     }
 
+    private void updateComponentsDimensions() {
+
+        //TODO
+        windowDimension = window.getSize();
+        level0SplitPaneDimension = level0SplitPaneDimension.getSize();
+        level0LeftDimension = level0LeftDimension.getSize();
+        level0RightDimension = level0RightDimension.getSize();
+        level1LeftDimension = level1LeftDimension.getSize();
+        level1RightDimension = level1RightDimension.getSize();
+        managerPanelDimension = managerPanelDimension.getSize();
+        managerPanelCentralDimension = managerPanelCentralDimension.getSize();
+        managerPanelSouthDimension = managerPanelSouthDimension.getSize();
+        imagePanelDimension = imagePanelDimension.getSize();
+        imagePanelNorthDimension = imagePanelNorth.getSize();
+        imagePanelCentralDimension = imagePanelCentralDimension.getSize();
+        imagePanelCentralDimension = imagePanelCentralDimension.getSize();
+        histogramPanelDimension = histogramPanelDimension.getSize();
+        histogramPanelCentralDimension = histogramPanelCentralDimension.getSize();
+        operationsPanelDimension = operationsPanelDimension.getSize();
+        operationsPanelCentralDimension = operationsPanelCentralDimension.getSize();
+        managerScrollerDimension = managerScrollerDimension.getSize();
+
+    }
 
     private void buildWindow() {
 
         window = new JFrame("Jmagination Workspace");
 
 
-        window.setPreferredSize(ConstantsInitializers.GUI_IMAGEWINDOW_SIZE);
-        window.setMinimumSize(ConstantsInitializers.GUI_IMAGEWINDOW_SIZE);
+        window.setPreferredSize(windowDimension);
+        window.setMinimumSize(windowDimension);
         window.setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
 
         // content panels init
@@ -182,38 +383,95 @@ public class Workspace{
         histogramPanel = new JPanel(new BorderLayout());
         operationsPanel = new JPanel(new BorderLayout());
 
+
+        managerPanel.setMinimumSize(managerPanelDimension);
+        imagePanel.setMinimumSize(imagePanelDimension);
+        operationsPanel.setMinimumSize(operationsPanelDimension);
+        histogramPanel.setMinimumSize(histogramPanelDimension);
+
+        managerPanel.setPreferredSize(managerPanelDimension);
+        imagePanel.setPreferredSize(imagePanelDimension);
+        operationsPanel.setPreferredSize(operationsPanelDimension);
+        histogramPanel.setPreferredSize(histogramPanelDimension);
+
+
+        // content direct holders
+        managerPanelNorth = new JPanel();
+        managerPanelCentral = new JPanel();
+        managerPanelSouth = new JPanel();
+        imagePanelNorth = new JPanel();
+        imagePanelCentral = new JPanel();
+        imagePanelSouth = new JPanel();
+        histogramPanelNorth = new JPanel();
+        histogramPanelCentral = new JPanel();
+        histogramPanelSouth = new JPanel();
+        operationsPanelNorth = new JPanel();
+        operationsPanelCentral = new JPanel();
+        operationsPanelSouth = new JPanel();
+
+        managerPanelNorth.setPreferredSize(managerPanelNorthDimension);
+        managerPanelCentral.setPreferredSize(managerPanelCentralDimension);
+        managerPanelSouth.setPreferredSize(managerPanelSouthDimension);
+        imagePanelNorth.setPreferredSize(imagePanelNorthDimension);
+        imagePanelCentral.setPreferredSize(imagePanelCentralDimension);
+        imagePanelSouth.setPreferredSize(imagePanelSouthDimension);
+        histogramPanelNorth.setPreferredSize(histogramPanelNorthDimension);
+        histogramPanelCentral.setPreferredSize(histogramPanelCentralDimension);
+        histogramPanelSouth.setPreferredSize(histogramPanelSouthDimension);
+        operationsPanelNorth.setPreferredSize(operationsPanelNorthDimension);
+        operationsPanelCentral.setPreferredSize(operationsPanelCentralDimension);
+        operationsPanelSouth.setPreferredSize(operationsPanelSouthDimension);
+
+        managerPanelNorth.setMinimumSize(managerPanelNorthDimension);
+        managerPanelCentral.setMinimumSize(managerPanelCentralDimension);
+        managerPanelSouth.setMinimumSize(managerPanelSouthDimension);
+        imagePanelNorth.setMinimumSize(imagePanelNorthDimension);
+        imagePanelCentral.setMinimumSize(imagePanelCentralDimension);
+        imagePanelSouth.setMinimumSize(imagePanelSouthDimension);
+        histogramPanelNorth.setMinimumSize(histogramPanelNorthDimension);
+        histogramPanelCentral.setMinimumSize(histogramPanelCentralDimension);
+        histogramPanelSouth.setMinimumSize(histogramPanelSouthDimension);
+        operationsPanelNorth.setMinimumSize(operationsPanelNorthDimension);
+        operationsPanelCentral.setMinimumSize(operationsPanelCentralDimension);
+        operationsPanelSouth.setMinimumSize(operationsPanelSouthDimension);
+
+
+        managerPanel.add(managerPanelNorth, BorderLayout.NORTH);
+        managerPanel.add(managerPanelCentral, BorderLayout.CENTER);
+        managerPanel.add(managerPanelSouth, BorderLayout.SOUTH);
+
+        imagePanel.add(imagePanelNorth, BorderLayout.NORTH);
+        imagePanel.add(imagePanelCentral, BorderLayout.CENTER);
+        imagePanel.add(imagePanelSouth, BorderLayout.SOUTH);
+
+        histogramPanel.add(histogramPanelNorth, BorderLayout.NORTH);
+        histogramPanel.add(histogramPanelCentral, BorderLayout.CENTER);
+        histogramPanel.add(histogramPanelSouth, BorderLayout.SOUTH);
+
+        operationsPanel.add(operationsPanelNorth, BorderLayout.NORTH);
+        operationsPanel.add(operationsPanelCentral, BorderLayout.CENTER);
+        operationsPanel.add(operationsPanelSouth, BorderLayout.SOUTH);
+
         // content panel labels
         JLabel managerPanelLabel = new JLabel("Manager");
         managerPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        managerPanel.add(managerPanelLabel, BorderLayout.NORTH);
+        managerPanelNorth.add(managerPanelLabel);
 
         JLabel imagePanelLabel = new JLabel("Image");
         imagePanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        imagePanel.add(imagePanelLabel, BorderLayout.NORTH);
+        imagePanelNorth.add(imagePanelLabel);
 
         JLabel histogramPanelLabel = new JLabel("Histogram");
         histogramPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        histogramPanel.add(histogramPanelLabel, BorderLayout.NORTH);
+        histogramPanelNorth.add(histogramPanelLabel);
 
         JLabel operationsPanelLabel = new JLabel("Operations");
         operationsPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        operationsPanel.add(operationsPanelLabel, BorderLayout.NORTH);
-
-        // content direct holders
-        managerPanelSouth = new JPanel();
-        imagePanelCentral = new JPanel();
-        histogramPanelCentral = new JPanel();
-        operationsPanelCentral = new JPanel();
-
-        managerPanel.add(managerPanelSouth, BorderLayout.CENTER);
-        imagePanel.add(imagePanelCentral, BorderLayout.CENTER);
-        histogramPanel.add(histogramPanelCentral, BorderLayout.CENTER);
-        operationsPanel.add(operationsPanelCentral, BorderLayout.CENTER);
-
+        operationsPanelNorth.add(operationsPanelLabel);
 
         // static content
-        managerPanel.add(jButtonForNewImage, BorderLayout.SOUTH);
-        managerPanelSouth.add(managerScroller);
+        managerPanelSouth.add(jButtonForNewImage);
+        managerPanelCentral.add(managerScroller);
 
         level1Left = new JPanel(new BorderLayout());
         level1Left.add(managerPanel);

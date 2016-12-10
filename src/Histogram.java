@@ -73,7 +73,7 @@ public class Histogram {
         }
     }
 
-    public BufferedImage createImg() {
+    public BufferedImage createImg(String model, Dimension dimension) {
 
         int mariginLeft = ConstantsInitializers.GUI_CHART_MARIGIN_LEFT_SIZE_PX;
         int mariginRight = ConstantsInitializers.GUI_CHART_MARIGIN_RIGHT_SIZE_PX;
@@ -81,13 +81,26 @@ public class Histogram {
         int mariginBottom = ConstantsInitializers.GUI_CHART_MARIGIN_BOTTOM_SIZE_PX;
 
         int histImageWidth = scaleWidth + mariginLeft + mariginRight;
-        int histImageHeight = img.getHeight();
+        int histImageHeight = (int) dimension.getHeight();
 
-        int chartAreaWidth = histImageWidth - ( mariginLeft + mariginRight );
-        int chartAreaHeight = histImageHeight - ( mariginTop + mariginBottom);
+
+
+        switch(model) {
+            case "INTERLACED":
+                return drawImg2(histImageWidth, histImageHeight, mariginLeft, mariginRight, mariginTop, mariginBottom);
+            default:
+                return drawImg(histImageWidth, histImageHeight, mariginLeft, mariginRight, mariginTop, mariginBottom);
+        }
+    }
+
+    public BufferedImage drawImg(int histImageWidth, int histImageHeight, int mariginLeft, int mariginRight,int mariginTop, int mariginBottom) {
+
 
         BufferedImage hist = new BufferedImage(histImageWidth,histImageHeight,BufferedImage.TYPE_INT_ARGB);
         Graphics hgr = hist.createGraphics();
+
+        int chartAreaWidth = histImageWidth - ( mariginLeft + mariginRight );
+        int chartAreaHeight = histImageHeight - ( mariginTop + mariginBottom);
 
         // draw background and frame
         hgr.setColor(ConstantsInitializers.GUI_CHARTS_BG_COLOR);
@@ -122,7 +135,6 @@ public class Histogram {
             Integer[] series = data.get(ch);
 
             double yScale = ( chartAreaHeight + 0.0 ) / maxLevelsValue;
-//                System.out.println("Scale " + yScale + ", Image height " + histImageHeight + ", maxLevels " + maxLevelsValue);
 
             for(int level = 0; level < series.length; ++level) {
                 int barWidth = 1;
@@ -206,60 +218,12 @@ public class Histogram {
             }
         }
 
-/*        for(int ch=0; ch<data.size(); ++ch) {
-            switch (ch) {
-                case 0:
-                    if (data.size() > 1) {
-                        channelColor = Color.RED;
-                    }
-                    break;
-                case 1:
-                    channelColor = Color.GREEN;
-                    break;
-                case 2:
-                    channelColor = Color.BLUE;
-                    break;
-            }
-            hgr.setColor(channelColor);
-
-            Integer[] series = data.get(ch);
-
-            double yScale = (chartAreaHeight + 0.0) / maxLevelsValue;
-
-            int oldbarX = 0;
-            int oldbarY = 0;
-
-            for (int level = 0; level < series.length; ++level) {
-                int barWidth = 1;
-                int barHeight = (int) (series[level] * yScale);
-                int barX = mariginLeft + level;
-                int barY = mariginTop + chartAreaHeight - barHeight;
-
-                if(level==0) {
-                    hgr.drawOval(barX, barY, 1, 1);
-                } else {
-                    hgr.drawLine(oldbarX, oldbarY, barX, barY);
-                }
-                oldbarX = barX;
-                oldbarY = barY;
-
-            }
-        }*/
-
         return hist;
 
     }
 
 
-    public BufferedImage createImg2() {
-
-        int mariginLeft = ConstantsInitializers.GUI_CHART_MARIGIN_LEFT_SIZE_PX;
-        int mariginRight = ConstantsInitializers.GUI_CHART_MARIGIN_RIGHT_SIZE_PX;
-        int mariginTop = ConstantsInitializers.GUI_CHART_MARIGIN_TOP_SIZE_PX;
-        int mariginBottom = ConstantsInitializers.GUI_CHART_MARIGIN_BOTTOM_SIZE_PX;
-
-        int histImageWidth = scaleWidth + mariginLeft + mariginRight;
-        int histImageHeight = img.getHeight();
+    public BufferedImage drawImg2(int histImageWidth, int histImageHeight, int mariginLeft, int mariginRight,int mariginTop, int mariginBottom) {
 
         int chartAreaWidth = histImageWidth - ( mariginLeft + mariginRight );
         int chartAreaHeight = histImageHeight - ( mariginTop + mariginBottom);

@@ -97,6 +97,12 @@ public class GUIStyler {
             super();
             setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
         }
+
+        public PresenterTab(Dimension dimension) {
+            this();
+            setMinimumSize(dimension);
+            setPreferredSize(dimension);
+        }
     }
 
     public static class PresenterTabProperties extends PresenterTab {
@@ -306,26 +312,19 @@ public class GUIStyler {
         public PresenterTabOperations(ArrayList<Operation> availableOperations) {
             super();
 
-            setMinimumSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
-            setPreferredSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
 
-            setLayout(new GridBagLayout());
 
             controlsPanel = new JPanel();
             controlsPanel.setLayout(new BorderLayout());
 
             controlsPanelCenter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JPanel(), new JPanel());
             controlsPanelCenter.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
-//            controlsPanel.setMinimumSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
-//            controlsPanel.setPreferredSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
 
             controlsPanel.add(controlsPanelCenter, BorderLayout.CENTER);
 
             parametersPanel = new JPanel();
             parametersPanel.setLayout(new BorderLayout());
             parametersPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
-//            parametersPanel.setMinimumSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
-//            parametersPanel.setPreferredSize(ConstantsInitializers.GUI_WORKSCACE_OPER_PANEL_SIZE);
             parametersPanel.setVisible(false);
 
             cancelButton = new JButton("Select another opertaion");
@@ -344,6 +343,16 @@ public class GUIStyler {
 
             add(controlsPanel);
             add(parametersPanel);
+
+        }
+
+        public PresenterTabOperations(ArrayList<Operation> availableOperations, Dimension dimension) {
+            this(availableOperations);
+
+            controlsPanel.setMinimumSize(dimension);
+            controlsPanel.setPreferredSize(dimension);
+            parametersPanel.setMinimumSize(dimension);
+            parametersPanel.setPreferredSize(dimension);
 
         }
 
@@ -509,6 +518,12 @@ public class GUIStyler {
 
             add(controlsPanel);
             add(imagePanel);
+        }
+
+        public PresenterTabImage(BufferedImage img, Dimension dimension) {
+            this(img);
+            imagePanel.setPreferredSize(dimension);
+            imagePanel.setMinimumSize(dimension);
         }
 
         private void drawControls() {

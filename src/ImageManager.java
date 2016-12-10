@@ -24,8 +24,8 @@ public class ImageManager {
         tree = new JTree(top);
 
 
-/*        tree.setRootVisible(false);
-        tree.setShowsRootHandles(true);*/
+        tree.setRootVisible(false);
+        tree.setShowsRootHandles(true);
 
     }
 

@@ -92,7 +92,10 @@ public class ImageServer {
         tpanel.addTab("Properties", propertiesTab);
 
         histogram = new Histogram(img);
-        GUIStyler.PresenterTabImage historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg2());
+
+        Dimension histogramDimension = new Dimension(img.getWidth(), img.getHeight());
+
+        GUIStyler.PresenterTabImage historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg("INTERLACED", histogramDimension));
         tpanel.addTab("Histogram", historgamTab);
 
         GUIStyler.PresenterTabOperations operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this));
