@@ -34,25 +34,30 @@ public final class ConstantsInitializers {
     public static final int GUI_CHART_Y_GRID_POINTS = 15;
 
 
+    private static final int commonNorthHeight = 30;
+    private static final int commonSouthHeight = 40;
 
-
-
-
-    private static final int operationsPanelNorthHeight = 30;
-    private static final int operationsPanelCentralHeight = 300;
+    private static final int operationsPanelNorthHeight = commonNorthHeight;
     private static final int operationsPanelSouthHeight = 0;
+    private static final int operationsPanelCentralHeight = 200;
+    private static final int operationsPanelHeight = operationsPanelNorthHeight + operationsPanelCentralHeight + operationsPanelSouthHeight;
 
-    private static final int histogramPanelNorthHeight = 30;
-    private static final int histogramPanelCentralHeight = 300;
-    private static final int histogramPanelSouthHeight = 40;
+    private static final int histogramPanelNorthHeight = commonNorthHeight;
+    private static final int histogramPanelSouthHeight = 0;
+    private static final int histogramPanelCentralHeight = 400;
+    private static final int histogramPanelHeight = histogramPanelNorthHeight + histogramPanelCentralHeight + histogramPanelSouthHeight;
 
-    private static final int managerPanelNorthHeight = operationsPanelNorthHeight;
-    private static final int managerPanelCentralHeight = operationsPanelCentralHeight + operationsPanelSouthHeight + histogramPanelNorthHeight + histogramPanelCentralHeight;
-    private static final int managerPanelSouthHeight = histogramPanelSouthHeight;
+    private static int totalHeight = operationsPanelHeight + histogramPanelHeight;
 
-    private static final int imagePanelNorthHeight = managerPanelNorthHeight;
-    private static final int imagePanelCentralHeight = managerPanelCentralHeight;
-    private static final int imagePanelSouthHeight = managerPanelSouthHeight;
+    private static final int managerPanelNorthHeight = commonNorthHeight;
+    private static final int managerPanelSouthHeight = commonSouthHeight;
+    private static final int managerPanelCentralHeight = totalHeight - operationsPanelNorthHeight - managerPanelSouthHeight;
+    private static final int managerPanelHeight = totalHeight;
+
+    private static final int imagePanelNorthHeight = commonNorthHeight;
+    private static final int imagePanelSouthHeight = 0;
+    private static final int imagePanelCentralHeight = totalHeight - imagePanelNorthHeight - imagePanelSouthHeight;
+    private static final int imagePanelHeight = totalHeight;
 
     private static final int operationsPanelWidth = 360;
 
@@ -83,25 +88,25 @@ public final class ConstantsInitializers {
     public static final Dimension GUI_DIMENSION_managerPanelCentral = new Dimension(managerPanelCentralWidth, managerPanelCentralHeight);
     public static final Dimension GUI_DIMENSION_managerPanelSouth = new Dimension(managerPanelSouthWidth, managerPanelSouthHeight);
 
-    public static final Dimension GUI_DIMENSION_managerPanel = new Dimension(managerPanelNorthWidth, managerPanelNorthHeight + managerPanelCentralHeight + managerPanelSouthHeight);
+    public static final Dimension GUI_DIMENSION_managerPanel = new Dimension(managerPanelNorthWidth, managerPanelHeight);
 
     public static final Dimension GUI_DIMENSION_imagePanelNorth = new Dimension(imagePanelNorthWidth, imagePanelNorthHeight);
     public static final Dimension GUI_DIMENSION_imagePanelCentral = new Dimension(imagePanelCentralWidth, imagePanelCentralHeight);
     public static final Dimension GUI_DIMENSION_imagePanelSouth = new Dimension(imagePanelSouthWidth, imagePanelSouthHeight);
 
-    public static final Dimension GUI_DIMENSION_imagePanel = new Dimension(imagePanelNorthWidth, imagePanelNorthHeight + imagePanelCentralHeight + imagePanelSouthHeight);
+    public static final Dimension GUI_DIMENSION_imagePanel = new Dimension(imagePanelNorthWidth, imagePanelHeight);
 
     public static final Dimension GUI_DIMENSION_operationsPanelNorth = new Dimension(operationsPanelNorthWidth, operationsPanelNorthHeight);
     public static final Dimension GUI_DIMENSION_operationsPanelCentral = new Dimension(operationsPanelCentralWidth, operationsPanelCentralHeight);
     public static final Dimension GUI_DIMENSION_operationsPanelSouth = new Dimension(operationsPanelSouthWidth, operationsPanelSouthHeight);
 
-    public static final Dimension GUI_DIMENSION_operationsPanel = new Dimension(operationsPanelNorthWidth, operationsPanelNorthHeight + operationsPanelCentralHeight + operationsPanelSouthHeight);
+    public static final Dimension GUI_DIMENSION_operationsPanel = new Dimension(operationsPanelNorthWidth, operationsPanelHeight);
 
     public static final Dimension GUI_DIMENSION_histogramPanelNorth = new Dimension(histogramPanelNorthWidth, histogramPanelNorthHeight);
     public static final Dimension GUI_DIMENSION_histogramPanelCentral = new Dimension(histogramPanelCentralWidth, histogramPanelCentralHeight);
     public static final Dimension GUI_DIMENSION_histogramPanelSouth = new Dimension(histogramPanelSouthWidth, histogramPanelSouthHeight);
 
-    public static final Dimension GUI_DIMENSION_histogramPanel = new Dimension(histogramPanelNorthWidth, histogramPanelNorthHeight + histogramPanelCentralHeight + histogramPanelSouthHeight);
+    public static final Dimension GUI_DIMENSION_histogramPanel = new Dimension(histogramPanelNorthWidth, histogramPanelHeight);
 
     public static final Dimension GUI_DIMENSION_level1Left = new Dimension(GUI_DIMENSION_managerPanel);
     public static final Dimension GUI_DIMENSION_level1Right = new Dimension((int) GUI_DIMENSION_operationsPanel.getWidth(), (int) ( GUI_DIMENSION_operationsPanel.getHeight() + GUI_DIMENSION_histogramPanel.getHeight()) );

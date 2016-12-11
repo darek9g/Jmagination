@@ -139,7 +139,7 @@ public class Workspace{
         *                     *                        *                        *
         *                     *                        *                        *
         *                     *                        *                        *
-        *                     ******* level1Right ******                        *
+        * operationsPanel     ******* level1Right ****** imagePanel             *
         *                     *                        *                        *
         *                     *                        *                        *
         *                     *                        *                        *
