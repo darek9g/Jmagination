@@ -72,7 +72,7 @@ public final class ConstantsInitializers {
     private static final int histogramPanelCentralWidth = histogramPanelWidth;
     private static final int histogramPanelSouthWidth = histogramPanelWidth;
 
-    private static final int managerPanelWidth = 400;
+    private static final int managerPanelWidth = 200;
 
     private static final int managerPanelNorthWidth = managerPanelWidth;
     private static final int managerPanelCentralWidth = managerPanelWidth;

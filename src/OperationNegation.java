@@ -79,13 +79,15 @@ public class OperationNegation extends Operation {
         int width = srcImage.getWidth();
         int height = srcImage.getHeight();
 
+        System.out.println("Channels " + channels);
 
 //        Random random = new Random();
 
+        int shift = 0;
+        int mask = 0x000000ff;
+
         for(int ch=0; ch<channels; ++ch) {
 
-            int shift = 0;
-            int mask = 0x000000ff;
 
             for(int w=0; w<width; ++w) {
                 for(int h=0; h<height; ++h) {
@@ -97,16 +99,12 @@ public class OperationNegation extends Operation {
                     int newLevel = 255 - level;
                     int newColorStripe = colorStripe & (~mask);
 
-//                    if(h==0) { System.out.println("Oldstripe " + String.format("%x",colorStripe)); }
-//                    if(h==0) { System.out.println("Newstripe " + String.format("%x",newColorStripe)); }
-
-
                     newColorStripe = newColorStripe | ( newLevel << shift );
-//                    if(h==0) { System.out.println("Newstripe " + String.format("%x",newColorStripe)); }
                     resultImg.setRGB(w,h,newColorStripe);
                 }
             }
 
+            System.out.println("Shift " + shift);
             shift+=8;
             mask*=0x100;
         }

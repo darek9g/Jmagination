@@ -327,7 +327,8 @@ public class GUIStyler {
             parametersPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
             parametersPanel.setVisible(false);
 
-            cancelButton = new JButton("Select another opertaion");
+            cancelButton = new JButton("Powrót do wyboru operacji");
+            Dimension cancelButtonDimension = cancelButton.getSize();
             cancelButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

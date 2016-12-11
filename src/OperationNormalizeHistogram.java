@@ -157,14 +157,15 @@ public class OperationNormalizeHistogram extends Operation {
 
 //        Random random = new Random();
 
+        int shift = 0;
+        int mask = 0x000000ff;
+
         for(int ch=0; ch<channels; ++ch) {
             int levels = srcHistogramData.get(ch).length;
             Integer[] leftLevelLimitsChannel = leftLevelLimits.get(ch);
             Integer[] rightLevelLimitsChannel = rightLevelLimits.get(ch);
             Integer[] newLevelsChannel = newLevels.get(ch);
 
-            int shift = 0;
-            int mask = 0x000000ff;
 
             for(int w=0; w<width; ++w) {
                 for(int h=0; h<height; ++h) {

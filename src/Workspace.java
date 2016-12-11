@@ -230,7 +230,7 @@ public class Workspace{
 
         managerScroller = new JScrollPane(imageManager.getTree());
         managerScroller.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_managerPanelCentral);
-        managerScroller.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_managerPanelCentral);
+//        managerScroller.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_managerPanelCentral);
 
 
         supplyLoadFromFileButton();
@@ -253,8 +253,8 @@ public class Workspace{
                 if (selRow != -1 && e.getClickCount() == 1 && selPath != null) {
                     DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
 
-                    System.out.println("Selected node" + selectedNode.toString());
-                    System.out.println("UserObject: " + selectedNode.getUserObject().toString());
+//                    System.out.println("Selected node" + selectedNode.toString());
+//                    System.out.println("UserObject: " + selectedNode.getUserObject().toString());
                     ImageServer imageServer = (ImageServer) selectedNode.getUserObject();
 
                     if(e.getButton() == MouseEvent.BUTTON1) {

@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 /**
@@ -16,7 +18,9 @@ public class ImageServer {
 
     ImageManager imageManager;
     int id;
+    boolean fromFile;
     String description;
+    String srcFilePath;
 
     JFrame window;
 
@@ -57,28 +61,27 @@ public class ImageServer {
 
     }
 
-    ImageServer(BufferedImage img, String filePath, ImageManager imageManager) {
+    ImageServer(BufferedImage img, ImageManager imageManager, String filePath, boolean fromFile) {
         this(imageManager);
         this.img = img;
+        this.fromFile = fromFile;
+        this.srcFilePath = filePath;
 
-        configure("Id: " + this.id + " from file: " + filePath);
+        if(this.fromFile == true) {
+            configure("Id: " + this.id + " from file: " + filePath);
+        } else {
+            configure("Id: " + this.id + " - new image ");
+        }
     }
 
     public static ImageServer createLoadedImageServer(BufferedImage img, String filePath, ImageManager imageManager) {
-        ImageServer child = new ImageServer(img,  filePath, imageManager);
+        ImageServer child = new ImageServer(img, imageManager, filePath, true);
         imageManager.addLoadedImage(child);
         return child;
     }
 
-    ImageServer(BufferedImage img, ImageManager imageManager) {
-        this(imageManager);
-        this.img = img;
-
-        configure("Id: " + this.id + " from image " + this.getId());
-    }
-
     public ImageServer createChildImageServer(BufferedImage img) {
-        ImageServer child = new ImageServer(img, imageManager);
+        ImageServer child = new ImageServer(img, imageManager, this.srcFilePath, false);
         imageManager.addCreatedImage(child, this);
         return child;
     }
@@ -128,7 +131,12 @@ public class ImageServer {
     }
 
     public String toString() {
-        return this.description;
+        if(fromFile == true) {
+            Path p = Paths.get(this.srcFilePath);
+            return p.getFileName().toString();
+        } else {
+            return this.description;
+        }
     }
 
     public void toogleWindow() {

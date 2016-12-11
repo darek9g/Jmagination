@@ -14,7 +14,8 @@ import java.util.ArrayList;
 public class OperationThreshold extends Operation {
 
     JPanel configurationPanel;
-    JTextField thresholdJTextField = new JTextField("128");
+    Integer threshold = 128;
+    JTextField thresholdJTextField = new JTextField(threshold.toString());
 
     public OperationThreshold(ImageServer srcImageServer) {
         super(srcImageServer);
@@ -26,10 +27,9 @@ public class OperationThreshold extends Operation {
     @Override
     public BufferedImage RunOperation(ImageServer srcImageServer) {
 
+        threshold.getInteger(thresholdJTextField.getText());
         BufferedImage srcImage = srcImageServer.getImg();
-        System.out.printf("Test input %d",Integer.getInteger(thresholdJTextField.getText()));
-//        return thresholdPixelsFunction(srcImage, Integer.getInteger(thresholdJTextField.getText()));
-        return thresholdPixelsFunction(srcImage, 20);
+        return thresholdPixelsFunction(srcImage, threshold);
     }
 
     @Override
@@ -90,10 +90,11 @@ public class OperationThreshold extends Operation {
 
 //        Random random = new Random();
 
+        int shift = 0;
+        int mask = 0x000000ff;
+
         for(int ch=0; ch<channels; ++ch) {
 
-            int shift = 0;
-            int mask = 0x000000ff;
 
             for(int w=0; w<width; ++w) {
                 for(int h=0; h<height; ++h) {
@@ -107,12 +108,7 @@ public class OperationThreshold extends Operation {
                     if(level<threshold) { newLevel = 0; } else { newLevel = level; }
                     int newColorStripe = colorStripe & (~mask);
 
-//                    if(h==0) { System.out.println("Oldstripe " + String.format("%x",colorStripe)); }
-//                    if(h==0) { System.out.println("Newstripe " + String.format("%x",newColorStripe)); }
-
-
                     newColorStripe = newColorStripe | ( newLevel << shift );
-//                    if(h==0) { System.out.println("Newstripe " + String.format("%x",newColorStripe)); }
                     resultImg.setRGB(w,h,newColorStripe);
                 }
             }
