@@ -394,10 +394,10 @@ public class Workspace{
         operationsPanel = new JPanel(new BorderLayout());
 
 
-        managerPanel.setMinimumSize(managerPanelDimension);
+/*        managerPanel.setMinimumSize(managerPanelDimension);
         imagePanel.setMinimumSize(imagePanelDimension);
         operationsPanel.setMinimumSize(operationsPanelDimension);
-        histogramPanel.setMinimumSize(histogramPanelDimension);
+        histogramPanel.setMinimumSize(histogramPanelDimension);*/
 
         managerPanel.setPreferredSize(managerPanelDimension);
         imagePanel.setPreferredSize(imagePanelDimension);
@@ -432,7 +432,7 @@ public class Workspace{
         operationsPanelCentral.setPreferredSize(operationsPanelCentralDimension);
         operationsPanelSouth.setPreferredSize(operationsPanelSouthDimension);
 
-        managerPanelNorth.setMinimumSize(managerPanelNorthDimension);
+/*        managerPanelNorth.setMinimumSize(managerPanelNorthDimension);
         managerPanelCentral.setMinimumSize(managerPanelCentralDimension);
         managerPanelSouth.setMinimumSize(managerPanelSouthDimension);
         imagePanelNorth.setMinimumSize(imagePanelNorthDimension);
@@ -443,7 +443,7 @@ public class Workspace{
         histogramPanelSouth.setMinimumSize(histogramPanelSouthDimension);
         operationsPanelNorth.setMinimumSize(operationsPanelNorthDimension);
         operationsPanelCentral.setMinimumSize(operationsPanelCentralDimension);
-        operationsPanelSouth.setMinimumSize(operationsPanelSouthDimension);
+        operationsPanelSouth.setMinimumSize(operationsPanelSouthDimension);*/
 
 
         managerPanel.add(managerPanelNorth, BorderLayout.NORTH);
@@ -485,27 +485,35 @@ public class Workspace{
 
         level1Left = new JPanel(new BorderLayout());
         level1Left.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
-        level1Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
+//        level1Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
         level1Left.add(managerPanel);
 
         level1Right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, operationsPanel, histogramPanel);
         level1Right.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
-        level1Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
+//        level1Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
 
         level0Left = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, level1Left, level1Right);
         level0Left.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
-        level0Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
+//        level0Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
 
         level0Right = new JPanel(new BorderLayout());
         level0Right.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
-        level0Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
+//        level0Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
 
+        level1Right.setResizeWeight(0.5);
+        level1Right.setDividerSize(ConstantsInitializers.GUI_DIMENSION_splitPaneDividerSize);
+
+        level0Left.setResizeWeight(0.5);
+        level0Left.setDividerSize(ConstantsInitializers.GUI_DIMENSION_splitPaneDividerSize);
 
         level0Right.add(imagePanel);
 
         level0SplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, level0Left, level0Right);
         level0SplitPane.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
-        level0SplitPane.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
+//        level0SplitPane.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
+
+        level0SplitPane.setResizeWeight(0.25);
+        level0SplitPane.setDividerSize(ConstantsInitializers.GUI_DIMENSION_splitPaneDividerSize);
 
 
 

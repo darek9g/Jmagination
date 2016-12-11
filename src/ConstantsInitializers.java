@@ -36,6 +36,7 @@ public final class ConstantsInitializers {
 
     private static final int commonNorthHeight = 30;
     private static final int commonSouthHeight = 40;
+    public static final int GUI_DIMENSION_splitPaneDividerSize = 10;
 
     private static final int operationsPanelNorthHeight = commonNorthHeight;
     private static final int operationsPanelSouthHeight = 0;
@@ -47,7 +48,7 @@ public final class ConstantsInitializers {
     private static final int histogramPanelCentralHeight = 400;
     private static final int histogramPanelHeight = histogramPanelNorthHeight + histogramPanelCentralHeight + histogramPanelSouthHeight;
 
-    private static int totalHeight = operationsPanelHeight + histogramPanelHeight;
+    private static int totalHeight = operationsPanelHeight + GUI_DIMENSION_splitPaneDividerSize + histogramPanelHeight;
 
     private static final int managerPanelNorthHeight = commonNorthHeight;
     private static final int managerPanelSouthHeight = commonSouthHeight;
@@ -112,9 +113,9 @@ public final class ConstantsInitializers {
     public static final Dimension GUI_DIMENSION_level1Right = new Dimension((int) GUI_DIMENSION_operationsPanel.getWidth(), (int) ( GUI_DIMENSION_operationsPanel.getHeight() + GUI_DIMENSION_histogramPanel.getHeight()) );
 
     public static final Dimension GUI_DIMENSION_level0Right = new Dimension(GUI_DIMENSION_imagePanel);
-    public static final Dimension GUI_DIMENSION_level0Left = new Dimension((int) ( GUI_DIMENSION_level1Left.getWidth() + GUI_DIMENSION_level1Right.getWidth()), (int) ( GUI_DIMENSION_level1Left.getHeight() ) );
+    public static final Dimension GUI_DIMENSION_level0Left = new Dimension((int) ( GUI_DIMENSION_level1Left.getWidth() + GUI_DIMENSION_splitPaneDividerSize + GUI_DIMENSION_level1Right.getWidth()), (int) ( GUI_DIMENSION_level1Left.getHeight() ) );
 
-    public static final Dimension GUI_DIMENSION_level0SplitPane = new Dimension((int) ( GUI_DIMENSION_level0Left.getWidth() + GUI_DIMENSION_level0Right.getWidth()), (int) ( GUI_DIMENSION_level0Left.getHeight() ) );
+    public static final Dimension GUI_DIMENSION_level0SplitPane = new Dimension((int) ( GUI_DIMENSION_level0Left.getWidth() + GUI_DIMENSION_splitPaneDividerSize + GUI_DIMENSION_level0Right.getWidth()), (int) ( GUI_DIMENSION_level0Left.getHeight() ) );
 
 
     private ConstantsInitializers() {
