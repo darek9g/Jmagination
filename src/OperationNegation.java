@@ -13,13 +13,15 @@ import java.util.ArrayList;
 
 public class OperationNegation extends Operation {
 
-    JPanel configurationPanel;
+    Parameters parameters;
 
     public OperationNegation(ImageServer srcImageServer) {
         super(srcImageServer);
-        this.label = "Negate pixels";
+        this.label = "Negacja";
         categories.add("LAB 2");
-        categories.add("SINGLE POINT");
+        categories.add("Punktowe jednoargumentowe");
+
+        parameters = new Parameters();
     }
 
     @Override
@@ -36,18 +38,18 @@ public class OperationNegation extends Operation {
     public void drawConfigurationPanel(JPanel panel) {
         panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
-        JLabel title = new JLabel("Negate pixels");
+        JLabel title = new JLabel("Negacja");
 
         int panelX = 0;
         int panelY = 0;
 
         panel.add(title, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JTextArea description = new JTextArea("Set pixel values to their completement");
+        JTextArea description = new JTextArea("Opis - UZUPEŁNIĆ");
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Apply");
+        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
         apply.addActionListener(new ActionListener() {
             @Override
@@ -110,6 +112,12 @@ public class OperationNegation extends Operation {
         }
 
         return resultImg;
+    }
+
+    private class Parameters {
+        int threshold = 128;
+
+        public Parameters() {}
     }
 
 }

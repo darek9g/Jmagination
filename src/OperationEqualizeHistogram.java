@@ -13,13 +13,15 @@ import java.util.ArrayList;
 
 public class OperationEqualizeHistogram extends Operation {
 
-    JPanel configurationPanel;
+    Parameters parameters;
 
     public OperationEqualizeHistogram(ImageServer srcImageServer) {
         super(srcImageServer);
-        this.label = "Equalize Histogram";
+        this.label = "Rozciąganie histogramu";
         categories.add("LAB 1");
-        categories.add("MULTIPOINT");
+        categories.add("Wielopunktowe");
+
+        parameters = new Parameters();
     }
 
     @Override
@@ -36,18 +38,18 @@ public class OperationEqualizeHistogram extends Operation {
     public void drawConfigurationPanel(JPanel panel) {
         panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
-        JLabel title = new JLabel("Equalize histogram");
+        JLabel title = new JLabel("Rozciąganie histogramu");
 
         int panelX = 0;
         int panelY = 0;
 
         panel.add(title, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JTextArea description = new JTextArea("Equalize histogram description");
+        JTextArea description = new JTextArea("Opis - UZUPEŁNIĆ");
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Apply");
+        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
         apply.addActionListener(new ActionListener() {
             @Override
@@ -126,6 +128,12 @@ public class OperationEqualizeHistogram extends Operation {
         }
 
         return resultImg;
+    }
+
+    private class Parameters {
+        int threshold = 128;
+
+        public Parameters() {}
     }
 
 }

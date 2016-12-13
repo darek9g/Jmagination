@@ -100,8 +100,8 @@ public class GUIStyler {
 
         public PresenterTab(Dimension dimension) {
             this();
-            setMinimumSize(dimension);
-            setPreferredSize(dimension);
+//            setMinimumSize(dimension);
+//            setPreferredSize(dimension);
         }
     }
 
@@ -387,7 +387,7 @@ public class GUIStyler {
             JScrollPane operationsScroller = new JScrollPane(operationsList);
             operations.add(operationsScroller);
 
-            JButton selectButton = new JButton("Select");
+            JButton selectButton = new JButton("Wybierz");
             operations.add(selectButton);
 
             ActionListener al = new ActionListener() {
@@ -687,7 +687,7 @@ public class GUIStyler {
 
             Dimension dim = new Dimension(img.getWidth(), img.getHeight());
 
-            setMinimumSize(dim);
+//            setMinimumSize(dim);
             setPreferredSize(dim);
             addMouseMotionListener(this);
             addMouseListener(this);

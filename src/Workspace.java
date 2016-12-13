@@ -266,7 +266,7 @@ public class Workspace{
                     if(e.getButton() == MouseEvent.BUTTON3) {
                         JPopupMenu jPopupMenu = new JPopupMenu("Popup menu");
 
-                        JMenuItem jMenuItemShowImage = new JMenuItem("Show/Hide Image");
+                        JMenuItem jMenuItemShowImage = new JMenuItem("Pokaż/Ukryj okno obrazu");
                         jMenuItemShowImage.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
@@ -277,7 +277,7 @@ public class Workspace{
 
                         jPopupMenu.add(jMenuItemShowImage);
 
-                        JMenuItem jMenuItemPlaceInWorkspace = new JMenuItem("Place in Workspace");
+                        JMenuItem jMenuItemPlaceInWorkspace = new JMenuItem("Umieść na biurku");
                         jMenuItemPlaceInWorkspace.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
@@ -330,7 +330,7 @@ public class Workspace{
 
     private void supplyLoadFromFileButton() {
 
-        jButtonForNewImage = new JButton("Open file");
+        jButtonForNewImage = new JButton("Otwórz plik");
 
         jButtonForNewImage.addActionListener(new ActionListener() {
             @Override
@@ -380,7 +380,7 @@ public class Workspace{
 
     private void buildWindow() {
 
-        window = new JFrame("Jmagination Workspace");
+        window = new JFrame("Jmagination - Biurko");
 
 
         window.setPreferredSize(windowDimension);
@@ -463,11 +463,11 @@ public class Workspace{
         operationsPanel.add(operationsPanelSouth, BorderLayout.SOUTH);
 
         // content panel labels
-        JLabel managerPanelLabel = new JLabel("Manager");
+        JLabel managerPanelLabel = new JLabel("Menedżer obrazów");
         managerPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         managerPanelNorth.add(managerPanelLabel);
 
-        JLabel imagePanelLabel = new JLabel("Image");
+        JLabel imagePanelLabel = new JLabel("Obraz");
         imagePanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imagePanelNorth.add(imagePanelLabel);
 
@@ -475,7 +475,7 @@ public class Workspace{
         histogramPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         histogramPanelNorth.add(histogramPanelLabel);
 
-        JLabel operationsPanelLabel = new JLabel("Operations");
+        JLabel operationsPanelLabel = new JLabel("Operacje");
         operationsPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         operationsPanelNorth.add(operationsPanelLabel);
 

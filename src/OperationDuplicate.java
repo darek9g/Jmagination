@@ -11,13 +11,15 @@ import java.awt.image.WritableRaster;
  */
 public class OperationDuplicate extends Operation {
 
-    JPanel configurationPanel;
+    Parameters parameters;
 
     public OperationDuplicate(ImageServer srcImageServer) {
         super(srcImageServer);
-        this.label = "Duplicate";
+        this.label = "Zduplikuj";
         categories.add("LAB 1");
-        categories.add("GENERAL");
+        categories.add("Ogólne");
+
+        parameters = new Parameters();
     }
 
     @Override
@@ -32,18 +34,18 @@ public class OperationDuplicate extends Operation {
     public void drawConfigurationPanel(JPanel panel) {
         panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
-        JLabel title = new JLabel("Duplicate");
+        JLabel title = new JLabel("Zduplikuj");
 
         int panelX = 0;
         int panelY = 0;
 
         panel.add(title, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JTextArea description = new JTextArea("Copies the image into new buffer");
+        JTextArea description = new JTextArea("Kopiuje obraz do nowego bufora");
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Apply");
+        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
         apply.addActionListener(new ActionListener() {
             @Override
@@ -63,6 +65,12 @@ public class OperationDuplicate extends Operation {
         boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
         WritableRaster raster = srcImage.copyData(null);
         return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+    }
+
+    private class Parameters {
+        int threshold = 128;
+
+        public Parameters() {}
     }
 
 }

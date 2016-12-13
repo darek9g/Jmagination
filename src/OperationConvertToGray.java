@@ -10,11 +10,15 @@ import java.awt.image.BufferedImage;
 
 public class OperationConvertToGray extends Operation {
 
+    Parameters parameters;
+
     public OperationConvertToGray(ImageServer srcImageServer) {
         super(srcImageServer);
-        this.label = "Convert to gray";
+        this.label = "Zamiana na obraz w odcieniach szarości";
         categories.add("LAB 1");
-        categories.add("CONVERSION");
+        categories.add("Konwersje");
+
+        parameters = new Parameters();
     }
 
     @Override
@@ -34,11 +38,11 @@ public class OperationConvertToGray extends Operation {
         JLabel title = new JLabel("Convert to gray");
         panel.add(title, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JTextArea description = new JTextArea("Combines each pixel color values into grey level");
+        JTextArea description = new JTextArea("Uśrednia jasności kolorów każdego piksela i zapisuje go w odcieniu szarości");
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Apply");
+        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
         apply.addActionListener(new ActionListener() {
             @Override
@@ -98,5 +102,10 @@ public class OperationConvertToGray extends Operation {
         }
 
         return grayImg;
+    }
+
+    private class Parameters {
+
+        public Parameters() {}
     }
 }

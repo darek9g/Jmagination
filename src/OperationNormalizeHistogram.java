@@ -14,51 +14,48 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class OperationNormalizeHistogram extends Operation {
 
-    String[] runModes = { "Average", "Random", "By neighborhood(3x3)"};
-    JComboBox<String> modeSelect = new JComboBox<>(runModes);
+    Parameters parameters;
+    String[] runModes = { "Średnich", "Losowa", "Według sąsiedztwa 3x3"};
+    JComboBox<String> methodSelect = new JComboBox<>(runModes);
 
     public OperationNormalizeHistogram(ImageServer srcImageServer) {
         super(srcImageServer);
-        this.label = "Normalize Histogram";
+        this.label = "Wyrównaj histogram";
         categories.add("LAB 1");
-        categories.add("MULTIPOINT");
-    }
+        categories.add("Wielopunktowe");
 
-    public OperationNormalizeHistogram(ImageServer srcImageServer, String modeSelected) {
-        super(srcImageServer);
-        for(String s: runModes) {
-            if(modeSelected == s) {
-                modeSelect.setSelectedItem(modeSelected);
-            }
-        }
+        parameters = new Parameters();
     }
 
     @Override
     public BufferedImage RunOperation(ImageServer srcImageServer) {
 
+        String method = (String) methodSelect.getSelectedItem();
+        parameters.method = method;
+
         BufferedImage srcImage = srcImageServer.getImg();
         Histogram histogram = srcImageServer.getHistogram();
-        return normalizeHistogramFunction(srcImage, histogram, (String) modeSelect.getSelectedItem());
+        return normalizeHistogramFunction(srcImage, histogram);
     }
 
     @Override
     public void drawConfigurationPanel(JPanel panel) {
         panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
-        JLabel title = new JLabel("Normalize histogram");
+        JLabel title = new JLabel("Wyrównaj histogram");
 
         int panelX = 0;
         int panelY = 0;
 
         panel.add(title, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JTextArea description = new JTextArea("Normalize histogram description - TODO");
+        JTextArea description = new JTextArea("Opis - UZUPEŁNIĆ");
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        panel.add(modeSelect, new GUIStyler.ParamsGrid(panelX,panelY++));
+        panel.add(methodSelect, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Apply");
+        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
         apply.addActionListener(new ActionListener() {
             @Override
@@ -71,10 +68,10 @@ public class OperationNormalizeHistogram extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationNormalizeHistogram(null, (String) modeSelect.getSelectedItem());
+        return new OperationNormalizeHistogram(null);
     }
 
-    public static BufferedImage normalizeHistogramFunction(BufferedImage srcImage, Histogram histogram, String runMode) {
+    public BufferedImage normalizeHistogramFunction(BufferedImage srcImage, Histogram histogram) {
 
         BufferedImage resultImg;
 
@@ -140,11 +137,11 @@ public class OperationNormalizeHistogram extends Operation {
                 }
                 rightLevelLimits.get(ch)[level] = R;
 
-                switch(runMode) {
-                    case "Average":
+                switch(parameters.method) {
+                    case "Średnich":
                         newLevels.get(ch)[level] = (int) ( ( leftLevelLimits.get(ch)[level] + rightLevelLimits.get(ch)[level]) / 2.0 );
                         break;
-                    case "Random":
+                    case "Losowa":
                         newLevels.get(ch)[level] = rightLevelLimits.get(ch)[level] - leftLevelLimits.get(ch)[level];
                 }
 
@@ -177,17 +174,17 @@ public class OperationNormalizeHistogram extends Operation {
                     int newLevel = level;
                     int newColorStripe = colorStripe & (~mask);
 
-                    switch(runMode) {
-                        case "Average":
+                    switch(parameters.method) {
+                        case "Średnich":
                             if(level == newLevelsChannel[level]) { continue; };
                             newLevel = newLevelsChannel[level];
                             break;
-                        case "Random":
+                        case "Losowa":
                             if(level == newLevelsChannel[level]) { continue; };
                             int r = ThreadLocalRandom.current().nextInt(0, newLevelsChannel[level]+1);
                             newLevel = leftLevelLimitsChannel[level] + r;
                             break;
-                        case "By neighborhood(3x3)":
+                        case "Według sąsiedztwa 3x3":
 
                             //get 3x3 neighborhood average
 
@@ -230,4 +227,11 @@ public class OperationNormalizeHistogram extends Operation {
 
         return resultImg;
     }
+
+    private class Parameters {
+        String method = "Średnich";
+
+        public Parameters() {}
+    }
+
 }

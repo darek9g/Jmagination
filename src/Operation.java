@@ -12,7 +12,7 @@ public abstract class Operation {
     ArrayList<String> categories = new ArrayList<>();
 
     public Operation(ImageServer srcImageServer) {
-        categories.add("ALL");
+        categories.add("Wszystkie");
         this.srcImageServer = srcImageServer;
     }
 

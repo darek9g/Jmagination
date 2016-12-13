@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
-import java.util.ArrayList;
+
 
 /**
  * Created by darek on 30.11.2016.
@@ -13,30 +13,35 @@ import java.util.ArrayList;
 
 public class OperationThreshold extends Operation {
 
-    JPanel configurationPanel;
-    Integer threshold = 128;
-    JTextField thresholdJTextField = new JTextField(threshold.toString());
+    Parameters parameters;
+    JTextField thresholdJTextField;
+
 
     public OperationThreshold(ImageServer srcImageServer) {
         super(srcImageServer);
-        this.label = "Threshold pixels";
+        this.label = "Progowanie";
         categories.add("LAB 2");
-        categories.add("SINGLE POINT");
+        categories.add("Punktowe jednoargumentowe");
+
+        parameters = new Parameters();
+
+        thresholdJTextField = new JTextField(String.valueOf(parameters.threshold));
     }
 
     @Override
     public BufferedImage RunOperation(ImageServer srcImageServer) {
 
-        threshold.getInteger(thresholdJTextField.getText());
+        String thresholdStr = thresholdJTextField.getText();
+        parameters.threshold = Integer.parseInt(thresholdStr);
         BufferedImage srcImage = srcImageServer.getImg();
-        return thresholdPixelsFunction(srcImage, threshold);
+        return thresholdPixelsFunction(srcImage);
     }
 
     @Override
     public void drawConfigurationPanel(JPanel panel) {
         panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
-        JLabel title = new JLabel("Threshold pixels");
+        JLabel title = new JLabel("Progowanie");
 
         int panelX = 0;
         int panelY = 0;
@@ -49,7 +54,7 @@ public class OperationThreshold extends Operation {
 
         panel.add(thresholdJTextField, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Apply");
+        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
         apply.addActionListener(new ActionListener() {
             @Override
@@ -57,8 +62,6 @@ public class OperationThreshold extends Operation {
                 Run();
             }
         });
-
-        System.out.printf("Test input %d",Integer.getInteger(thresholdJTextField.getText()));
     }
 
     @Override
@@ -67,12 +70,12 @@ public class OperationThreshold extends Operation {
     }
 
 
-    public static BufferedImage thresholdPixelsFunction(BufferedImage srcImage, int threshold) {
+    public BufferedImage thresholdPixelsFunction(BufferedImage srcImage) {
 
         BufferedImage resultImg;
 
 
-        System.out.println("Threshold " + threshold);
+        System.out.println("Threshold " + parameters.threshold);
 
 
         int channels;
@@ -105,7 +108,7 @@ public class OperationThreshold extends Operation {
 
                     int newLevel;
 
-                    if(level<threshold) { newLevel = 0; } else { newLevel = level; }
+                    if(level<parameters.threshold) { newLevel = 0; } else { newLevel = level; }
                     int newColorStripe = colorStripe & (~mask);
 
                     newColorStripe = newColorStripe | ( newLevel << shift );
@@ -120,4 +123,9 @@ public class OperationThreshold extends Operation {
         return resultImg;
     }
 
+    private class Parameters {
+        int threshold = 128;
+
+        public Parameters() {}
+    }
 }
