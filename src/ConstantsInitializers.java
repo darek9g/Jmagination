@@ -36,7 +36,7 @@ public final class ConstantsInitializers {
 
     private static final int commonNorthHeight = 30;
     private static final int commonSouthHeight = 40;
-    public static final int GUI_DIMENSION_splitPaneDividerSize = 10;
+    public static final int GUI_DIMENSION_splitPaneDividerSize = 20;
 
     private static final int operationsPanelNorthHeight = commonNorthHeight;
     private static final int operationsPanelSouthHeight = 0;

@@ -27,22 +27,20 @@ public class Workspace{
 
     JPanel managerPanel;
     JPanel managerPanelNorth;
-    JPanel managerPanelCentral;
+    JScrollPane managerPanelCentral;
     JPanel managerPanelSouth;
     JPanel imagePanel;
     JPanel imagePanelNorth;
-    JPanel imagePanelCentral;
+    JScrollPane imagePanelCentral;
     JPanel imagePanelSouth;
     JPanel histogramPanel;
     JPanel histogramPanelNorth;
-    JPanel histogramPanelCentral;
+    JScrollPane histogramPanelCentral;
     JPanel histogramPanelSouth;
     JPanel operationsPanel;
     JPanel operationsPanelNorth;
     JPanel operationsPanelCentral;
     JPanel operationsPanelSouth;
-
-    JScrollPane managerScroller;
 
     /* WINDOW PANELING SCHEMA
 
@@ -213,7 +211,6 @@ public class Workspace{
     Dimension operationsPanelCentralDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral);
     Dimension operationsPanelSouthDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_operationsPanelSouth);
 
-    Dimension managerScrollerDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_managerPanelCentral);
 
     ImageManager imageManager;
 
@@ -228,17 +225,13 @@ public class Workspace{
         this.imageManager = imageManager;
         this.srcImageServer = null;
 
-        managerScroller = new JScrollPane(imageManager.getTree());
-        managerScroller.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_managerPanelCentral);
-//        managerScroller.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_managerPanelCentral);
-
 
         supplyLoadFromFileButton();
 
-        buildWindow();
-
-
         JTree imageManagerTree = imageManager.getTree();
+        buildWindow(imageManagerTree);
+
+
 
 
         Workspace workspace = this;
@@ -266,17 +259,6 @@ public class Workspace{
                     if(e.getButton() == MouseEvent.BUTTON3) {
                         JPopupMenu jPopupMenu = new JPopupMenu("Popup menu");
 
-                        JMenuItem jMenuItemShowImage = new JMenuItem("Pokaż/Ukryj okno obrazu");
-                        jMenuItemShowImage.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                imageServer.toogleWindow();
-                            }
-                        });
-
-
-                        jPopupMenu.add(jMenuItemShowImage);
-
                         JMenuItem jMenuItemPlaceInWorkspace = new JMenuItem("Umieść na biurku");
                         jMenuItemPlaceInWorkspace.addActionListener(new ActionListener() {
                             @Override
@@ -284,8 +266,17 @@ public class Workspace{
                                 workspace.setImageServer(imageServer);
                             }
                         });
-
                         jPopupMenu.add(jMenuItemPlaceInWorkspace);
+
+                        JMenuItem jMenuItemShowImage = new JMenuItem("Pokaż/Ukryj okno obrazu");
+                        jMenuItemShowImage.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                imageServer.toogleWindow();
+                            }
+                        });
+                        jPopupMenu.add(jMenuItemShowImage);
+
                         jPopupMenu.show(tree, e.getX(), e.getY());
 
                     }
@@ -297,7 +288,7 @@ public class Workspace{
     public Workspace(ImageManager imageManager, ImageServer srcImageServer) {
         this(imageManager);
 
-        buildWindow();
+        buildWindow(imageManager.getTree());
         setImageServer(srcImageServer);
         window.repaint();
     }
@@ -305,25 +296,26 @@ public class Workspace{
     public void setImageServer(ImageServer srcImageServer) {
         this.srcImageServer = srcImageServer;
 
-        imagePanelCentral.removeAll();
-        imagePanelCentral.add(new GUIStyler.ImagePanel2(this.srcImageServer.getImg()));
+        imagePanelCentral.setViewportView(new JScrollPane(new GUIStyler.ImagePanel3(this.srcImageServer.getImg())));
 
+        GUIStyler.ImagePanel3 imagePanel3 =new GUIStyler.ImagePanel3(srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
 
-        histogramPanelCentral.removeAll();
-        histogramPanelCentral.add(new GUIStyler.ImagePanel2(srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral)));
+        histogramPanelCentral.setViewportView(imagePanel3);
+        /*histogramPanelCentral.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        histogramPanelCentral.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);*/
 
-        operationsPanelCentral.removeAll();
-        operationsPanelCentral.add(new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral));
+        /*operationsPanelCentral.removeAll();
+        operationsPanelCentral.add(new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral));*/
 
-        window.pack();
+//        window.pack();
         window.repaint();
 
-        window.pack();
+/*        window.pack();
         Insets windowInsets = window.getInsets();
         int windowWidth = (int) level0SplitPane.getWidth() + windowInsets.left + windowInsets.right;
         int windowHeight = (int) level0SplitPane.getHeight() + windowInsets.top + windowInsets.bottom;
         window.setPreferredSize(new Dimension(windowWidth, windowHeight));
-        window.pack();
+        window.pack();*/
         window.setVisible(true);
 
     }
@@ -374,11 +366,10 @@ public class Workspace{
         histogramPanelCentralDimension = histogramPanelCentralDimension.getSize();
         operationsPanelDimension = operationsPanelDimension.getSize();
         operationsPanelCentralDimension = operationsPanelCentralDimension.getSize();
-        managerScrollerDimension = managerScrollerDimension.getSize();
 
     }
 
-    private void buildWindow() {
+    private void buildWindow(JTree managerTree) {
 
         window = new JFrame("Jmagination - Biurko");
 
@@ -394,32 +385,32 @@ public class Workspace{
         operationsPanel = new JPanel(new BorderLayout());
 
 
-/*        managerPanel.setMinimumSize(managerPanelDimension);
+        managerPanel.setMinimumSize(managerPanelDimension);
         imagePanel.setMinimumSize(imagePanelDimension);
         operationsPanel.setMinimumSize(operationsPanelDimension);
-        histogramPanel.setMinimumSize(histogramPanelDimension);*/
+        histogramPanel.setMinimumSize(histogramPanelDimension);
 
-        managerPanel.setPreferredSize(managerPanelDimension);
+/*        managerPanel.setPreferredSize(managerPanelDimension);
         imagePanel.setPreferredSize(imagePanelDimension);
         operationsPanel.setPreferredSize(operationsPanelDimension);
-        histogramPanel.setPreferredSize(histogramPanelDimension);
+        histogramPanel.setPreferredSize(histogramPanelDimension);*/
 
 
         // content direct holders
         managerPanelNorth = new JPanel();
-        managerPanelCentral = new JPanel();
+        managerPanelCentral = new JScrollPane();
         managerPanelSouth = new JPanel();
         imagePanelNorth = new JPanel();
-        imagePanelCentral = new JPanel();
+        imagePanelCentral = new JScrollPane();
         imagePanelSouth = new JPanel();
         histogramPanelNorth = new JPanel();
-        histogramPanelCentral = new JPanel();
+        histogramPanelCentral = new JScrollPane();
         histogramPanelSouth = new JPanel();
         operationsPanelNorth = new JPanel();
-        operationsPanelCentral = new JPanel();
+        operationsPanelCentral = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral);
         operationsPanelSouth = new JPanel();
 
-        managerPanelNorth.setPreferredSize(managerPanelNorthDimension);
+/*        managerPanelNorth.setPreferredSize(managerPanelNorthDimension);
         managerPanelCentral.setPreferredSize(managerPanelCentralDimension);
         managerPanelSouth.setPreferredSize(managerPanelSouthDimension);
         imagePanelNorth.setPreferredSize(imagePanelNorthDimension);
@@ -430,9 +421,9 @@ public class Workspace{
         histogramPanelSouth.setPreferredSize(histogramPanelSouthDimension);
         operationsPanelNorth.setPreferredSize(operationsPanelNorthDimension);
         operationsPanelCentral.setPreferredSize(operationsPanelCentralDimension);
-        operationsPanelSouth.setPreferredSize(operationsPanelSouthDimension);
+        operationsPanelSouth.setPreferredSize(operationsPanelSouthDimension);*/
 
-/*        managerPanelNorth.setMinimumSize(managerPanelNorthDimension);
+        managerPanelNorth.setMinimumSize(managerPanelNorthDimension);
         managerPanelCentral.setMinimumSize(managerPanelCentralDimension);
         managerPanelSouth.setMinimumSize(managerPanelSouthDimension);
         imagePanelNorth.setMinimumSize(imagePanelNorthDimension);
@@ -443,7 +434,7 @@ public class Workspace{
         histogramPanelSouth.setMinimumSize(histogramPanelSouthDimension);
         operationsPanelNorth.setMinimumSize(operationsPanelNorthDimension);
         operationsPanelCentral.setMinimumSize(operationsPanelCentralDimension);
-        operationsPanelSouth.setMinimumSize(operationsPanelSouthDimension);*/
+        operationsPanelSouth.setMinimumSize(operationsPanelSouthDimension);
 
 
         managerPanel.add(managerPanelNorth, BorderLayout.NORTH);
@@ -481,24 +472,26 @@ public class Workspace{
 
         // static content
         managerPanelSouth.add(jButtonForNewImage);
-        managerPanelCentral.add(managerScroller);
+        managerPanelCentral.setViewportView(managerTree);
 
         level1Left = new JPanel(new BorderLayout());
-        level1Left.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
-//        level1Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
+//        level1Left.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
+        level1Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
         level1Left.add(managerPanel);
 
         level1Right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, operationsPanel, histogramPanel);
-        level1Right.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
-//        level1Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
+//        level1Right.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
+        level1Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
+        level1Right.setOneTouchExpandable(true);
 
         level0Left = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, level1Left, level1Right);
-        level0Left.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
-//        level0Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
+//        level0Left.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
+        level0Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
+        level0Left.setOneTouchExpandable(true);
 
         level0Right = new JPanel(new BorderLayout());
-        level0Right.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
-//        level0Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
+//        level0Right.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
+        level0Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
 
         level1Right.setResizeWeight(0.5);
         level1Right.setDividerSize(ConstantsInitializers.GUI_DIMENSION_splitPaneDividerSize);
@@ -511,6 +504,7 @@ public class Workspace{
         level0SplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, level0Left, level0Right);
         level0SplitPane.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
 //        level0SplitPane.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
+        level0SplitPane.setOneTouchExpandable(true);
 
         level0SplitPane.setResizeWeight(0.25);
         level0SplitPane.setDividerSize(ConstantsInitializers.GUI_DIMENSION_splitPaneDividerSize);

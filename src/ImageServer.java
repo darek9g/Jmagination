@@ -104,7 +104,7 @@ public class ImageServer {
         GUIStyler.PresenterTabOperations operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this));
         tpanel.addTab("Operations", operationsTab);
 
-        window.setTitle("Id: " + id);
+        window.setTitle(description);
         callUpButton.setText(description);
 
         window.pack();
