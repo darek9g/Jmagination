@@ -214,7 +214,9 @@ public class Workspace{
 
     ImageManager imageManager;
 
-    JButton jButtonForNewImage;
+    JButton jButtonOpenFile;
+
+
 
 
 
@@ -226,7 +228,7 @@ public class Workspace{
         this.srcImageServer = null;
 
 
-        supplyLoadFromFileButton();
+        setupJButtonOpenFile();
 
         JTree imageManagerTree = imageManager.getTree();
         buildWindow(imageManagerTree);
@@ -320,11 +322,11 @@ public class Workspace{
 
     }
 
-    private void supplyLoadFromFileButton() {
+    private void setupJButtonOpenFile() {
 
-        jButtonForNewImage = new JButton("Otwórz plik");
+        jButtonOpenFile = new JButton("Otwórz plik");
 
-        jButtonForNewImage.addActionListener(new ActionListener() {
+        jButtonOpenFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 JFileChooser chooser = new JFileChooser();
@@ -345,6 +347,7 @@ public class Workspace{
         });
 
     }
+
 
     private void updateComponentsDimensions() {
 
@@ -471,7 +474,7 @@ public class Workspace{
         operationsPanelNorth.add(operationsPanelLabel);
 
         // static content
-        managerPanelSouth.add(jButtonForNewImage);
+        managerPanelSouth.add(jButtonOpenFile);
         managerPanelCentral.setViewportView(managerTree);
 
         level1Left = new JPanel(new BorderLayout());

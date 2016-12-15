@@ -302,47 +302,77 @@ public class GUIStyler {
 
     public static class PresenterTabOperations extends PresenterTab {
 
-        JPanel controlsPanel;
-        JSplitPane controlsPanelCenter;
+        JSplitPane choicePanel;
+        JScrollPane choicePanelCategories;
+        JPanel choicePanelContainer;
+        JScrollPane choicePanelOperations;
         JPanel parametersPanel;
-        JPanel getParametersPanelCenter;
+        JPanel parametersPanelNorth;
+        JPanel parametersPanelCenter;
+        JPanel parametersPanelSouth;
 
-        JButton cancelButton;
+
+        JButton jButtonRunOperation;
+        JButton jButtonRunOperationLive;
+        JButton jButtonSaveOperationsOutcome;
+
+        JButton jButtonCancel;
 
         public PresenterTabOperations(ArrayList<Operation> availableOperations) {
             super();
 
 
+            choicePanelCategories = new JScrollPane();
+            choicePanelContainer = new JPanel();
+            choicePanelContainer.setLayout(new BorderLayout());
+            choicePanelOperations = new JScrollPane();
+            choicePanelContainer.add(choicePanelOperations, BorderLayout.CENTER);
 
-            controlsPanel = new JPanel();
-            controlsPanel.setLayout(new BorderLayout());
 
-            controlsPanelCenter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JPanel(), new JPanel());
-            controlsPanelCenter.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
+            choicePanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, choicePanelCategories, choicePanelContainer);
+            choicePanel.setOneTouchExpandable(true);
+            choicePanel.setResizeWeight(0.5);
+            choicePanel.setDividerSize(ConstantsInitializers.GUI_DIMENSION_splitPaneDividerSize);
 
-            controlsPanel.add(controlsPanelCenter, BorderLayout.CENTER);
 
             parametersPanel = new JPanel();
             parametersPanel.setLayout(new BorderLayout());
             parametersPanel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_ALT_COLOR);
             parametersPanel.setVisible(false);
 
-            cancelButton = new JButton("Powrót do wyboru operacji");
-            Dimension cancelButtonDimension = cancelButton.getSize();
-            cancelButton.addActionListener(new ActionListener() {
+            parametersPanelNorth = new JPanel();
+            parametersPanelCenter = new JPanel();
+            parametersPanelSouth = new JPanel();
+
+            parametersPanel.add(parametersPanelNorth,BorderLayout.NORTH);
+            parametersPanel.add(parametersPanelCenter,BorderLayout.CENTER);
+            parametersPanel.add(parametersPanelSouth,BorderLayout.SOUTH);
+
+            // parameters North
+
+            jButtonCancel = new JButton("Powrót do wyboru operacji");
+            Dimension jButtonCancelDimension = jButtonCancel.getSize();
+            jButtonCancel.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     deSelectCommand();
                 }
             });
-            parametersPanel.add(cancelButton,BorderLayout.NORTH);
+            parametersPanelNorth.add(jButtonCancel);
 
-            getParametersPanelCenter = new JPanel();
-            parametersPanel.add(getParametersPanelCenter, BorderLayout.CENTER);
+            // parameters South
+            jButtonRunOperation = new JButton("Wykonaj");
+            jButtonRunOperationLive = new JButton("Wykonaj interaktywnie");
+            jButtonSaveOperationsOutcome = new JButton("Zapisz");
 
-            drawControls(availableOperations, getParametersPanelCenter);
+            parametersPanelSouth.add(jButtonRunOperation);
+            parametersPanelSouth.add(jButtonRunOperationLive);
+            parametersPanelSouth.add(jButtonSaveOperationsOutcome);
 
-            add(controlsPanel);
+            // parameters Center
+            drawControls(availableOperations, parametersPanelCenter);
+
+            add(choicePanel);
             add(parametersPanel);
 
         }
@@ -350,45 +380,38 @@ public class GUIStyler {
         public PresenterTabOperations(ArrayList<Operation> availableOperations, Dimension dimension) {
             this(availableOperations);
 
-            controlsPanel.setMinimumSize(dimension);
-            controlsPanel.setPreferredSize(dimension);
+            choicePanel.setMinimumSize(dimension);
+            choicePanel.setPreferredSize(dimension);
             parametersPanel.setMinimumSize(dimension);
             parametersPanel.setPreferredSize(dimension);
 
         }
 
         private void selectCommand() {
-            controlsPanel.setVisible(false);
+            choicePanel.setVisible(false);
             parametersPanel.setVisible(true);
         }
 
         private void deSelectCommand() {
-            controlsPanel.setVisible(true);
+            choicePanel.setVisible(true);
             parametersPanel.setVisible(false);
         }
 
         private void drawControls(ArrayList<Operation> availableOperations, JPanel panel) {
 
-            JPanel categories = (JPanel) controlsPanelCenter.getLeftComponent();
-            JPanel operations = (JPanel) controlsPanelCenter.getRightComponent();
-//            operations.setLayout(new BoxLayout(operations,BoxLayout.Y_AXIS));
-
-
             DefaultListModel catListModel = new DefaultListModel();
             JList categoriesList = new JList(catListModel);
             categoriesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            JScrollPane categoriesScroller = new JScrollPane(categoriesList);
-            categories.add(categoriesScroller);
+            choicePanelCategories.setViewportView(categoriesList);
 
 
             DefaultListModel opListModel = new DefaultListModel();
             JList operationsList = new JList(opListModel);
             operationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            JScrollPane operationsScroller = new JScrollPane(operationsList);
-            operations.add(operationsScroller);
+            choicePanelOperations.setViewportView(operationsList);
 
-            JButton selectButton = new JButton("Wybierz");
-            operations.add(selectButton);
+            JButton jButtonSelect = new JButton("Wybierz");
+            choicePanelContainer.add(jButtonSelect,BorderLayout.SOUTH);
 
 
             ActionListener al = new ActionListener() {
@@ -396,9 +419,9 @@ public class GUIStyler {
                 public void actionPerformed(ActionEvent e) {
 
                     panel.removeAll();
-                    for(Component c: panel.getComponents()) {
-                        if(c != cancelButton) panel.remove(c);
-                    }
+/*                    for(Component c: panel.getComponents()) {
+                        if(c != jButtonCancel) panel.remove(c);
+                    }*/
 
                     Operation selectedOperation = (Operation) operationsList.getSelectedValue();
                     selectedOperation.drawConfigurationPanel(panel);
@@ -408,7 +431,7 @@ public class GUIStyler {
                 }
             };
 
-            selectButton.addActionListener(al);
+            jButtonSelect.addActionListener(al);
 
             ArrayList<String> tags = new ArrayList<>();
 
@@ -442,7 +465,7 @@ public class GUIStyler {
                     }
                 }
             }
-            selectButton.setEnabled(false);
+            jButtonSelect.setEnabled(false);
 
             categoriesList.addListSelectionListener(new ListSelectionListener() {
                 @Override
@@ -461,7 +484,9 @@ public class GUIStyler {
                                 }
                             }
                         }
-                        selectButton.setEnabled(false);
+                        jButtonSelect.setEnabled(false);
+                        choicePanelContainer.revalidate();
+                        operationsList.revalidate();
 
                     }
                 }
@@ -474,10 +499,10 @@ public class GUIStyler {
                         JList list = (JList) e.getSource();
                         if(list.getSelectedIndex() == -1) {
                         } else {
-                            selectButton.setEnabled(true);
+                            jButtonSelect.setEnabled(true);
                         }
                     } else {
-                            selectButton.setEnabled(false);
+                        jButtonSelect.setEnabled(false);
                     }
                 }
             });

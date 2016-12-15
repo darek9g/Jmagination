@@ -16,7 +16,7 @@ public class OperationNegation extends Operation {
     Parameters parameters;
 
     public OperationNegation(ImageServer srcImageServer) {
-        super(srcImageServer);
+        super();
         this.label = "Negacja";
         categories.add("LAB 2");
         categories.add("Punktowe jednoargumentowe");
@@ -25,13 +25,9 @@ public class OperationNegation extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperation(ImageServer srcImageServer) {
+    public BufferedImage RunOperation(BufferedImage bufferedImage) {
 
-        BufferedImage srcImage = srcImageServer.getImg();
-        Histogram histogram = srcImageServer.getHistogram();
-        return negatePixelsFunction(srcImage, histogram);
-
-
+        return negatePixelsFunction(bufferedImage);
     }
 
     @Override
@@ -49,14 +45,14 @@ public class OperationNegation extends Operation {
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Wykonaj");
+/*        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
         apply.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Run();
             }
-        });
+        });*/
     }
 
     @Override
@@ -65,7 +61,7 @@ public class OperationNegation extends Operation {
     }
 
 
-    public static BufferedImage negatePixelsFunction(BufferedImage srcImage, Histogram histogram) {
+    public static BufferedImage negatePixelsFunction(BufferedImage srcImage) {
 
         BufferedImage resultImg;
 

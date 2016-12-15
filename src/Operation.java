@@ -7,13 +7,11 @@ import java.util.ArrayList;
  */
 public abstract class Operation {
 
-    ImageServer srcImageServer;
     String label = "Dummy";
     ArrayList<String> categories = new ArrayList<>();
 
-    public Operation(ImageServer srcImageServer) {
+    public Operation() {
         categories.add("Wszystkie");
-        this.srcImageServer = srcImageServer;
     }
 
     public ArrayList<String> getCategories () {
@@ -29,13 +27,9 @@ public abstract class Operation {
         return label;
     }
 
-    public abstract BufferedImage RunOperation(ImageServer srcImageServer);
+    public abstract BufferedImage RunOperation(BufferedImage bufferedImage);
 
     public abstract void drawConfigurationPanel(JPanel panel);
-
-    public void Run() {
-        srcImageServer.createChildImageServer(RunOperation(srcImageServer));
-    }
 
     public abstract Operation Clone();
 

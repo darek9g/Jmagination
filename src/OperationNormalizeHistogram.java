@@ -19,7 +19,7 @@ public class OperationNormalizeHistogram extends Operation {
     JComboBox<String> methodSelect = new JComboBox<>(runModes);
 
     public OperationNormalizeHistogram(ImageServer srcImageServer) {
-        super(srcImageServer);
+        super();
         this.label = "Wyrównaj histogram";
         categories.add("LAB 1");
         categories.add("Wielopunktowe");
@@ -28,14 +28,13 @@ public class OperationNormalizeHistogram extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperation(ImageServer srcImageServer) {
+    public BufferedImage RunOperation(BufferedImage bufferedImage) {
 
         String method = (String) methodSelect.getSelectedItem();
         parameters.method = method;
 
-        BufferedImage srcImage = srcImageServer.getImg();
-        Histogram histogram = srcImageServer.getHistogram();
-        return normalizeHistogramFunction(srcImage, histogram);
+        Histogram histogram = new Histogram(bufferedImage);
+        return normalizeHistogramFunction(bufferedImage, histogram);
     }
 
     @Override
@@ -55,14 +54,14 @@ public class OperationNormalizeHistogram extends Operation {
 
         panel.add(methodSelect, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Wykonaj");
+/*        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
         apply.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Run();
             }
-        });
+        });*/
 
     }
 

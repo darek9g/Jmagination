@@ -16,7 +16,7 @@ public class OperationEqualizeHistogram extends Operation {
     Parameters parameters;
 
     public OperationEqualizeHistogram(ImageServer srcImageServer) {
-        super(srcImageServer);
+        super();
         this.label = "Rozciąganie histogramu";
         categories.add("LAB 1");
         categories.add("Wielopunktowe");
@@ -25,11 +25,10 @@ public class OperationEqualizeHistogram extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperation(ImageServer srcImageServer) {
+    public BufferedImage RunOperation(BufferedImage bufferedImage) {
 
-        BufferedImage srcImage = srcImageServer.getImg();
-        Histogram histogram = srcImageServer.getHistogram();
-        return equalizeHistogramFunction(srcImage, histogram);
+        Histogram histogram = new Histogram(bufferedImage);
+        return equalizeHistogramFunction(bufferedImage, histogram);
 
 
     }
@@ -49,14 +48,14 @@ public class OperationEqualizeHistogram extends Operation {
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Wykonaj");
+/*        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
         apply.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Run();
             }
-        });
+        });*/
     }
 
     @Override

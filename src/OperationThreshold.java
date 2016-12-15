@@ -18,7 +18,7 @@ public class OperationThreshold extends Operation {
 
 
     public OperationThreshold(ImageServer srcImageServer) {
-        super(srcImageServer);
+        super();
         this.label = "Progowanie";
         categories.add("LAB 2");
         categories.add("Punktowe jednoargumentowe");
@@ -29,12 +29,11 @@ public class OperationThreshold extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperation(ImageServer srcImageServer) {
+    public BufferedImage RunOperation(BufferedImage bufferedImage) {
 
         String thresholdStr = thresholdJTextField.getText();
         parameters.threshold = Integer.parseInt(thresholdStr);
-        BufferedImage srcImage = srcImageServer.getImg();
-        return thresholdPixelsFunction(srcImage);
+        return thresholdPixelsFunction(bufferedImage);
     }
 
     @Override
@@ -54,14 +53,14 @@ public class OperationThreshold extends Operation {
 
         panel.add(thresholdJTextField, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Wykonaj");
+/*        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
         apply.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Run();
             }
-        });
+        });*/
     }
 
     @Override
