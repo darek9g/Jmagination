@@ -216,6 +216,8 @@ public class Workspace implements RunOperation{
 
     JButton jButtonOpenFile;
 
+    BufferedImage bufferedImage;
+    BufferedImage histogramImage;
 
 
 
@@ -298,9 +300,13 @@ public class Workspace implements RunOperation{
     public void setImageServer(ImageServer srcImageServer) {
         this.srcImageServer = srcImageServer;
 
-        imagePanelCentral.setViewportView(new JScrollPane(new GUIStyler.ImagePanel3(this.srcImageServer.getImg())));
+        bufferedImage = this.srcImageServer.getImg();
 
-        GUIStyler.ImagePanel3 imagePanel3 =new GUIStyler.ImagePanel3(srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
+        imagePanelCentral.setViewportView(new JScrollPane(new GUIStyler.ImagePanel3(bufferedImage)));
+
+        histogramImage = srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
+
+        GUIStyler.ImagePanel3 imagePanel3 =new GUIStyler.ImagePanel3(histogramImage);
 
         histogramPanelCentral.setViewportView(imagePanel3);
         /*histogramPanelCentral.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -528,6 +534,10 @@ public class Workspace implements RunOperation{
 
     @Override
     public void RunBatch(Operation operation) {
+        bufferedImage = operation.RunOperation(bufferedImage);
+        Histogram histogram = new Histogram(bufferedImage);
+        histogramImage = histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
+        window.repaint();
     }
 
     @Override
@@ -536,5 +546,7 @@ public class Workspace implements RunOperation{
 
     @Override
     public void Save(Operation operation) {
+        ImageServer newImageServer = srcImageServer.createChildImageServer(bufferedImage);
+        setImageServer(newImageServer);
     }
 }
