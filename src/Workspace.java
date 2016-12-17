@@ -12,7 +12,7 @@ import java.io.File;
 /**
  * Created by darek on 19.11.2016.
  */
-public class Workspace{
+public class Workspace implements RunOperation{
 
     ImageServer srcImageServer;
 
@@ -410,7 +410,7 @@ public class Workspace{
         histogramPanelCentral = new JScrollPane();
         histogramPanelSouth = new JPanel();
         operationsPanelNorth = new JPanel();
-        operationsPanelCentral = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral);
+        operationsPanelCentral = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral, this);
         operationsPanelSouth = new JPanel();
 
 /*        managerPanelNorth.setPreferredSize(managerPanelNorthDimension);
@@ -526,6 +526,15 @@ public class Workspace{
     }
 
 
+    @Override
+    public void RunBatch(Operation operation) {
+    }
 
+    @Override
+    public void RunInteractive(Operation operation) {
+    }
 
+    @Override
+    public void Save(Operation operation) {
+    }
 }

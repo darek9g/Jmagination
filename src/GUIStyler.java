@@ -318,7 +318,7 @@ public class GUIStyler {
 
         JButton jButtonCancel;
 
-        public PresenterTabOperations(ArrayList<Operation> availableOperations) {
+        public PresenterTabOperations(ArrayList<Operation> availableOperations, RunOperation runOperation) {
             super();
 
 
@@ -369,16 +369,17 @@ public class GUIStyler {
             parametersPanelSouth.add(jButtonRunOperationLive);
             parametersPanelSouth.add(jButtonSaveOperationsOutcome);
 
+
             // parameters Center
-            drawControls(availableOperations, parametersPanelCenter);
+            drawControls(availableOperations, runOperation, parametersPanelCenter);
 
             add(choicePanel);
             add(parametersPanel);
 
         }
 
-        public PresenterTabOperations(ArrayList<Operation> availableOperations, Dimension dimension) {
-            this(availableOperations);
+        public PresenterTabOperations(ArrayList<Operation> availableOperations, Dimension dimension, RunOperation runOperation) {
+            this(availableOperations, runOperation);
 
             choicePanel.setMinimumSize(dimension);
             choicePanel.setPreferredSize(dimension);
@@ -397,7 +398,7 @@ public class GUIStyler {
             parametersPanel.setVisible(false);
         }
 
-        private void drawControls(ArrayList<Operation> availableOperations, JPanel panel) {
+        private void drawControls(ArrayList<Operation> availableOperations, RunOperation runOperation, JPanel panel) {
 
             DefaultListModel catListModel = new DefaultListModel();
             JList categoriesList = new JList(catListModel);
@@ -425,6 +426,40 @@ public class GUIStyler {
 
                     Operation selectedOperation = (Operation) operationsList.getSelectedValue();
                     selectedOperation.drawConfigurationPanel(panel);
+
+                    ActionListener[] jButtonRunOperationActionListeners = jButtonRunOperation.getActionListeners();
+                    for(ActionListener actionListener : jButtonRunOperationActionListeners) {
+                        jButtonRunOperation.removeActionListener(actionListener);
+                    }
+                    jButtonRunOperation.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            runOperation.RunBatch(selectedOperation);
+                        }
+                    });
+
+                    ActionListener[] jButtonRunOperationLiveActionListeners = jButtonRunOperationLive.getActionListeners();
+                    for(ActionListener actionListener : jButtonRunOperationLiveActionListeners) {
+                        jButtonRunOperationLive.removeActionListener(actionListener);
+                    }
+                    jButtonRunOperationLive.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            runOperation.RunInteractive(selectedOperation);
+                        }
+                    });
+
+                    ActionListener[] jButtonSaveOperationsOutcomeActionListeners = jButtonSaveOperationsOutcome.getActionListeners();
+                    for(ActionListener actionListener : jButtonSaveOperationsOutcomeActionListeners) {
+                        jButtonSaveOperationsOutcome.removeActionListener(actionListener);
+                    }
+                    jButtonSaveOperationsOutcome.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            runOperation.Save(selectedOperation);
+                        }
+                    });
+
 
                     getParent().repaint();
                     selectCommand();

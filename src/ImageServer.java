@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 /**
  * Created by darek on 26.10.16.
  */
-public class ImageServer {
+public class ImageServer implements RunOperation{
 
     ImageManager imageManager;
     int id;
@@ -24,7 +24,6 @@ public class ImageServer {
 
     JFrame window;
 
-    GUIStyler.JButtonS callUpButton;
     GUIStyler.Presenter tpanel = new GUIStyler.Presenter();
 
     BufferedImage img;
@@ -40,17 +39,6 @@ public class ImageServer {
         window = new JFrame("Empty buffer");
         window.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         window.setContentPane(tpanel);
-
-        callUpButton = new GUIStyler.JButtonS(String.valueOf(this.id));
-
-        callUpButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(window.isVisible()==false) window.setVisible(true);
-                if(window.getState()==JFrame.ICONIFIED) window.setState(JFrame.NORMAL);
-                window.toFront();
-            }
-        });
 
         img = null;
 
@@ -101,11 +89,10 @@ public class ImageServer {
         GUIStyler.PresenterTabImage historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg("INTERLACED", histogramDimension));
         tpanel.addTab("Histogram", historgamTab);
 
-        GUIStyler.PresenterTabOperations operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this));
+        GUIStyler.PresenterTabOperations operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this), this);
         tpanel.addTab("Operations", operationsTab);
 
         window.setTitle(description);
-        callUpButton.setText(description);
 
         window.pack();
 
@@ -155,10 +142,6 @@ public class ImageServer {
         window.toFront();
     }
 
-    public GUIStyler.JButtonS getCallUpButton() {
-        return callUpButton;
-    }
-
     public BufferedImage getImg() {
         return img;
     };
@@ -179,4 +162,15 @@ public class ImageServer {
         return bufferedImage;
     }
 
+    @Override
+    public void RunBatch(Operation operation) {
+    }
+
+    @Override
+    public void RunInteractive(Operation operation) {
+    }
+
+    @Override
+    public void Save(Operation operation) {
+    }
 }
