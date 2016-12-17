@@ -312,7 +312,7 @@ public class Workspace implements RunOperation{
 
         histogramImage = srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
 
-        GUIStyler.ImagePanel3 histogramPanelCont =new GUIStyler.ImagePanel3(histogramImage);
+        histogramPanelCont = new GUIStyler.ImagePanel3(histogramImage);
 
         histogramPanelCentral.setViewportView(histogramPanelCont);
         /*histogramPanelCentral.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
