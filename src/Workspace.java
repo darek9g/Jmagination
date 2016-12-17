@@ -218,6 +218,8 @@ public class Workspace implements RunOperation{
 
     BufferedImage bufferedImage;
     BufferedImage histogramImage;
+    GUIStyler.ImagePanel3 imagePanelCont;
+    GUIStyler.ImagePanel3 histogramPanelCont;
 
 
 
@@ -302,13 +304,14 @@ public class Workspace implements RunOperation{
 
         bufferedImage = this.srcImageServer.getImg();
 
-        imagePanelCentral.setViewportView(new JScrollPane(new GUIStyler.ImagePanel3(bufferedImage)));
+        imagePanelCont = new GUIStyler.ImagePanel3(bufferedImage);
+        imagePanelCentral.setViewportView(new JScrollPane(imagePanelCont));
 
         histogramImage = srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
 
-        GUIStyler.ImagePanel3 imagePanel3 =new GUIStyler.ImagePanel3(histogramImage);
+        GUIStyler.ImagePanel3 histogramPanelCont =new GUIStyler.ImagePanel3(histogramImage);
 
-        histogramPanelCentral.setViewportView(imagePanel3);
+        histogramPanelCentral.setViewportView(histogramPanelCont);
         /*histogramPanelCentral.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         histogramPanelCentral.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);*/
 
@@ -535,13 +538,17 @@ public class Workspace implements RunOperation{
     @Override
     public void RunBatch(Operation operation) {
         bufferedImage = operation.RunOperation(bufferedImage);
+        imagePanelCont.setImage(bufferedImage);
+        imagePanelCont.repaint();
         Histogram histogram = new Histogram(bufferedImage);
         histogramImage = histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
+        histogramPanelCont.setImage(histogramImage);
         window.repaint();
     }
 
     @Override
     public void RunInteractive(Operation operation) {
+
     }
 
     @Override

@@ -987,6 +987,10 @@ public class GUIStyler {
             addMouseMotionListener(this); //handle mouse drags
         }
 
+        public void setImage(BufferedImage bufferedImage) {
+            img = bufferedImage;
+        }
+
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
 //            g.drawImage(img, (int)origin.getX(), (int)origin.getY(), null);
