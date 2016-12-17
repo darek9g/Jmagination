@@ -1,11 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
-import java.util.ArrayList;
 
 /**
  * Created by darek on 30.11.2016.
@@ -27,7 +24,7 @@ public class OperationNegation extends Operation {
     @Override
     public BufferedImage RunOperation(BufferedImage bufferedImage) {
 
-        return negatePixelsFunction(bufferedImage);
+        return negate(bufferedImage);
     }
 
     @Override
@@ -60,7 +57,33 @@ public class OperationNegation extends Operation {
         return new OperationNegation(null);
     }
 
+    public static BufferedImage negate(BufferedImage inImage){
+        int width = inImage.getWidth();
+        int height = inImage.getHeight();
+        BufferedImage outImage = new BufferedImage(width, height, inImage.getType());
+        WritableRaster raster = inImage.getRaster();
+        for(int x = 0; x < width; x++){
+            for(int y = 0; y < height; y++){
+                outImage.setRGB(x, y, negatePixel(raster.getPixel(x,y, new int[raster.getNumBands()])).getRGB());
+            }
+        }
+        return outImage;
+    }
 
+    public static Color negatePixel(int... pixel){
+        switch (pixel.length) {
+            case 1: //GREY
+                return new Color(255-pixel[0], 255-pixel[0], 255-pixel[0]);
+            case 3: //RGB
+                return new Color(255-pixel[0], 255-pixel[1], 255-pixel[2]);
+            case 4: //RGBA
+                return new Color(255-pixel[0], 255-pixel[1], 255-pixel[2], 255-pixel[3]);
+            default:
+                throw new java.lang.IllegalArgumentException("Niedozwolona liczba argumentów (1 dla GREY, 3 dla RGB, 4 dla RGBA).");
+        }
+    }
+
+    @Deprecated
     public static BufferedImage negatePixelsFunction(BufferedImage srcImage) {
 
         BufferedImage resultImg;
