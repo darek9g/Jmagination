@@ -8,6 +8,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.FileDialog;
 
 /**
  * Created by darek on 19.11.2016.
@@ -338,17 +341,13 @@ public class Workspace implements RunOperation{
         jButtonOpenFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JFileChooser chooser = new JFileChooser();
-                chooser.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
-                chooser.setCurrentDirectory(new File("C:\\Users\\" + System.getProperty("user.name") + "\\Pictures"));
-                int chooserResult = chooser.showOpenDialog(window);
-                if(chooserResult == JFileChooser.APPROVE_OPTION) {
-
-                    BufferedImage loaded = ImageServer.LoadImageFromFile(chooser.getSelectedFile().getAbsolutePath());
-
+                String src = selectFile();
+                if(src != null) {
+                    File file = new File(src);
+                    BufferedImage loaded = ImageServer.LoadImageFromFile(file.getAbsolutePath());
                     if(loaded!=null) {
                         ImageServer imageServer;
-                        imageServer = ImageServer.createLoadedImageServer(loaded, chooser.getSelectedFile().getAbsolutePath(), imageManager);
+                        imageServer = ImageServer.createLoadedImageServer(loaded, file.getAbsolutePath(), imageManager);
                         setImageServer(imageServer);
                     }
                 }
@@ -357,6 +356,20 @@ public class Workspace implements RunOperation{
 
     }
 
+    private String selectFile() {
+        Display display = new Display ();
+        Shell shell = new Shell (display);
+        org.eclipse.swt.widgets.FileDialog tDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
+        String [] filterNames = new String [] {"All Files (*)"};
+        String [] filterExtensions = new String [] {"*"};
+        String filterPath = "C:\\Users\\\" + System.getProperty(\"user.name\") + \"\\Pictures";
+        tDialog.setFilterNames (filterNames);
+        tDialog.setFilterExtensions (filterExtensions);
+        tDialog.setFilterPath (filterPath);
+        String src = tDialog.open();
+        display.close();
+        return src;
+    }
 
     private void updateComponentsDimensions() {
 
