@@ -56,25 +56,22 @@ public class OperationNegation extends Operation {
         int height = inImage.getHeight();
         BufferedImage outImage = new BufferedImage(width, height, inImage.getType());
         WritableRaster raster = inImage.getRaster();
+        WritableRaster outRaster = outImage.getRaster();
         for(int x = 0; x < width; x++){
             for(int y = 0; y < height; y++){
-                outImage.setRGB(x, y, negatePixel(raster.getPixel(x,y, new int[raster.getNumBands()])).getRGB());
+                int[] pixel = negatePixel2(raster.getPixel(x,y, new int[raster.getNumBands()]));
+                outRaster.setPixel(x, y, pixel);
             }
         }
         return outImage;
     }
 
-    public static Color negatePixel(int... pixel){
-        switch (pixel.length) {
-            case 1: //GREY
-                return new Color(255-pixel[0], 255-pixel[0], 255-pixel[0]);
-            case 3: //RGB
-                return new Color(255-pixel[0], 255-pixel[1], 255-pixel[2]);
-            case 4: //RGBA
-                return new Color(255-pixel[0], 255-pixel[1], 255-pixel[2], 255-pixel[3]);
-            default:
-                throw new java.lang.IllegalArgumentException("Niedozwolona liczba argumentów (1 dla GREY, 3 dla RGB, 4 dla RGBA).");
+    public static int[] negatePixel2(int... pixel){
+        int[] newPixel = new int[pixel.length];
+        for (int i = 0; i < pixel.length; i++) {
+            newPixel[i] = 255-pixel[i];
         }
+        return newPixel;
     }
 
     @Deprecated
