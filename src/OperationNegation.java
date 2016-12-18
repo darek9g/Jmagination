@@ -22,8 +22,7 @@ public class OperationNegation extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperation(BufferedImage bufferedImage) {
-
+    public BufferedImage RunOperationFunction(BufferedImage bufferedImage) {
         return negate(bufferedImage);
     }
 
@@ -42,14 +41,9 @@ public class OperationNegation extends Operation {
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-/*        JButton apply  = new JButton("Wykonaj");
+        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
-        apply.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Run();
-            }
-        });*/
+        apply.addActionListener(runOperationTrigger);
     }
 
     @Override

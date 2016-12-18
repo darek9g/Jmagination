@@ -307,12 +307,20 @@ public class Workspace implements RunOperation{
 
         bufferedImage = this.srcImageServer.getImg();
 
-        imagePanelCont = new GUIStyler.ImagePanel3(bufferedImage);
+        if ( imagePanelCont == null) {
+            imagePanelCont = new GUIStyler.ImagePanel3(bufferedImage);
+        } else {
+            imagePanelCont.setImage(bufferedImage);
+        }
         imagePanelCentral.setViewportView(new JScrollPane(imagePanelCont));
 
         histogramImage = srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
 
-        histogramPanelCont = new GUIStyler.ImagePanel3(histogramImage);
+        if ( histogramPanelCont == null ) {
+            histogramPanelCont = new GUIStyler.ImagePanel3(histogramImage);
+        } else {
+            histogramPanelCont.setImage(histogramImage);
+        }
 
         histogramPanelCentral.setViewportView(histogramPanelCont);
         /*histogramPanelCentral.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -549,24 +557,23 @@ public class Workspace implements RunOperation{
 
 
     @Override
-    public void RunBatch(Operation operation) {
-        bufferedImage = operation.RunOperation(bufferedImage);
-        imagePanelCont.setImage(bufferedImage);
-        imagePanelCont.repaint();
-        Histogram histogram = new Histogram(bufferedImage);
-        histogramImage = histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
-        histogramPanelCont.setImage(histogramImage);
-        window.repaint();
-    }
-
-    @Override
-    public void RunInteractive(Operation operation) {
-
+    public void Discard() {
+        setImageServer(srcImageServer);
     }
 
     @Override
     public void Save(Operation operation) {
-        ImageServer newImageServer = srcImageServer.createChildImageServer(bufferedImage);
+        ImageServer newImageServer = srcImageServer.createChildImageServer(imagePanelCont.getImage());
         setImageServer(newImageServer);
+    }
+
+    @Override
+    public GUIStyler.ImagePanel3 getImageContainer() {
+        return imagePanelCont;
+    }
+
+    @Override
+    public GUIStyler.ImagePanel3 getHistogramContainer() {
+        return histogramPanelCont;
     }
 }

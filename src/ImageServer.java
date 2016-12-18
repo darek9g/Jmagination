@@ -163,14 +163,20 @@ public class ImageServer implements RunOperation{
     }
 
     @Override
-    public void RunBatch(Operation operation) {
-    }
-
-    @Override
-    public void RunInteractive(Operation operation) {
+    public void Discard() {
     }
 
     @Override
     public void Save(Operation operation) {
+    }
+
+    @Override
+    public GUIStyler.ImagePanel3 getImageContainer() {
+        return null;
+    }
+
+    @Override
+    public GUIStyler.ImagePanel3 getHistogramContainer() {
+        return null;
     }
 }

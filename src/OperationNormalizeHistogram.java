@@ -28,7 +28,7 @@ public class OperationNormalizeHistogram extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperation(BufferedImage bufferedImage) {
+    public BufferedImage RunOperationFunction(BufferedImage bufferedImage) {
 
         String method = (String) methodSelect.getSelectedItem();
         parameters.method = method;
@@ -51,6 +51,8 @@ public class OperationNormalizeHistogram extends Operation {
         JTextArea description = new JTextArea("Opis - UZUPEŁNIĆ");
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
+
+        methodSelect.addActionListener(runOperationTrigger);
 
         panel.add(methodSelect, new GUIStyler.ParamsGrid(panelX,panelY++));
 

@@ -23,10 +23,8 @@ public class OperationDuplicate extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperation(BufferedImage bufferedImage) {
-
-
-        return duplicateImageFunction(bufferedImage);
+    public BufferedImage RunOperationFunction(BufferedImage bufferedImage) {
+        return bufferedImage;
     }
 
     @Override
@@ -44,14 +42,9 @@ public class OperationDuplicate extends Operation {
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-/*        JButton apply  = new JButton("Wykonaj");
+        JButton apply  = new JButton("Wykonaj");
         panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
-        apply.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Run();
-            }
-        });*/
+        apply.addActionListener(runOperationTrigger);
     }
 
     @Override
