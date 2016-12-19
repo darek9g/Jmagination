@@ -167,6 +167,11 @@ public class ImageServer implements RunOperation{
     }
 
     @Override
+    public void postOperation() {
+
+    }
+
+    @Override
     public void discardOperation() {
     }
 
@@ -182,5 +187,15 @@ public class ImageServer implements RunOperation{
     @Override
     public GUIStyler.ImagePanel3 getHistogramContainer() {
         return null;
+    }
+
+    @Override
+    public boolean getChanged() {
+        return false;
+    }
+
+    @Override
+    public boolean getReplaced() {
+        return false;
     }
 }

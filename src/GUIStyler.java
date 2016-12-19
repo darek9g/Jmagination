@@ -315,12 +315,15 @@ public class GUIStyler {
         JButton jButtonRevertOperationOutcome;
         JButton jButtonSaveOperationsOutcome;
 
-        JButton jButtonCancel;
+        JButton jButtonLeaveOperationPanel;
+
+        RunOperation runOperation;
 
 
         public PresenterTabOperations(ArrayList<Operation> availableOperations, RunOperation runOperation) {
             super();
 
+            this.runOperation = runOperation;
 
             choicePanelCategories = new JScrollPane();
             choicePanelContainer = new JPanel();
@@ -350,20 +353,14 @@ public class GUIStyler {
 
             // parameters North
 
-            jButtonCancel = new JButton("Powrót do wyboru operacji");
-            Dimension jButtonCancelDimension = jButtonCancel.getSize();
-            jButtonCancel.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    deSelectCommand();
-                }
-            });
-            parametersPanelNorth.add(jButtonCancel);
+
 
             // parameters South
+            jButtonLeaveOperationPanel = new JButton("Powrót");
             jButtonRevertOperationOutcome = new JButton("Cofnij zmiany");
             jButtonSaveOperationsOutcome = new JButton("Zapisz");
 
+            parametersPanelSouth.add(jButtonLeaveOperationPanel);
             parametersPanelSouth.add(jButtonRevertOperationOutcome);
             parametersPanelSouth.add(jButtonSaveOperationsOutcome);
 
@@ -388,12 +385,31 @@ public class GUIStyler {
 
         private void selectCommand() {
             choicePanel.setVisible(false);
+            updateControls();
             parametersPanel.setVisible(true);
         }
 
         private void deSelectCommand() {
             choicePanel.setVisible(true);
             parametersPanel.setVisible(false);
+        }
+
+        public void updateControls() {
+
+            if (runOperation.getChanged() == true) {
+                jButtonRevertOperationOutcome.setEnabled(false);
+                jButtonSaveOperationsOutcome.setEnabled(false);
+            } else {
+
+                if (runOperation.getReplaced() == true) {
+                    jButtonRevertOperationOutcome.setEnabled(true);
+                    jButtonSaveOperationsOutcome.setEnabled(true);
+                } else {
+                    jButtonRevertOperationOutcome.setEnabled(false);
+                    jButtonSaveOperationsOutcome.setEnabled(false);
+                }
+            }
+
         }
 
         private void drawControls(ArrayList<Operation> availableOperations, RunOperation runOperation, JPanel panel) {
@@ -420,10 +436,20 @@ public class GUIStyler {
                     panel.removeAll();
 
                     Operation selectedOperation = (Operation) operationsList.getSelectedValue();
+                    selectedOperation.setRunOperation(runOperation);
                     selectedOperation.setImageContainer(runOperation.getImageContainer());
                     selectedOperation.setHistogramContainer(runOperation.getHistogramContainer());
                     selectedOperation.setOriginalImage();
                     selectedOperation.drawConfigurationPanel(panel);
+
+                    jButtonLeaveOperationPanel.addActionListener(new ActionListener() {
+                    @Override
+                        public void actionPerformed(ActionEvent e) {
+                            selectedOperation.releaseOriginalImage();
+                            runOperation.discardOperation();
+                            deSelectCommand();
+                        }
+                    });
 
                     ActionListener[] jButtonRevertOperationOutcomeActionListeners = jButtonRevertOperationOutcome.getActionListeners();
                     for(ActionListener actionListener : jButtonRevertOperationOutcomeActionListeners) {
@@ -443,7 +469,7 @@ public class GUIStyler {
                     jButtonSaveOperationsOutcome.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            runOperation.setupOperation(selectedOperation);
+                            runOperation.saveOperationsOutput(selectedOperation);
                         }
                     });
 
@@ -527,6 +553,8 @@ public class GUIStyler {
                     }
                 }
             });
+
+
         }
 
     }
@@ -847,10 +875,11 @@ public class GUIStyler {
 
             setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
 
-            Dimension dim = new Dimension(img.getWidth(), img.getHeight());
+            if(this.img != null) {
+                Dimension dim = new Dimension(img.getWidth(), img.getHeight());
+                setPreferredSize(dim);
+            }
 
-//            setMinimumSize(dim);
-            setPreferredSize(dim);
 
             //Let the user scroll by dragging to outside the window.
             setAutoscrolls(true); //enable synthetic drag events

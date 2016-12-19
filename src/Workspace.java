@@ -42,7 +42,7 @@ public class Workspace implements RunOperation{
     JPanel histogramPanelSouth;
     JPanel operationsPanel;
     JPanel operationsPanelNorth;
-    JPanel operationsPanelCentral;
+    GUIStyler.PresenterTabOperations operationsPanelCentral;
     JPanel operationsPanelSouth;
 
     /* WINDOW PANELING SCHEMA
@@ -221,9 +221,8 @@ public class Workspace implements RunOperation{
 
     BufferedImage bufferedImage;
     BufferedImage histogramImage;
-    GUIStyler.ImagePanel3 imagePanelCont;
-    GUIStyler.ImagePanel3 histogramPanelCont;
-
+    GUIStyler.ImagePanel3 imagePanelCont = new GUIStyler.ImagePanel3(null);
+    GUIStyler.ImagePanel3 histogramPanelCont = new GUIStyler.ImagePanel3(null);
 
     public Workspace(ImageManager imageManager) {
 
@@ -302,23 +301,12 @@ public class Workspace implements RunOperation{
         this.srcImageServer = srcImageServer;
 
         bufferedImage = OperationDuplicate.duplicateImageFunction(this.srcImageServer.getImg());
-
-        if ( imagePanelCont == null) {
-            imagePanelCont = new GUIStyler.ImagePanel3(bufferedImage);
-        } else {
-            imagePanelCont.changeImage(bufferedImage);
-        }
-        imagePanelCentral.setViewportView(new JScrollPane(imagePanelCont));
+        imagePanelCont.changeImage(bufferedImage);
 
         histogramImage = srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
+        histogramPanelCont.changeImage(histogramImage);
 
-        if ( histogramPanelCont == null ) {
-            histogramPanelCont = new GUIStyler.ImagePanel3(histogramImage);
-        } else {
-            histogramPanelCont.changeImage(histogramImage);
-        }
-
-        histogramPanelCentral.setViewportView(histogramPanelCont);
+        imagePanelCont.setImageReplaced(false);
 
         window.repaint();
         window.setVisible(true);
@@ -417,10 +405,10 @@ public class Workspace implements RunOperation{
         managerPanelCentral = new JScrollPane();
         managerPanelSouth = new JPanel();
         imagePanelNorth = new JPanel();
-        imagePanelCentral = new JScrollPane();
+        imagePanelCentral = new JScrollPane(imagePanelCont);
         imagePanelSouth = new JPanel();
         histogramPanelNorth = new JPanel();
-        histogramPanelCentral = new JScrollPane();
+        histogramPanelCentral = new JScrollPane(histogramPanelCont);
         histogramPanelSouth = new JPanel();
         operationsPanelNorth = new JPanel();
         operationsPanelCentral = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral, this);
@@ -543,12 +531,19 @@ public class Workspace implements RunOperation{
     public void setupOperation(Operation operation) {
         operation.setImageContainer(imagePanelCont);
         operation.setHistogramContainer(histogramPanelCont);
+    }
 
+    @Override
+    public void postOperation() {
+        operationsPanelCentral.updateControls();
     }
 
     @Override
     public void discardOperation() {
-        setImageServer(srcImageServer);
+        if(imagePanelCont.isImageReplaced() == true) {
+            setImageServer(srcImageServer);
+        }
+        operationsPanelCentral.updateControls();
     }
 
     @Override
@@ -556,6 +551,7 @@ public class Workspace implements RunOperation{
         ImageServer newImageServer = srcImageServer.createChildImageServer(imagePanelCont.getImage());
         setImageServer(newImageServer);
         setupOperation(operation);
+        operationsPanelCentral.updateControls();
     }
 
     @Override
@@ -566,5 +562,15 @@ public class Workspace implements RunOperation{
     @Override
     public GUIStyler.ImagePanel3 getHistogramContainer() {
         return histogramPanelCont;
+    }
+
+    @Override
+    public boolean getChanged() {
+        return imagePanelCont.isImageChanged();
+    }
+
+    @Override
+    public boolean getReplaced() {
+        return imagePanelCont.isImageReplaced();
     }
 }

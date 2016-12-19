@@ -14,6 +14,7 @@ public abstract class Operation {
     boolean hsvModeAllowed = false;
     GUIStyler.ImagePanel3 imageContainer = null;
     GUIStyler.ImagePanel3 histogramContainer = null;
+    RunOperation runOperation;
 
     BufferedImage originalBufferedImage = null;
 
@@ -46,6 +47,10 @@ public abstract class Operation {
 
     public void releaseOriginalImage() {
         originalBufferedImage = null;
+    }
+
+    public void setRunOperation(RunOperation runOperation) {
+        this.runOperation = runOperation;
     }
 
     public void setImageContainer(GUIStyler.ImagePanel3 imagePanel) {
@@ -91,6 +96,8 @@ public abstract class Operation {
             Histogram histogram = new Histogram(newBufferedImage);
             histogramContainer.replaceImage(histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
         }
+
+        runOperation.postOperation();
 
     };
 
