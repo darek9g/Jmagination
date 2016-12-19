@@ -15,6 +15,8 @@ public abstract class Operation {
     GUIStyler.ImagePanel3 imageContainer = null;
     GUIStyler.ImagePanel3 histogramContainer = null;
 
+    BufferedImage originalBufferedImage = null;
+
     ActionListener runOperationTrigger = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -28,6 +30,22 @@ public abstract class Operation {
 
     public ArrayList<String> getCategories () {
         return categories;
+    }
+
+    public void setOriginalImage() {
+        if (imageContainer == null) {
+            return;
+        }
+
+        if (imageContainer.getImage() == null) {
+            return;
+        }
+
+        originalBufferedImage = OperationDuplicate.duplicateImageFunction(imageContainer.getImage());
+    }
+
+    public void releaseOriginalImage() {
+        originalBufferedImage = null;
     }
 
     public void setImageContainer(GUIStyler.ImagePanel3 imagePanel) {
@@ -57,20 +75,21 @@ public abstract class Operation {
             return;
         }
 
-        BufferedImage bufferedImage = imageContainer.getImage();
+        if (imageContainer.isImageChanged() == true) {
+            setOriginalImage();
+            imageContainer.setImageChanged(false);
+        }
+
         BufferedImage newBufferedImage;
 
-        newBufferedImage = RunOperationFunction(bufferedImage);
+        newBufferedImage = RunOperationFunction(originalBufferedImage);
 
-        imageContainer.setImage(newBufferedImage);
-        imageContainer.revalidate();
-        imageContainer.repaint();
+        imageContainer.replaceImage(newBufferedImage);
+
 
         if (histogramContainer!=null) {
             Histogram histogram = new Histogram(newBufferedImage);
-            histogramContainer.setImage(histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
-            histogramContainer.revalidate();
-            histogramContainer.repaint();
+            histogramContainer.replaceImage(histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
         }
 
     };

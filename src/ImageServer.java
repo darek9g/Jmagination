@@ -163,11 +163,15 @@ public class ImageServer implements RunOperation{
     }
 
     @Override
-    public void Discard() {
+    public void setupOperation(Operation operation) {
     }
 
     @Override
-    public void Save(Operation operation) {
+    public void discardOperation() {
+    }
+
+    @Override
+    public void saveOperationsOutput(Operation operation) {
     }
 
     @Override

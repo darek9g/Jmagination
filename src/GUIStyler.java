@@ -317,6 +317,7 @@ public class GUIStyler {
 
         JButton jButtonCancel;
 
+
         public PresenterTabOperations(ArrayList<Operation> availableOperations, RunOperation runOperation) {
             super();
 
@@ -417,13 +418,11 @@ public class GUIStyler {
                 public void actionPerformed(ActionEvent e) {
 
                     panel.removeAll();
-/*                    for(Component c: panel.getComponents()) {
-                        if(c != jButtonCancel) panel.remove(c);
-                    }*/
 
                     Operation selectedOperation = (Operation) operationsList.getSelectedValue();
                     selectedOperation.setImageContainer(runOperation.getImageContainer());
                     selectedOperation.setHistogramContainer(runOperation.getHistogramContainer());
+                    selectedOperation.setOriginalImage();
                     selectedOperation.drawConfigurationPanel(panel);
 
                     ActionListener[] jButtonRevertOperationOutcomeActionListeners = jButtonRevertOperationOutcome.getActionListeners();
@@ -433,7 +432,7 @@ public class GUIStyler {
                     jButtonRevertOperationOutcome.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            runOperation.Discard();
+                            runOperation.discardOperation();
                         }
                     });
 
@@ -444,7 +443,7 @@ public class GUIStyler {
                     jButtonSaveOperationsOutcome.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            runOperation.Save(selectedOperation);
+                            runOperation.setupOperation(selectedOperation);
                         }
                     });
 
@@ -458,7 +457,6 @@ public class GUIStyler {
 
             ArrayList<String> tags = new ArrayList<>();
 
-            boolean init = true;
             for (Operation op: availableOperations) {
 
                 for(String cat: op.getCategories()) {
@@ -837,6 +835,9 @@ public class GUIStyler {
     public static class ImagePanel3 extends JPanel implements Scrollable, MouseMotionListener {
 
         BufferedImage img = null;
+        boolean imageChanged = true;
+        boolean imageReplaced = false;
+
 
         private int maxUnitIncrement = 1;
 
@@ -856,8 +857,40 @@ public class GUIStyler {
             addMouseMotionListener(this); //handle mouse drags
         }
 
-        public void setImage(BufferedImage bufferedImage) {
+        private void setImage(BufferedImage bufferedImage) {
             img = bufferedImage;
+            Dimension dim = new Dimension(img.getWidth(), img.getHeight());
+            setPreferredSize(dim);
+            revalidate();
+            repaint();
+        }
+
+        public void replaceImage(BufferedImage bufferedImage) {
+            setImage(bufferedImage);
+            imageChanged = false;
+            imageReplaced = true;
+        }
+
+        public void changeImage(BufferedImage bufferedImage) {
+            setImage(bufferedImage);
+            imageChanged = true;
+            imageReplaced = false;
+        }
+
+        public void setImageChanged(boolean value) {
+            imageChanged = value;
+        }
+
+        public void setImageReplaced(boolean value) {
+            imageReplaced = value;
+        }
+
+        public boolean isImageChanged() {
+            return imageChanged;
+        }
+
+        public boolean isImageReplaced() {
+            return imageReplaced;
         }
 
         public BufferedImage getImage() {

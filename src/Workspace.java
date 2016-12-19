@@ -188,7 +188,7 @@ public class Workspace implements RunOperation{
 
      */
 
-    Dimension windowDimension = new Dimension();
+    Dimension windowDimension = new Dimension(1200,800);
 
     Dimension level0SplitPaneDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
     Dimension level0LeftDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level0Left);
@@ -223,10 +223,6 @@ public class Workspace implements RunOperation{
     BufferedImage histogramImage;
     GUIStyler.ImagePanel3 imagePanelCont;
     GUIStyler.ImagePanel3 histogramPanelCont;
-
-
-
-
 
 
     public Workspace(ImageManager imageManager) {
@@ -305,12 +301,12 @@ public class Workspace implements RunOperation{
     public void setImageServer(ImageServer srcImageServer) {
         this.srcImageServer = srcImageServer;
 
-        bufferedImage = this.srcImageServer.getImg();
+        bufferedImage = OperationDuplicate.duplicateImageFunction(this.srcImageServer.getImg());
 
         if ( imagePanelCont == null) {
             imagePanelCont = new GUIStyler.ImagePanel3(bufferedImage);
         } else {
-            imagePanelCont.setImage(bufferedImage);
+            imagePanelCont.changeImage(bufferedImage);
         }
         imagePanelCentral.setViewportView(new JScrollPane(imagePanelCont));
 
@@ -319,25 +315,12 @@ public class Workspace implements RunOperation{
         if ( histogramPanelCont == null ) {
             histogramPanelCont = new GUIStyler.ImagePanel3(histogramImage);
         } else {
-            histogramPanelCont.setImage(histogramImage);
+            histogramPanelCont.changeImage(histogramImage);
         }
 
         histogramPanelCentral.setViewportView(histogramPanelCont);
-        /*histogramPanelCentral.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        histogramPanelCentral.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);*/
 
-        /*operationsPanelCentral.removeAll();
-        operationsPanelCentral.add(new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral));*/
-
-//        window.pack();
         window.repaint();
-
-/*        window.pack();
-        Insets windowInsets = window.getInsets();
-        int windowWidth = (int) level0SplitPane.getWidth() + windowInsets.left + windowInsets.right;
-        int windowHeight = (int) level0SplitPane.getHeight() + windowInsets.top + windowInsets.bottom;
-        window.setPreferredSize(new Dimension(windowWidth, windowHeight));
-        window.pack();*/
         window.setVisible(true);
 
     }
@@ -550,21 +533,29 @@ public class Workspace implements RunOperation{
         Insets windowInsets = window.getInsets();
         int windowWidth = (int) ConstantsInitializers.GUI_DIMENSION_level0SplitPane.getWidth() + windowInsets.left + windowInsets.right;
         int windowHeight = (int) ConstantsInitializers.GUI_DIMENSION_level0SplitPane.getHeight() + windowInsets.top + windowInsets.bottom;
-        window.setPreferredSize(new Dimension(windowWidth, windowHeight));
+        //window.setPreferredSize(new Dimension(windowWidth, windowHeight));
         window.pack();
         window.setVisible(true);
     }
 
 
     @Override
-    public void Discard() {
+    public void setupOperation(Operation operation) {
+        operation.setImageContainer(imagePanelCont);
+        operation.setHistogramContainer(histogramPanelCont);
+
+    }
+
+    @Override
+    public void discardOperation() {
         setImageServer(srcImageServer);
     }
 
     @Override
-    public void Save(Operation operation) {
+    public void saveOperationsOutput(Operation operation) {
         ImageServer newImageServer = srcImageServer.createChildImageServer(imagePanelCont.getImage());
         setImageServer(newImageServer);
+        setupOperation(operation);
     }
 
     @Override
