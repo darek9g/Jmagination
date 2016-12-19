@@ -25,6 +25,11 @@ public class ImageServer implements RunOperation{
     JFrame window;
 
     GUIStyler.Presenter tpanel = new GUIStyler.Presenter();
+    GUIStyler.PresenterTabImage imageTab;
+    GUIStyler.PresenterTabProperties propertiesTab;
+    GUIStyler.PresenterTabImage historgamTab;
+    GUIStyler.PresenterTabOperations operationsTab;
+
 
     BufferedImage img;
     Histogram histogram;
@@ -76,20 +81,20 @@ public class ImageServer implements RunOperation{
 
     private void configure(String description) {
         this.description = description;
-        GUIStyler.PresenterTabImage imageTab = new GUIStyler.PresenterTabImage(img);
+        imageTab = new GUIStyler.PresenterTabImage(img);
         tpanel.addTab("Image", imageTab);
 
-        GUIStyler.PresenterTabProperties propertiesTab = new GUIStyler.PresenterTabProperties(img);
+        propertiesTab = new GUIStyler.PresenterTabProperties(img);
         tpanel.addTab("Properties", propertiesTab);
 
         histogram = new Histogram(img);
 
         Dimension histogramDimension = new Dimension(img.getWidth(), img.getHeight());
 
-        GUIStyler.PresenterTabImage historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg("INTERLACED", histogramDimension));
+        historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg("INTERLACED", histogramDimension));
         tpanel.addTab("Histogram", historgamTab);
 
-        GUIStyler.PresenterTabOperations operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this), this);
+        operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this), this);
         tpanel.addTab("Operations", operationsTab);
 
         window.setTitle(description);
@@ -162,40 +167,37 @@ public class ImageServer implements RunOperation{
         return bufferedImage;
     }
 
+
     @Override
-    public void setupOperation(Operation operation) {
+    public void runOperation(Operation operation) {
+
+        BufferedImage newBufferedImage;
+
+        newBufferedImage = operation.RunOperationFunction(img, histogram);
+
+        imageTab.setImage(newBufferedImage);
+
+        Histogram histogram = new Histogram(newBufferedImage);
+        historgamTab.setImage(histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
+
+        operationsTab.updateControls(true);
     }
 
     @Override
-    public void postOperation() {
-
-    }
-
-    @Override
-    public void discardOperation() {
+    public void discardOperation(Operation operation) {
+        if(imageTab.getImage() != img) {
+            imageTab.setImage(img);
+            historgamTab.setImage(histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
+        }
+        operation.jButtonApply.setEnabled(true);
+        operationsTab.updateControls(false);
     }
 
     @Override
     public void saveOperationsOutput(Operation operation) {
-    }
-
-    @Override
-    public GUIStyler.ImagePanel3 getImageContainer() {
-        return null;
-    }
-
-    @Override
-    public GUIStyler.ImagePanel3 getHistogramContainer() {
-        return null;
-    }
-
-    @Override
-    public boolean getChanged() {
-        return false;
-    }
-
-    @Override
-    public boolean getReplaced() {
-        return false;
+        ImageServer newImageServer = this.createChildImageServer(imageTab.getImage());
+        newImageServer.toogleWindow();
+        operation.jButtonApply.setEnabled(true);
+        operationsTab.updateControls(false);
     }
 }

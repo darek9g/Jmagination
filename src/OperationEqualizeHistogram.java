@@ -25,11 +25,8 @@ public class OperationEqualizeHistogram extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage) {
-
-        Histogram histogram = new Histogram(bufferedImage);
+    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
         return equalizeHistogramFunction(bufferedImage, histogram);
-
     }
 
     @Override
@@ -47,9 +44,7 @@ public class OperationEqualizeHistogram extends Operation {
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Wykonaj");
-        panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
-        apply.addActionListener(runOperationTrigger);
+        panel.add(jButtonApply, new GUIStyler.ParamsGrid(panelX,panelY++));
     }
 
     @Override

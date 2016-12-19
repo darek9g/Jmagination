@@ -29,7 +29,7 @@ public class OperationThreshold extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage) {
+    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
 
         String thresholdStr = thresholdJTextField.getText();
         parameters.threshold = Integer.parseInt(thresholdStr);
@@ -53,6 +53,8 @@ public class OperationThreshold extends Operation {
 
         thresholdJTextField.addActionListener(runOperationTrigger);
         panel.add(thresholdJTextField, new GUIStyler.ParamsGrid(panelX,panelY++));
+
+        panel.add(jButtonApply, new GUIStyler.ParamsGrid(panelX,panelY++));
 
     }
 

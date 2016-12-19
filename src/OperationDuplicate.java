@@ -23,7 +23,7 @@ public class OperationDuplicate extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage) {
+    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
         return bufferedImage;
     }
 
@@ -42,9 +42,7 @@ public class OperationDuplicate extends Operation {
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        JButton apply  = new JButton("Wykonaj");
-        panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
-        apply.addActionListener(runOperationTrigger);
+        panel.add(jButtonApply, new GUIStyler.ParamsGrid(panelX,panelY++));
     }
 
     @Override

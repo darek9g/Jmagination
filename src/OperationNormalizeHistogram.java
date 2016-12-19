@@ -28,12 +28,11 @@ public class OperationNormalizeHistogram extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage) {
+    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
 
         String method = (String) methodSelect.getSelectedItem();
         parameters.method = method;
 
-        Histogram histogram = new Histogram(bufferedImage);
         return normalizeHistogramFunction(bufferedImage, histogram);
     }
 
@@ -56,14 +55,7 @@ public class OperationNormalizeHistogram extends Operation {
 
         panel.add(methodSelect, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-/*        JButton apply  = new JButton("Wykonaj");
-        panel.add(apply, new GUIStyler.ParamsGrid(panelX,panelY++));
-        apply.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Run();
-            }
-        });*/
+        panel.add(jButtonApply, new GUIStyler.ParamsGrid(panelX,panelY++));
 
     }
 

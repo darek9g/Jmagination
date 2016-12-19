@@ -223,6 +223,7 @@ public class Workspace implements RunOperation{
     BufferedImage histogramImage;
     GUIStyler.ImagePanel3 imagePanelCont = new GUIStyler.ImagePanel3(null);
     GUIStyler.ImagePanel3 histogramPanelCont = new GUIStyler.ImagePanel3(null);
+    BufferedImage originalBufferedImage = null;
 
     public Workspace(ImageManager imageManager) {
 
@@ -300,13 +301,11 @@ public class Workspace implements RunOperation{
     public void setImageServer(ImageServer srcImageServer) {
         this.srcImageServer = srcImageServer;
 
-        bufferedImage = OperationDuplicate.duplicateImageFunction(this.srcImageServer.getImg());
-        imagePanelCont.changeImage(bufferedImage);
+        originalBufferedImage = OperationDuplicate.duplicateImageFunction(this.srcImageServer.getImg());
+        imagePanelCont.setImage(originalBufferedImage);
 
         histogramImage = srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
-        histogramPanelCont.changeImage(histogramImage);
-
-        imagePanelCont.setImageReplaced(false);
+        histogramPanelCont.setImage(histogramImage);
 
         window.repaint();
         window.setVisible(true);
@@ -527,50 +526,40 @@ public class Workspace implements RunOperation{
     }
 
 
+
     @Override
-    public void setupOperation(Operation operation) {
-        operation.setImageContainer(imagePanelCont);
-        operation.setHistogramContainer(histogramPanelCont);
+    public void runOperation(Operation operation) {
+        if (imagePanelCont.getImage() == null) {
+            return;
+        }
+
+        BufferedImage newBufferedImage;
+
+        newBufferedImage = operation.RunOperationFunction(originalBufferedImage, srcImageServer.getHistogram());
+
+        imagePanelCont.setImage(newBufferedImage);
+
+        Histogram histogram = new Histogram(newBufferedImage);
+        histogramPanelCont.setImage(histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
+
+        operationsPanelCentral.updateControls(true);
     }
 
     @Override
-    public void postOperation() {
-        operationsPanelCentral.updateControls();
-    }
-
-    @Override
-    public void discardOperation() {
-        if(imagePanelCont.isImageReplaced() == true) {
+    public void discardOperation(Operation operation) {
+        if(imagePanelCont.getImage() != originalBufferedImage) {
             setImageServer(srcImageServer);
         }
-        operationsPanelCentral.updateControls();
+        operation.jButtonApply.setEnabled(true);
+        operationsPanelCentral.updateControls(false);
     }
 
     @Override
     public void saveOperationsOutput(Operation operation) {
         ImageServer newImageServer = srcImageServer.createChildImageServer(imagePanelCont.getImage());
         setImageServer(newImageServer);
-        setupOperation(operation);
-        operationsPanelCentral.updateControls();
+        operation.jButtonApply.setEnabled(true);
+        operationsPanelCentral.updateControls(false);
     }
 
-    @Override
-    public GUIStyler.ImagePanel3 getImageContainer() {
-        return imagePanelCont;
-    }
-
-    @Override
-    public GUIStyler.ImagePanel3 getHistogramContainer() {
-        return histogramPanelCont;
-    }
-
-    @Override
-    public boolean getChanged() {
-        return imagePanelCont.isImageChanged();
-    }
-
-    @Override
-    public boolean getReplaced() {
-        return imagePanelCont.isImageReplaced();
-    }
 }
