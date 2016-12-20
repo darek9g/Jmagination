@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -18,12 +20,17 @@ public abstract class Operation {
 
     JButton jButtonApply  = new JButton("Wykonaj");
 
-
-
-
     ActionListener runOperationTrigger = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
+            jButtonApply.setEnabled(false);
+            RunOperation(that);
+        }
+    };
+
+    ChangeListener runOperationChangeTrigger = new ChangeListener() {
+        @Override
+        public void stateChanged(ChangeEvent e) {
             jButtonApply.setEnabled(false);
             RunOperation(that);
         }

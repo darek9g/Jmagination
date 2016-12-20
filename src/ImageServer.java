@@ -178,7 +178,7 @@ public class ImageServer implements RunOperation{
         imageTab.setImage(newBufferedImage);
 
         Histogram histogram = new Histogram(newBufferedImage);
-        historgamTab.setImage(histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
+        historgamTab.setImage(histogram.createImg("INTERLACED", new Dimension(img.getWidth(),img.getHeight())));
 
         operationsTab.updateControls(true);
     }
@@ -187,7 +187,7 @@ public class ImageServer implements RunOperation{
     public void discardOperation(Operation operation) {
         if(imageTab.getImage() != img) {
             imageTab.setImage(img);
-            historgamTab.setImage(histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
+            historgamTab.setImage(histogram.createImg("INTERLACED", new Dimension(img.getWidth(),img.getHeight())));
         }
         operation.jButtonApply.setEnabled(true);
         operationsTab.updateControls(false);

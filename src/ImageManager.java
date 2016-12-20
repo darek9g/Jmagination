@@ -38,9 +38,12 @@ public class ImageManager {
     }
 
     public void addLoadedImage(ImageServer newImageServer) {
-        top.add(new DefaultMutableTreeNode(newImageServer));
+        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(newImageServer);
+        top.add(newNode);
         DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+        model.nodeChanged(top);
         model.reload();
+//        model.nodesWereInserted();
     }
 
     public void addCreatedImage(ImageServer childImageServer, ImageServer parentImageServer) {
@@ -52,9 +55,14 @@ public class ImageManager {
                 break;
             }
         }
-        theNode.add(new DefaultMutableTreeNode(childImageServer));
+        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(childImageServer);
+        theNode.add(newNode);
         DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
-        model.reload();
+
+        // TODO
+//        model.reload();
+        model.nodeChanged(theNode);
+        tree.expandPath(new TreePath(theNode));
     }
 /*
     public void removeImage(ImageServer imageServer) {

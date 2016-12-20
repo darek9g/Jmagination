@@ -1,3 +1,5 @@
+import slider.RangeSlider;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,7 +16,9 @@ import java.awt.image.WritableRaster;
 public class OperationThreshold extends Operation {
 
     Parameters parameters;
-    JTextField thresholdJTextField;
+    JLabel thresholdRangeLowJLabel;
+    JLabel thresholdRangeHighJLabel;
+    RangeSlider thresholdJRangeSlider;
 
 
     public OperationThreshold(ImageServer srcImageServer) {
@@ -25,14 +29,24 @@ public class OperationThreshold extends Operation {
 
         parameters = new Parameters();
 
-        thresholdJTextField = new JTextField(String.valueOf(parameters.threshold));
+        thresholdRangeLowJLabel = new JLabel(String.valueOf(parameters.thresholdRangeLow));
+        thresholdRangeHighJLabel = new JLabel(String.valueOf(parameters.thresholdRangeHigh));
+        thresholdJRangeSlider = new RangeSlider();
+        thresholdJRangeSlider.setMinimum(0);
+        thresholdJRangeSlider.setMaximum(255);
+        thresholdJRangeSlider.setValue(0);
+        thresholdJRangeSlider.setUpperValue(255);
     }
 
     @Override
     public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
 
-        String thresholdStr = thresholdJTextField.getText();
-        parameters.threshold = Integer.parseInt(thresholdStr);
+        /*String thresholdStr = thresholdJTextField.getText();
+        Integer.parseInt(thresholdStr);*/
+        parameters.thresholdRangeLow = thresholdJRangeSlider.getValue();
+        parameters.thresholdRangeHigh = thresholdJRangeSlider.getUpperValue();
+        thresholdRangeLowJLabel.setText(String.valueOf(parameters.thresholdRangeLow));
+        thresholdRangeHighJLabel.setText(String.valueOf(parameters.thresholdRangeHigh));
         return thresholdPixelsFunction(bufferedImage);
     }
 
@@ -51,8 +65,11 @@ public class OperationThreshold extends Operation {
         description.setEditable(false);
         panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
 
-        thresholdJTextField.addActionListener(runOperationTrigger);
-        panel.add(thresholdJTextField, new GUIStyler.ParamsGrid(panelX,panelY++));
+        panel.add(thresholdRangeLowJLabel, new GUIStyler.ParamsGrid(panelX,panelY));
+        panel.add(thresholdRangeHighJLabel, new GUIStyler.ParamsGrid(panelX + 1, panelY++));
+
+        thresholdJRangeSlider.addChangeListener(runOperationChangeTrigger);
+        panel.add(thresholdJRangeSlider, new GUIStyler.ParamsGrid(panelX, panelY++));
 
         panel.add(jButtonApply, new GUIStyler.ParamsGrid(panelX,panelY++));
 
@@ -67,10 +84,6 @@ public class OperationThreshold extends Operation {
     public BufferedImage thresholdPixelsFunction(BufferedImage srcImage) {
 
         BufferedImage resultImg;
-
-
-        System.out.println("Threshold " + parameters.threshold);
-
 
         int channels;
         {
@@ -102,7 +115,13 @@ public class OperationThreshold extends Operation {
 
                     int newLevel;
 
-                    if(level<parameters.threshold) { newLevel = 0; } else { newLevel = level; }
+                    if(level<parameters.thresholdRangeLow) {
+                        newLevel = 0;
+                    } else {
+                        if (level>parameters.thresholdRangeHigh) { newLevel = 0;} else {
+                            newLevel = level;
+                        }
+                    }
                     int newColorStripe = colorStripe & (~mask);
 
                     newColorStripe = newColorStripe | ( newLevel << shift );
@@ -118,7 +137,8 @@ public class OperationThreshold extends Operation {
     }
 
     private class Parameters {
-        int threshold = 128;
+        int thresholdRangeLow = 0;
+        int thresholdRangeHigh = 255;
 
         public Parameters() {}
     }
