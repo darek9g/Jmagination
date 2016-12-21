@@ -22,7 +22,6 @@ public class PixelHood <E> {
         for(int i=0;i<dataSize;++i) {
             data.add(initializer);
         }
-        System.out.printf("Data size: %d", data.size());
     }
 
     public int getHorizontalBorderSize() {

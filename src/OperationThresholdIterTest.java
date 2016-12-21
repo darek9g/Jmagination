@@ -1,4 +1,6 @@
 import slider.RangeSlider;
+import util.ImageCursor;
+import util.PixelHood;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +15,7 @@ import java.awt.image.WritableRaster;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationThreshold extends Operation {
+public class OperationThresholdIterTest extends Operation {
 
     Parameters parameters;
     JLabel thresholdRangeLowJLabel;
@@ -21,9 +23,9 @@ public class OperationThreshold extends Operation {
     RangeSlider thresholdJRangeSlider;
 
 
-    public OperationThreshold(ImageServer srcImageServer) {
+    public OperationThresholdIterTest(ImageServer srcImageServer) {
         super();
-        this.label = "Progowanie";
+        this.label = "Progowanie Iterator";
         categories.add("LAB 2");
         categories.add("Punktowe jednoargumentowe");
 
@@ -54,7 +56,7 @@ public class OperationThreshold extends Operation {
     public void drawConfigurationPanel(JPanel panel) {
         panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
-        JLabel title = new JLabel("Progowanie");
+        JLabel title = new JLabel("Progowanie Iterator");
 
         int panelX = 0;
         int panelY = 0;
@@ -86,12 +88,17 @@ public class OperationThreshold extends Operation {
         BufferedImage outImage = new BufferedImage(width, height, inImage.getType());
         WritableRaster raster = inImage.getRaster();
         WritableRaster outRaster = outImage.getRaster();
-        for(int x = 0; x < width; x++){
-            for(int y = 0; y < height; y++){
-                int[] pixel = thresholdPixel(parameters.thresholdRangeLow, parameters.thresholdRangeHigh, raster.getPixel(x,y, new int[raster.getNumBands()]));
-                outRaster.setPixel(x, y, pixel);
-            }
-        }
+
+        PixelHood<int[]> pixelHood = new PixelHood<>(0,0, new int[raster.getNumBands()]);
+        ImageCursor imageCursor = new ImageCursor(inImage);
+
+        do {
+            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_MIN);
+            int[] pixel = thresholdPixel(parameters.thresholdRangeLow, parameters.thresholdRangeHigh, pixelHood.getPixel(0,0));
+            outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
+
+        } while (imageCursor.forward());
+
         return outImage;
     }
 

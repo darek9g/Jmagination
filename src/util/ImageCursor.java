@@ -2,6 +2,7 @@ package util;
 
 import javax.swing.border.Border;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 
 /**
  * Created by darek on 20.12.2016.
@@ -14,6 +15,7 @@ public class ImageCursor {
 
 
     private BufferedImage img;
+    WritableRaster raster;
 
     private int posX;
     private int posY;
@@ -23,6 +25,7 @@ public class ImageCursor {
 
     public ImageCursor(BufferedImage bufferedImage) {
         this.img = bufferedImage;
+        raster = this.img.getRaster();
 
         if(this.img == null) { return; }
 
@@ -95,13 +98,12 @@ public class ImageCursor {
         return test;
     }
 
-    public void fillPixelHood(PixelHood<Integer> pixelHood, int commonCompleteMode) {
+    public void fillPixelHood(PixelHood<int[]> pixelHood, int commonCompleteMode) {
         fillPixelHood(pixelHood, commonCompleteMode, commonCompleteMode, commonCompleteMode, commonCompleteMode);
     }
 
-    public void fillPixelHood(PixelHood<Integer> pixelHood, int leftCompleteMode, int rightCompleteMode, int topCompleteMode, int bottomCompleteMode) {
+    public void fillPixelHood(PixelHood<int[]> pixelHood, int leftCompleteMode, int rightCompleteMode, int topCompleteMode, int bottomCompleteMode) {
 
-        System.out.printf("Pixel value: %d\n", getPixelValue());
         int[] signs = { -1, 1};
         for(int y=0; y<=pixelHood.getVerticalBorderSize(); ++y) {
             for(int x=0; x<=pixelHood.getHorizontalBorderSize(); ++x) {
@@ -166,12 +168,12 @@ public class ImageCursor {
         }
     }
 
-    private int getPixelValue() {
-        return img.getRGB(posX,posY);
+    private int[] getPixelValue() {
+        return getPixelValue(posX, posY);
     }
 
-    private int getPixelValue(int x, int y) {
-        return img.getRGB(x,y);
+    private int[] getPixelValue(int x, int y) {
+        return raster.getPixel(x, y, new int[raster.getNumBands()]);
     }
 
     private boolean checkXYinRange(int x, int y) {
@@ -182,12 +184,19 @@ public class ImageCursor {
         }
     }
 
-    private int getPixelMinPossibleValue() {
-        return 254;
-//        return 256*256*256*256 - 1;
+    private int[] getPixelMinPossibleValue() {
+        int[] ret = new int[raster.getNumBands()];
+        for(int i=0;i<raster.getNumBands();++i) {
+            ret[i] = 0;
+        }
+        return ret;
     }
 
-    private int getPixelMaxPossibleValue() {
-        return 0;
+    private int[] getPixelMaxPossibleValue() {
+        int[] ret = new int[raster.getNumBands()];
+        for(int i=0;i<raster.getNumBands();++i) {
+            ret[i] = 255;
+        }
+        return ret;
     }
 }

@@ -53,6 +53,8 @@ public class Histogram {
         int width = img.getWidth();
         int height = img.getHeight();
 
+        maxLevelsValue = 0;
+
         for(int w=0; w<width; ++w) {
             for(int h=0; h<height; ++h) {
                 int colorStripe = img.getRGB(w, h);
