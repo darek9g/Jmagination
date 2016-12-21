@@ -21,9 +21,6 @@ public class ImageCursor {
     private int height;
     private int width;
 
-    private Exception invalidPosition = new Exception();
-
-
     public ImageCursor(BufferedImage bufferedImage) {
         this.img = bufferedImage;
 
@@ -50,31 +47,32 @@ public class ImageCursor {
         return posY;
     }
 
-    public void goTo(int x, int y) throws Exception {
+    public boolean goTo(int x, int y) throws Exception {
         if(x<0 || x>width-1 || y<0 || y>height-1 ) {
-            throw invalidPosition;
+            return false;
         }
 
         posX=x;
         posY=y;
+
+        return true;
     }
 
     public boolean forward (int step) {
-        int newX = posX + step;
-        int newY = posY;
-        if ( newX > width-1 ) {
-            ++newY;
-            step = newX - width + 1;
-            newY+=step/width;
-            newX=step % width;
 
-            if(newY>height-1) {
-                return false;
-            }
-            posX=newX;
-            posY=newY;
+        int pixels = width * height;
+        int pixels_accumulated = posY * width + posX + 1 + step;
+
+        if(pixels_accumulated>pixels) { return false; }
+
+        int mod = pixels_accumulated % width;
+        int div = pixels_accumulated / width;
+        if(div > 0 && mod == 0) {
+            posX = width - 1;
+            posY = div - 1;
         } else {
-            posX = newX;
+            posX = mod - 1;
+            posY = div;
         }
 
         return true;
@@ -121,7 +119,7 @@ public class ImageCursor {
                                 pixelHood.setPixel(sx, sy, getPixelValue(globalX, globalY));
                             } else {
 
-                                System.out.printf("Y X MODY MODX SY SX: %d %d %d %d %d %d\n", y, x, mody, modx,sy, sx);
+//                                System.out.printf("Y X MODY MODX SY SX: %d %d %d %d %d %d\n", y, x, mody, modx,sy, sx);
 
                                 // tylko gdy sx!=0 lub-rozłącznie sy!=0 to nastąpi
 
@@ -135,9 +133,9 @@ public class ImageCursor {
                                 } else {
                                     if(sx==0) {
                                         if(sy>0) {
-                                            completeModeTest = topCompleteMode;
-                                        } else {
                                             completeModeTest = bottomCompleteMode;
+                                        } else {
+                                            completeModeTest = topCompleteMode;
                                         }
                                     }
                                 }
@@ -152,15 +150,16 @@ public class ImageCursor {
                                     case COMPLETE_COPY:
                                     default:
                                         if(sy==0) {
-                                            pixelHood.setPixel(sx, sy, pixelHood.getPixel(sx - 1, sy));
+                                            pixelHood.setPixel(sx, sy, pixelHood.getPixel(sx - 1 * modx, sy));
                                         } else {
-                                            pixelHood.setPixel(sx, sy, pixelHood.getPixel(sx, sy - 1));
+                                            pixelHood.setPixel(sx, sy, pixelHood.getPixel(sx, sy - 1 * mody));
                                         }
                                 }
                             }
 
-                            if(sx==0 && sy == 0) break;
+                            if(sx==0) break;
                         }
+                        if( sy == 0 ) break;
                     }
                 }
             }

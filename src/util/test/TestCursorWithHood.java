@@ -3,7 +3,6 @@ package util.test;
 import util.ImageCursor;
 import util.PixelHood;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -14,7 +13,7 @@ public class TestCursorWithHood {
     public TestCursorWithHood() {
 
         int bufferedImageWidth = 1;
-        int bufferedImageHeight = 1;
+        int bufferedImageHeight = 2;
 
         BufferedImage bufferedImage = new BufferedImage(bufferedImageWidth, bufferedImageHeight, BufferedImage.TYPE_INT_RGB);
 
@@ -24,11 +23,11 @@ public class TestCursorWithHood {
             }
         }
 
-        PixelHood<Integer> pixelHood = new PixelHood<>(1,1, 0);
+        PixelHood<Integer> pixelHood = new PixelHood<>(2,1, 0);
         ImageCursor imageCursor = new ImageCursor(bufferedImage);
 
          do {
-                imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+                imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_MAX);
 
                 System.out.printf("\nPixel hood for (%d,%d)\n", imageCursor.getPosX(), imageCursor.getPosY());
                 printPixelHood(pixelHood);
@@ -38,13 +37,13 @@ public class TestCursorWithHood {
 
     private void printPixelHood(PixelHood<Integer> pixelHood) {
 
-        System.out.println("----------------------------------");
+        System.out.println("-------------------------------------------------------------------");
         for(int i=-pixelHood.getVerticalBorderSize(); i<=pixelHood.getVerticalBorderSize(); ++i) {
             for (int j = -pixelHood.getHorizontalBorderSize(); j <= pixelHood.getHorizontalBorderSize(); ++j) {
-                System.out.printf("|" + pixelHood.getPixel(i,j));
+                System.out.printf("| %10d ", pixelHood.getPixel(j,i));
             }
-            System.out.printf("|\n");
-            System.out.println("----------------------------------");
+            System.out.printf(" |\n");
+            System.out.println("-------------------------------------------------------------------");
         }
 
     }

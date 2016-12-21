@@ -42,7 +42,7 @@ public class PixelHood <E> {
     }
 
     private int getIndex(int x, int y) {
-        if(x > horizontalBorderSize || x< -horizontalBorderSize || y>verticalBorderSize || y< -verticalBorderSize) {
+        if((x > horizontalBorderSize) || (x < -horizontalBorderSize) || (y > verticalBorderSize) || (y < -verticalBorderSize)) {
             throw new IndexOutOfBoundsException();
         }
         return x + horizontalBorderSize + ( y + verticalBorderSize ) * (1 + 2 * horizontalBorderSize);
