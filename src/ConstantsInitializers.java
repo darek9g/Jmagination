@@ -7,11 +7,9 @@ import java.awt.*;
 public final class ConstantsInitializers {
 
     public static final Dimension GUI_BUTTON_SIZE_LONG = new Dimension(320,30);
-    public static final Dimension GUI_BUTTON_SIZE_SHORT = new Dimension(140,20);
+    public static final Dimension GUI_BUTTON_SIZE_SHORT = new Dimension(40,20);
 
-
-
-    public static final Font GUI_FONT_TITLE = Font.getFont(Font.MONOSPACED);
+    public static final Font GUI_SMALL_FONT = new Font("serif", Font.PLAIN, 12);
 
     public static final Color GUI_DRAWING_BG_COLOR = new Color(238, 238, 238);
     public static final Color GUI_CONTROLS_BG_COLOR = new Color(238, 238, 238);

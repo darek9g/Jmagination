@@ -15,7 +15,6 @@ public class Operations {
         availableOperations.add(new OperationEqualizeHistogram(imageServer));
         availableOperations.add(new OperationNegation(imageServer));
         availableOperations.add(new OperationThreshold(imageServer));
-        availableOperations.add(new OperationThresholdIterTest(imageServer));
 
         return availableOperations;
     }

@@ -18,7 +18,15 @@ public abstract class Operation {
 
     RunOperation runOperation;
 
-    JButton jButtonApply  = new JButton("Wykonaj");
+
+    // wspólne dla operacji elementy interfejsu
+
+    GUIStyler.JButtonJM jButtonApply  = new GUIStyler.JButtonJM("Wykonaj");
+
+    JLabel jLabelColorMode = new JLabel("Tryb");
+    JRadioButton jRadioButtonColorModeHSV = new JRadioButton("HSV");
+    JRadioButton jRadioButtonColorModeRGB = new JRadioButton("RGB");
+    ButtonGroup buttonGroupColorMode = new ButtonGroup();
 
     ActionListener runOperationTrigger = new ActionListener() {
         @Override
@@ -67,5 +75,19 @@ public abstract class Operation {
     public abstract void drawConfigurationPanel(JPanel panel);
 
     public abstract Operation Clone();
+
+    protected void configureColorModeControls() {
+
+        jLabelColorMode.setHorizontalTextPosition(SwingConstants.RIGHT);
+        jRadioButtonColorModeRGB.setSelected(true);
+
+        buttonGroupColorMode.add(jRadioButtonColorModeRGB);
+        buttonGroupColorMode.add(jRadioButtonColorModeHSV);
+
+        if(hsvModeAllowed == false) {
+            jRadioButtonColorModeHSV.setEnabled(false);
+        }
+
+    }
 
 }

@@ -1,11 +1,10 @@
 import slider.RangeSlider;
+import util.ImageCursor;
+import util.PixelHood;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 
 
@@ -30,19 +29,23 @@ public class OperationThreshold extends Operation {
         parameters = new Parameters();
 
         thresholdRangeLowJLabel = new JLabel(String.valueOf(parameters.thresholdRangeLow));
+        thresholdRangeLowJLabel.setPreferredSize(new Dimension(25,10));
+        thresholdRangeLowJLabel.setMinimumSize(new Dimension(25,10));
+        thresholdRangeLowJLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         thresholdRangeHighJLabel = new JLabel(String.valueOf(parameters.thresholdRangeHigh));
+        thresholdRangeHighJLabel.setPreferredSize(new Dimension(25,10));
+        thresholdRangeHighJLabel.setMinimumSize(new Dimension(25,10));
+        thresholdRangeLowJLabel.setHorizontalAlignment(SwingConstants.LEFT);
         thresholdJRangeSlider = new RangeSlider();
         thresholdJRangeSlider.setMinimum(0);
         thresholdJRangeSlider.setMaximum(255);
         thresholdJRangeSlider.setValue(0);
         thresholdJRangeSlider.setUpperValue(255);
+        thresholdJRangeSlider.setMinimumSize(new Dimension(256,15));
     }
 
     @Override
     public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
-
-        /*String thresholdStr = thresholdJTextField.getText();
-        Integer.parseInt(thresholdStr);*/
         parameters.thresholdRangeLow = thresholdJRangeSlider.getValue();
         parameters.thresholdRangeHigh = thresholdJRangeSlider.getUpperValue();
         thresholdRangeLowJLabel.setText(String.valueOf(parameters.thresholdRangeLow));
@@ -54,25 +57,69 @@ public class OperationThreshold extends Operation {
     public void drawConfigurationPanel(JPanel panel) {
         panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(2,2, 2, 2);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1.0f;
+        c.weighty = 1.0f;
+
+        //tytuł
+        c.gridx =0;
+        c.gridy =0;
+        c.gridwidth = 16;
         JLabel title = new JLabel("Progowanie");
+        panel.add(title, c);
 
-        int panelX = 0;
-        int panelY = 0;
-
-        panel.add(title, new GUIStyler.ParamsGrid(panelX,panelY++));
-
-        JTextArea description = new JTextArea("Zero pixel values if they do not exess threshold");
+        // opis
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 16;
+        JTextArea description = new JTextArea("Ustawienie minimalnej jasności pikselom spoza określonego \nzakresu jasności");
         description.setEditable(false);
-        panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
+        panel.add(description, c);
 
-        panel.add(thresholdRangeLowJLabel, new GUIStyler.ParamsGrid(panelX,panelY));
-        panel.add(thresholdRangeHighJLabel, new GUIStyler.ParamsGrid(panelX + 1, panelY++));
+        // wiersz suwaka
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 2;
+        panel.add(thresholdRangeLowJLabel, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 2;
+        c.gridwidth = 12;
 
         thresholdJRangeSlider.addChangeListener(runOperationChangeTrigger);
-        panel.add(thresholdJRangeSlider, new GUIStyler.ParamsGrid(panelX, panelY++));
+        panel.add(thresholdJRangeSlider, c);
 
-        panel.add(jButtonApply, new GUIStyler.ParamsGrid(panelX,panelY++));
+        c.gridx+= c.gridwidth;
+        c.gridy = 2;
+        c.gridwidth = 2;
+        panel.add(thresholdRangeHighJLabel, c);
 
+        // wiersz sterowania wykonaniem
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jLabelColorMode, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jRadioButtonColorModeRGB, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jRadioButtonColorModeHSV, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jButtonApply, c);
+
+
+        configureColorModeControls();
     }
 
     @Override
@@ -86,12 +133,17 @@ public class OperationThreshold extends Operation {
         BufferedImage outImage = new BufferedImage(width, height, inImage.getType());
         WritableRaster raster = inImage.getRaster();
         WritableRaster outRaster = outImage.getRaster();
-        for(int x = 0; x < width; x++){
-            for(int y = 0; y < height; y++){
-                int[] pixel = thresholdPixel(parameters.thresholdRangeLow, parameters.thresholdRangeHigh, raster.getPixel(x,y, new int[raster.getNumBands()]));
-                outRaster.setPixel(x, y, pixel);
-            }
-        }
+
+        PixelHood<int[]> pixelHood = new PixelHood<>(0,0, new int[raster.getNumBands()]);
+        ImageCursor imageCursor = new ImageCursor(inImage);
+
+        do {
+            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_MIN);
+            int[] pixel = thresholdPixel(parameters.thresholdRangeLow, parameters.thresholdRangeHigh, pixelHood.getPixel(0,0));
+            outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
+
+        } while (imageCursor.forward());
+
         return outImage;
     }
 
@@ -108,62 +160,6 @@ public class OperationThreshold extends Operation {
             }
         }
         return newPixel;
-    }
-
-    @Deprecated
-    public BufferedImage thresholdPixelsFunctionOld(BufferedImage srcImage) {
-
-        BufferedImage resultImg;
-
-        int channels;
-        {
-            ColorModel cm = srcImage.getColorModel();
-            channels = cm.getNumComponents();
-            boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-            WritableRaster raster = srcImage.copyData(null);
-            resultImg = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-        }
-
-        int width = srcImage.getWidth();
-        int height = srcImage.getHeight();
-
-
-//        Random random = new Random();
-
-        int shift = 0;
-        int mask = 0x000000ff;
-
-        for(int ch=0; ch<channels; ++ch) {
-
-
-            for(int w=0; w<width; ++w) {
-                for(int h=0; h<height; ++h) {
-                    int colorStripe = srcImage.getRGB(w, h);
-                    int level = ( colorStripe & mask ) >> shift;
-
-                    //selecting new level
-
-                    int newLevel;
-
-                    if(level<parameters.thresholdRangeLow) {
-                        newLevel = 0;
-                    } else {
-                        if (level>parameters.thresholdRangeHigh) { newLevel = 0;} else {
-                            newLevel = level;
-                        }
-                    }
-                    int newColorStripe = colorStripe & (~mask);
-
-                    newColorStripe = newColorStripe | ( newLevel << shift );
-                    resultImg.setRGB(w,h,newColorStripe);
-                }
-            }
-
-            shift+=8;
-            mask*=0x100;
-        }
-
-        return resultImg;
     }
 
     private class Parameters {

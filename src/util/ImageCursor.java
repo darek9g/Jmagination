@@ -104,6 +104,12 @@ public class ImageCursor {
 
     public void fillPixelHood(PixelHood<int[]> pixelHood, int leftCompleteMode, int rightCompleteMode, int topCompleteMode, int bottomCompleteMode) {
 
+        // single pixel acceleration
+        if( pixelHood.getHorizontalBorderSize() == 0 || pixelHood.getVerticalBorderSize() == 0 ) {
+            pixelHood.setPixel(0, 0, getPixelValue(posX, posY));
+            return;
+        }
+
         int[] signs = { -1, 1};
         for(int y=0; y<=pixelHood.getVerticalBorderSize(); ++y) {
             for(int x=0; x<=pixelHood.getHorizontalBorderSize(); ++x) {

@@ -14,44 +14,66 @@ import java.util.Set;
  */
 public class GUIStyler {
 
-    public static class JButtonS extends JButton {
+    public static class JButtonJM extends JButton {
 
-        public JButtonS() {
+        public JButtonJM() {
             super();
-            doStyling();
+            setDefaults();
         }
 
-        public JButtonS(String s) {
+        public JButtonJM(String s) {
             super(s);
-            doStyling();
+            setDefaults();
         }
 
-        private void doStyling() {
-            setPreferredSize(ConstantsInitializers.GUI_BUTTON_SIZE_LONG);
-            setMinimumSize(ConstantsInitializers.GUI_BUTTON_SIZE_LONG);
-            setMaximumSize(ConstantsInitializers.GUI_BUTTON_SIZE_LONG);
+        private void setDefaults() {
+
+            setFont(ConstantsInitializers.GUI_SMALL_FONT);
+
+//            setPreferredSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
+            setMinimumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
+
         }
 
+    }
+
+    public static class JSeparatorJM extends JSeparator {
+
+        private final Dimension dimension = new Dimension(200,10);
+
+        public JSeparatorJM() {
+            super();
+            setDefaults();
+        }
+
+        private void setDefaults() {
+//            setPreferredSize(dimension);
+            setMinimumSize(dimension);
+        }
     }
 
     public static class ParamsGrid extends GridBagConstraints {
 
         public ParamsGrid() {
             super();
-            do_styling();
+            setDefaults();
         }
 
         public ParamsGrid(int gridx, int gridy) {
-            super();
-            do_styling();
+            this();
 
             this.gridx = gridx;
             this.gridy = gridy;
         }
 
+        public ParamsGrid(int gridx, int gridy, int anchor) {
+            this(gridx, gridy);
+
+            this.anchor = anchor;
+        }
+
         public ParamsGrid(int gridx, int gridy, int gridwidth, int gridheight) {
-            super();
-            do_styling();
+            this();
 
             this.gridx = gridx;
             this.gridy = gridy;
@@ -60,12 +82,29 @@ public class GUIStyler {
             this.gridheight = gridheight;
         }
 
+        public ParamsGrid(int gridx, int gridy, int gridwidth, int gridheight, int anchor) {
+            this(gridx, gridy, gridwidth, gridheight);
+
+            this.anchor = anchor;
+        }
+
         public ParamsGrid(int gridx, int gridy, int gridwidth, int gridheight, double weightx, double weighty, int anchor, int fill, Insets insets, int ipadx, int ipady) {
             super(gridx, gridy, gridwidth, gridheight, weightx, weighty, anchor, fill, insets, ipadx, ipady);
         }
 
-        private void do_styling() {
+        private void setDefaults() {
 
+            this.gridx = 0;
+            this.gridy = 0;
+            this.gridwidth = 1;
+            this.gridheight = 1;
+            this.weightx = 1.0d;
+            this.weighty = 1.0d;
+            this.anchor = BASELINE;
+            this.fill = 0;
+            this.insets = new Insets(2, 2, 2, 2);
+            this.ipadx = 1;
+            this.ipady = 1;
         }
     }
 
@@ -312,10 +351,10 @@ public class GUIStyler {
         JPanel parametersPanelSouth;
 
 
-        JButton jButtonRevertOperationOutcome;
-        JButton jButtonSaveOperationsOutcome;
+        JButtonJM jButtonRevertOperationOutcome;
+        JButtonJM jButtonSaveOperationsOutcome;
 
-        JButton jButtonLeaveOperationPanel;
+        JButtonJM jButtonLeaveOperationPanel;
 
         RunOperation runOperation;
 
@@ -356,9 +395,9 @@ public class GUIStyler {
 
 
             // parameters South
-            jButtonLeaveOperationPanel = new JButton("Powrót");
-            jButtonRevertOperationOutcome = new JButton("Cofnij zmiany");
-            jButtonSaveOperationsOutcome = new JButton("Zapisz");
+            jButtonLeaveOperationPanel = new JButtonJM("Powrót");
+            jButtonRevertOperationOutcome = new JButtonJM("Cofnij zmiany");
+            jButtonSaveOperationsOutcome = new JButtonJM("Zapisz");
 
             parametersPanelSouth.add(jButtonLeaveOperationPanel);
             parametersPanelSouth.add(jButtonRevertOperationOutcome);
@@ -412,7 +451,7 @@ public class GUIStyler {
             operationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             choicePanelOperations.setViewportView(operationsList);
 
-            JButton jButtonSelect = new JButton("Wybierz");
+            JButtonJM jButtonSelect = new JButtonJM("Wybierz");
             choicePanelContainer.add(jButtonSelect,BorderLayout.SOUTH);
 
 
@@ -599,14 +638,14 @@ public class GUIStyler {
             ActionListener al = new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    JButton jb = (JButton)e.getSource();
+                    JButtonJM jb = (JButtonJM)e.getSource();
                     imagePanel.setOriginCmd(jb.getText());
                 }
             };
 
 
             for (String s: commands) {
-                JButton jbCmd = new JButton(s);
+                JButtonJM jbCmd = new JButtonJM(s);
                 jbCmd.setMinimumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
                 jbCmd.setMaximumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
                 jbCmd.setPreferredSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
