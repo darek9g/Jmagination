@@ -22,7 +22,7 @@ public class OperationThreshold extends Operation {
 
     public OperationThreshold(ImageServer srcImageServer) {
         super();
-        this.label = "Progowanie";
+        this.label = "Proguj piksele";
         categories.add("LAB 2");
         categories.add("Punktowe jednoargumentowe");
 

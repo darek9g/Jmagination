@@ -6,7 +6,7 @@ import java.awt.*;
  */
 public final class ConstantsInitializers {
 
-    public static final Dimension GUI_BUTTON_SIZE_LONG = new Dimension(320,30);
+    public static final Dimension GUI_BUTTON_SIZE_LONG = new Dimension(100,20);
     public static final Dimension GUI_BUTTON_SIZE_SHORT = new Dimension(40,20);
 
     public static final Font GUI_SMALL_FONT = new Font("serif", Font.PLAIN, 12);

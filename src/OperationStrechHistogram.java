@@ -3,31 +3,30 @@ import util.PixelHood;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.ArrayList;
 
 /**
  * Created by darek on 30.11.2016.
  */
 
-public class OperationConvertToGray extends Operation {
+public class OperationStrechHistogram extends Operation {
 
     Parameters parameters;
 
-    public OperationConvertToGray(ImageServer srcImageServer) {
+    public OperationStrechHistogram(ImageServer srcImageServer) {
         super();
-        this.label = "Konwertuj na obraz w odcieniach szarości";
+        this.label = "Rozciągnij histogramu";
         categories.add("LAB 1");
-        categories.add("Konwersje");
+        categories.add("Wielopunktowe");
 
         parameters = new Parameters();
     }
 
     @Override
     public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
-        return convertToGrayFunction(bufferedImage);
+        return equalizeHistogramFunction(bufferedImage, histogram);
     }
 
     @Override
@@ -45,14 +44,14 @@ public class OperationConvertToGray extends Operation {
         c.gridx =0;
         c.gridy =0;
         c.gridwidth = 16;
-        JLabel title = new JLabel("Konwersja wartości kolorów pixeli do poziomów szarości");
+        JLabel title = new JLabel("Rozciąganie histogramu");
         panel.add(title, c);
 
         // opis
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 16;
-        JTextArea description = new JTextArea("Uśrednia jasności kolorów każdego piksela\ni zapisuje go w odcieniu szarości");
+        JTextArea description = new JTextArea("Dystrybuuje wartości kolorów równomiernie na całą\nprzestrzeń wartości");
         description.setEditable(false);
         panel.add(description, c);
 
@@ -83,47 +82,63 @@ public class OperationConvertToGray extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationConvertToGray(null);
+        return new OperationStrechHistogram(null);
     }
 
-    public BufferedImage convertToGrayFunction(BufferedImage inImage) {
+    public static BufferedImage equalizeHistogramFunction(BufferedImage inImage, Histogram histogram) {
+
         int width = inImage.getWidth();
         int height = inImage.getHeight();
-        BufferedImage outImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage outImage = new BufferedImage(width, height, inImage.getType());
         WritableRaster raster = inImage.getRaster();
         WritableRaster outRaster = outImage.getRaster();
+
+        int pixels = width * height;
+
+        int bands = histogram.getData().size();
+        int levels = histogram.getData().get(0).length;
+
+        ArrayList<Integer[]> intergatedHistogramData = new ArrayList<>(bands);
+        for(int ch=0; ch<bands; ++ch) {
+            Integer[] bandSrc =  histogram.getData().get(ch);
+            Integer[] bandData = new Integer[levels];
+            intergatedHistogramData.add(bandData);
+
+            if(bandData.length>0) bandData[0] = bandSrc[0];
+            for(int level=1; level<levels; ++level) {
+                bandData[level] = bandData[level-1] + bandSrc[level];
+            }
+
+            for(int level=0; level<levels; ++level) {
+                bandData[level] = (int) Math.floor( (levels - 1) * ( bandData[level] + 0.0 ) / pixels);
+            }
+        }
+
+        //applying changes
 
         PixelHood<int[]> pixelHood = new PixelHood<>(0,0, new int[raster.getNumBands()]);
         ImageCursor imageCursor = new ImageCursor(inImage);
 
         do {
             imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_MIN);
-            int[] pixel = toGrayPixel(outRaster.getNumBands(), pixelHood.getPixel(0,0));
-            outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
+
+            int[] pixel = pixelHood.getPixel(0,0);
+            int[] newPixel = new int[pixel.length];
+
+            for(int i = 0; i<pixel.length; ++i) {
+                newPixel[i] = intergatedHistogramData.get(i)[pixel[i]];
+            }
+
+            outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), newPixel);
 
         } while (imageCursor.forward());
 
         return outImage;
     }
 
-    public static int[] toGrayPixel(int newPixelLength, int... pixel){
-        int[] newPixel = new int[newPixelLength];
-        int bandSum = 0;
-        for (int i = 0; i < pixel.length; i++) {
-            bandSum += pixel[i];
-        }
-
-        bandSum  = (int) Math.round( ( bandSum + 0.0d ) / pixel.length );
-
-        for(int i = 0; i < newPixelLength; i++) {
-            newPixel[i] = bandSum;
-        }
-
-        return newPixel;
-    }
-
     private class Parameters {
 
         public Parameters() {}
     }
+
 }

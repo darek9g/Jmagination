@@ -15,7 +15,7 @@ public class OperationDuplicate extends Operation {
 
     public OperationDuplicate(ImageServer srcImageServer) {
         super();
-        this.label = "Zduplikuj";
+        this.label = "Zduplikuj obraz";
         categories.add("LAB 1");
         categories.add("Ogólne");
 
@@ -30,19 +30,52 @@ public class OperationDuplicate extends Operation {
     @Override
     public void drawConfigurationPanel(JPanel panel) {
         panel.setLayout(new GridBagLayout());
-        panel.setBackground(ConstantsInitializers.GUI_CONTROLS_BG_COLOR);
-        JLabel title = new JLabel("Zduplikuj");
+        panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
 
-        int panelX = 0;
-        int panelY = 0;
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(2,2, 2, 2);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1.0f;
+        c.weighty = 1.0f;
 
-        panel.add(title, new GUIStyler.ParamsGrid(panelX,panelY++));
+        //tytuł
+        c.gridx =0;
+        c.gridy =0;
+        c.gridwidth = 16;
+        JLabel title = new JLabel("Duplikowanie obrazu");
+        panel.add(title, c);
 
+        // opis
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 16;
         JTextArea description = new JTextArea("Kopiuje obraz do nowego bufora");
         description.setEditable(false);
-        panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
+        panel.add(description, c);
 
-        panel.add(jButtonApply, new GUIStyler.ParamsGrid(panelX,panelY++));
+        // wiersz sterowania wykonaniem
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jLabelColorMode, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jRadioButtonColorModeRGB, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jRadioButtonColorModeHSV, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jButtonApply, c);
+
+
+        configureColorModeControls();
     }
 
     @Override

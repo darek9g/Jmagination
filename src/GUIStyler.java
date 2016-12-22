@@ -646,9 +646,9 @@ public class GUIStyler {
 
             for (String s: commands) {
                 JButtonJM jbCmd = new JButtonJM(s);
-                jbCmd.setMinimumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
-                jbCmd.setMaximumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
-                jbCmd.setPreferredSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
+                jbCmd.setMinimumSize(ConstantsInitializers.GUI_BUTTON_SIZE_LONG);
+                jbCmd.setMaximumSize(ConstantsInitializers.GUI_BUTTON_SIZE_LONG);
+                jbCmd.setPreferredSize(ConstantsInitializers.GUI_BUTTON_SIZE_LONG);
                 jbCmd.setOpaque(true);
                 controlsPanel.add(jbCmd);
 

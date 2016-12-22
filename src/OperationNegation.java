@@ -14,7 +14,7 @@ public class OperationNegation extends Operation {
 
     public OperationNegation(ImageServer srcImageServer) {
         super();
-        this.label = "Negacja";
+        this.label = "Neguj pixele";
         categories.add("LAB 2");
         categories.add("Punktowe jednoargumentowe");
 
@@ -30,18 +30,51 @@ public class OperationNegation extends Operation {
     public void drawConfigurationPanel(JPanel panel) {
         panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
-        JLabel title = new JLabel("Negacja");
 
-        int panelX = 0;
-        int panelY = 0;
+        GridBagConstraints c = new GridBagConstraints();
+        c.insets = new Insets(2,2, 2, 2);
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.weightx = 1.0f;
+        c.weighty = 1.0f;
 
-        panel.add(title, new GUIStyler.ParamsGrid(panelX,panelY++));
+        //tytuł
+        c.gridx =0;
+        c.gridy =0;
+        c.gridwidth = 16;
+        JLabel title = new JLabel("Negacja poziomów koloru");
+        panel.add(title, c);
 
-        JTextArea description = new JTextArea("Opis - UZUPEŁNIĆ");
+        // opis
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 16;
+        JTextArea description = new JTextArea("Nadaje pikselom nowe wartości dopełniające wartości bieżące\ndo maksimum");
         description.setEditable(false);
-        panel.add(description, new GUIStyler.ParamsGrid(panelX,panelY++));
+        panel.add(description, c);
 
-        panel.add(jButtonApply, new GUIStyler.ParamsGrid(panelX,panelY++));
+        // wiersz sterowania wykonaniem
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jLabelColorMode, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jRadioButtonColorModeRGB, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jRadioButtonColorModeHSV, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jButtonApply, c);
+
+
+        configureColorModeControls();
     }
 
     @Override
@@ -70,56 +103,6 @@ public class OperationNegation extends Operation {
             newPixel[i] = 255-pixel[i];
         }
         return newPixel;
-    }
-
-    @Deprecated
-    public static BufferedImage negatePixelsFunction(BufferedImage srcImage) {
-
-        BufferedImage resultImg;
-
-        int channels;
-        {
-            ColorModel cm = srcImage.getColorModel();
-            channels = cm.getNumComponents();
-            boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-            WritableRaster raster = srcImage.copyData(null);
-            resultImg = new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-        }
-
-        int width = srcImage.getWidth();
-        int height = srcImage.getHeight();
-
-        System.out.println("Channels " + channels);
-
-//        Random random = new Random();
-
-        int shift = 0;
-        int mask = 0x000000ff;
-
-        for(int ch=0; ch<channels; ++ch) {
-
-
-            for(int w=0; w<width; ++w) {
-                for(int h=0; h<height; ++h) {
-                    int colorStripe = srcImage.getRGB(w, h);
-                    int level = ( colorStripe & mask ) >> shift;
-
-                    //selecting new level
-
-                    int newLevel = 255 - level;
-                    int newColorStripe = colorStripe & (~mask);
-
-                    newColorStripe = newColorStripe | ( newLevel << shift );
-                    resultImg.setRGB(w,h,newColorStripe);
-                }
-            }
-
-            System.out.println("Shift " + shift);
-            shift+=8;
-            mask*=0x100;
-        }
-
-        return resultImg;
     }
 
     private class Parameters {

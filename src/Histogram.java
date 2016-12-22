@@ -1,5 +1,9 @@
+import util.ImageCursor;
+import util.PixelHood;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -10,8 +14,9 @@ import java.util.Collections;
 public class Histogram {
 
     BufferedImage img;
+    WritableRaster raster;
     int scaleWidth;
-    int channels;
+    int bands;
 
     int maxLevelsValue;
 
@@ -20,13 +25,14 @@ public class Histogram {
 
     public Histogram(BufferedImage img) {
         this.img = img;
+        this.raster = img.getRaster();
         this.scaleWidth = 256;
 
-        this.channels = img.getColorModel().getNumColorComponents();
+        this.bands = raster.getNumBands();
         this.maxLevelsValue = 0;
 
-        data = new ArrayList<>(channels);
-        for(int ch=0;ch<channels;++ch) {
+        data = new ArrayList<>(bands);
+        for(int i=0;i<bands;++i) {
             data.add(new Integer[scaleWidth]);
         }
         fillZero();
@@ -55,24 +61,22 @@ public class Histogram {
 
         maxLevelsValue = 0;
 
-        for(int w=0; w<width; ++w) {
-            for(int h=0; h<height; ++h) {
-                int colorStripe = img.getRGB(w, h);
+        PixelHood<int[]> pixelHood = new PixelHood<>(0,0, new int[raster.getNumBands()]);
+        ImageCursor imageCursor = new ImageCursor(img);
 
-                int shift = 0;
-                int mask = 0x000000ff;
-                for(int ch=0; ch<channels; ++ch) {
-                    int level = ( colorStripe & mask ) >> shift;
-                    shift+=8;
-                    mask*=0x100;
-                    ++data.get(ch)[level];
-                    if( data.get(ch)[level] > maxLevelsValue ) {
-                        maxLevelsValue = data.get(ch)[level];
-                    }
-
+        do {
+            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_MIN);
+            int[] pixel = pixelHood.getPixel(0,0);
+            for(int i=0; i<bands; ++i) {
+                ++data.get(i)[pixel[i]];
+                if( data.get(i)[pixel[i]] > maxLevelsValue ) {
+                    maxLevelsValue = data.get(i)[pixel[i]];
                 }
+
+
             }
-        }
+
+        } while (imageCursor.forward());
     }
 
     public BufferedImage createImg(String model, Dimension dimension) {

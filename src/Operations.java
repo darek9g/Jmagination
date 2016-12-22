@@ -11,8 +11,8 @@ public class Operations {
 
         availableOperations.add(new OperationDuplicate(imageServer));
         availableOperations.add(new OperationConvertToGray(imageServer));
-        availableOperations.add(new OperationNormalizeHistogram(imageServer));
         availableOperations.add(new OperationEqualizeHistogram(imageServer));
+        availableOperations.add(new OperationStrechHistogram(imageServer));
         availableOperations.add(new OperationNegation(imageServer));
         availableOperations.add(new OperationThreshold(imageServer));
 
