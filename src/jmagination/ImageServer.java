@@ -1,6 +1,6 @@
 package jmagination;
 
-import jmagination.gui.GUIStyler;
+import jmagination.gui.*;
 import jmagination.histogram.Histogram;
 import jmagination.operations.Operation;
 
@@ -27,11 +27,11 @@ public class ImageServer implements RunOperation {
 
     JFrame window;
 
-    GUIStyler.Presenter tpanel = new GUIStyler.Presenter();
-    GUIStyler.PresenterTabImage imageTab;
-    GUIStyler.PresenterTabProperties propertiesTab;
-    GUIStyler.PresenterTabImage historgamTab;
-    GUIStyler.PresenterTabOperations operationsTab;
+    Presenter tpanel = new Presenter();
+    PresenterTabImage imageTab;
+    PresenterTabProperties propertiesTab;
+    PresenterTabImage historgamTab;
+    PresenterTabOperations operationsTab;
 
 
     BufferedImage img;
@@ -84,20 +84,20 @@ public class ImageServer implements RunOperation {
 
     private void configure(String description) {
         this.description = description;
-        imageTab = new GUIStyler.PresenterTabImage(img);
+        imageTab = new PresenterTabImage(img);
         tpanel.addTab("Obraz", imageTab);
 
-        propertiesTab = new GUIStyler.PresenterTabProperties(img);
+        propertiesTab = new PresenterTabProperties(img);
         tpanel.addTab("Cechy", propertiesTab);
 
         histogram = new Histogram(img);
 
         Dimension histogramDimension = new Dimension(img.getWidth(), img.getHeight());
 
-        historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg("INTERLACED", histogramDimension));
+        historgamTab = new PresenterTabImage(histogram.createImg("INTERLACED", histogramDimension));
         tpanel.addTab("Histogram", historgamTab);
 
-        operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this), this);
+        operationsTab = new PresenterTabOperations(Operations.registerOperationsForImageServer(this), this);
         tpanel.addTab("Operacje", operationsTab);
 
         window.setTitle(description);

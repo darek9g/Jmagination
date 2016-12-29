@@ -12,6 +12,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 import jmagination.gui.GUIStyler;
+import jmagination.gui.ImagePanel3;
+import jmagination.gui.PresenterTabOperations;
 import jmagination.histogram.Histogram;
 import jmagination.operations.Operation;
 import jmagination.operations.OperationDuplicate;
@@ -49,7 +51,8 @@ public class Workspace implements RunOperation {
     JPanel histogramPanelSouth;
     JPanel operationsPanel;
     JPanel operationsPanelNorth;
-    GUIStyler.PresenterTabOperations operationsPanelCentral;
+    JScrollPane operationsPanelCentral;
+    PresenterTabOperations operationsPanelCentralPane;
     JPanel operationsPanelSouth;
 
     /* WINDOW PANELING SCHEMA
@@ -147,7 +150,7 @@ public class Workspace implements RunOperation {
         *                     *                        *                        *
         *                     *                        *                        *
         *                     *                        *                        *
-        * operationsPanel     ******* level1Right ****** imagePanel             *
+        * managerPanel     ******* level1Right ****** imagePanel             *
         *                     *                        *                        *
         *                     *                        *                        *
         *                     *                        *                        *
@@ -228,8 +231,8 @@ public class Workspace implements RunOperation {
 
     BufferedImage bufferedImage;
     BufferedImage histogramImage;
-    GUIStyler.ImagePanel3 imagePanelCont = new GUIStyler.ImagePanel3(null);
-    GUIStyler.ImagePanel3 histogramPanelCont = new GUIStyler.ImagePanel3(null);
+    ImagePanel3 imagePanelCont = new ImagePanel3(null);
+    ImagePanel3 histogramPanelCont = new ImagePanel3(null);
     BufferedImage originalBufferedImage = null;
 
     public Workspace(ImageManager imageManager) {
@@ -417,7 +420,9 @@ public class Workspace implements RunOperation {
         histogramPanelCentral = new JScrollPane(histogramPanelCont);
         histogramPanelSouth = new JPanel();
         operationsPanelNorth = new JPanel();
-        operationsPanelCentral = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral, this);
+//        operationsPanelCentralPane = new PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral, this);
+        operationsPanelCentralPane = new PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), this);
+        operationsPanelCentral = new JScrollPane(operationsPanelCentralPane);
         operationsPanelSouth = new JPanel();
 
 /*        managerPanelNorth.setPreferredSize(managerPanelNorthDimension);
@@ -549,7 +554,7 @@ public class Workspace implements RunOperation {
         Histogram histogram = new Histogram(newBufferedImage);
         histogramPanelCont.setImage(histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
 
-        operationsPanelCentral.updateControls(true);
+        operationsPanelCentralPane.updateControls(true);
     }
 
     @Override
@@ -558,7 +563,7 @@ public class Workspace implements RunOperation {
             setImageServer(srcImageServer);
         }
         operation.jButtonApply.setEnabled(true);
-        operationsPanelCentral.updateControls(false);
+        operationsPanelCentralPane.updateControls(false);
     }
 
     @Override
@@ -566,7 +571,7 @@ public class Workspace implements RunOperation {
         ImageServer newImageServer = srcImageServer.createChildImageServer(imagePanelCont.getImage());
         setImageServer(newImageServer);
         operation.jButtonApply.setEnabled(true);
-        operationsPanelCentral.updateControls(false);
+        operationsPanelCentralPane.updateControls(false);
     }
 
 }
