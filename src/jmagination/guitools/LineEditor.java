@@ -11,9 +11,9 @@ import java.awt.*;
 public class LineEditor extends JPanel {
 
 
-    public final int MIN_ORG_MODE = 0;
-    public final int MIN_MAX_MODE = 1;
-    public final int FREE_MODE = 2;
+    public static final int MIN_ORG_MODE = 0;
+    public static final int MIN_MAX_MODE = 1;
+    public static final int FREE_MODE = 2;
 
     int minXSetup = 10;
     int maxXSetup = 10;
@@ -28,7 +28,6 @@ public class LineEditor extends JPanel {
     public LineEditor(int operationMode, int minXSetup, int maxXSetup, int minYSetup, int maxYSetup) {
         super();
 
-        polygon = new Polygon();
         this.operationMode = operationMode;
         this.minXSetup = minXSetup;
         this.maxXSetup = maxXSetup;
@@ -40,6 +39,12 @@ public class LineEditor extends JPanel {
         this.setMinimumSize(dimension);
         this.setMaximumSize(dimension);
         this.setPreferredSize(dimension);
+
+        setBackground(ConstantsInitializers.GUI_CHARTS_FG_COLOR);
+
+        polygon = new Polygon();
+        polygon.addPoint(0,0 );
+        polygon.addPoint(maxXSetup - minXSetup, maxYSetup - minYSetup);
 
     }
 

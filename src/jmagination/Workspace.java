@@ -381,7 +381,7 @@ public class Workspace implements RunOperation {
 
     private void buildWindow(JTree managerTree) {
 
-        window = new JFrame("jmagination.Jmagination - Biurko");
+        window = new JFrame("Jmagination - Biurko");
 
 
         window.setPreferredSize(windowDimension);
@@ -472,7 +472,7 @@ public class Workspace implements RunOperation {
         imagePanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imagePanelNorth.add(imagePanelLabel);
 
-        JLabel histogramPanelLabel = new JLabel("jmagination.histogram.Histogram");
+        JLabel histogramPanelLabel = new JLabel("Histogram");
         histogramPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         histogramPanelNorth.add(histogramPanelLabel);
 

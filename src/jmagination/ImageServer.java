@@ -41,10 +41,10 @@ public class ImageServer implements RunOperation {
     ImageServer(ImageManager imageManager) {
         this.imageManager = imageManager;
         this.id = imageManager.nextImageId();
-        this.description = "Empty";
+        this.description = "Pusty";
 
 
-        window = new JFrame("Empty buffer");
+        window = new JFrame("Pusty bufor");
         window.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         window.setContentPane(tpanel);
 
@@ -64,9 +64,9 @@ public class ImageServer implements RunOperation {
         this.srcFilePath = filePath;
 
         if(this.fromFile == true) {
-            configure("Id: " + this.id + " from file: " + filePath);
+            configure("Id: " + this.id + " z pliku: " + filePath);
         } else {
-            configure("Id: " + this.id + " - new image ");
+            configure("Id: " + this.id + " - nowy obraz ");
         }
     }
 
@@ -85,20 +85,20 @@ public class ImageServer implements RunOperation {
     private void configure(String description) {
         this.description = description;
         imageTab = new GUIStyler.PresenterTabImage(img);
-        tpanel.addTab("Image", imageTab);
+        tpanel.addTab("Obraz", imageTab);
 
         propertiesTab = new GUIStyler.PresenterTabProperties(img);
-        tpanel.addTab("Properties", propertiesTab);
+        tpanel.addTab("Cechy", propertiesTab);
 
         histogram = new Histogram(img);
 
         Dimension histogramDimension = new Dimension(img.getWidth(), img.getHeight());
 
         historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg("INTERLACED", histogramDimension));
-        tpanel.addTab("jmagination.histogram.Histogram", historgamTab);
+        tpanel.addTab("Histogram", historgamTab);
 
         operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this), this);
-        tpanel.addTab("jmagination.Operations", operationsTab);
+        tpanel.addTab("Operacje", operationsTab);
 
         window.setTitle(description);
 
@@ -164,7 +164,7 @@ public class ImageServer implements RunOperation {
         try {
             bufferedImage = ImageIO.read(new File(filePath));
         } catch (IOException e) {
-            System.out.println("Error loading image");
+            System.out.println("Błąd otwarcia obrazu z pliku");
         }
 
         return bufferedImage;

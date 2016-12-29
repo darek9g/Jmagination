@@ -184,7 +184,7 @@ public class GUIStyler {
             int panelY = 0;
 
             {
-                JLabel label = new JLabel("Height");
+                JLabel label = new JLabel("Wysokość");
                 panel.add(label, new GUIStyler.ParamsGrid(panelX++, panelY));
 
                 JTextArea value = new JTextArea(String.valueOf(img.getHeight()));
@@ -194,7 +194,7 @@ public class GUIStyler {
 
             {
                 panelX=0;
-                JLabel label = new JLabel("Width");
+                JLabel label = new JLabel("Szerokość");
                 panel.add(label, new GUIStyler.ParamsGrid(panelX++, panelY));
 
                 String s = String.valueOf(img.getWidth());
@@ -205,11 +205,11 @@ public class GUIStyler {
 
             {
                 panelX=0;
-                JLabel label = new JLabel("Type");
+                JLabel label = new JLabel("Typ");
                 panel.add(label, new GUIStyler.ParamsGrid(panelX++, panelY));
 
                 int input = img.getColorModel().getColorSpace().getType();
-                String s = "Color Space Type";
+                String s = "Typ przestrzeni kolorów";
 
                 switch(input) {
                     case java.awt.color.ColorSpace.CS_CIEXYZ:
@@ -311,7 +311,7 @@ public class GUIStyler {
 
             {
                 panelX=0;
-                JLabel label = new JLabel("Components");
+                JLabel label = new JLabel("Liczba komponentów koloru");
                 panel.add(label, new GUIStyler.ParamsGrid(panelX++, panelY));
 
                 int input = img.getColorModel().getColorSpace().getNumComponents();
@@ -325,7 +325,7 @@ public class GUIStyler {
 
             {
                 panelX=0;
-                JLabel label = new JLabel("Colors");
+                JLabel label = new JLabel("Liczba kolorów");
                 panel.add(label, new GUIStyler.ParamsGrid(panelX++, panelY));
 
                 int input = img.getColorModel().getColorSpace().getNumComponents();
@@ -591,15 +591,15 @@ public class GUIStyler {
         ImagePanel imagePanel;
         JPanel controlsPanel;
 
-        static final String CMD_CE = "Center";
-        static final String CMD_TL = "Top-Left";
-        static final String CMD_TR = "Top-Right";
-        static final String CMD_BL = "Bottom-Left";
-        static final String CMD_BR = "Bottom-Right";
-        static final String CMD_AT = "Align-Top";
-        static final String CMD_AB = "Align-Bottom";
-        static final String CMD_AL = "Align-Left";
-        static final String CMD_AR = "Align-Right";
+        static final String CMD_CE = "Wyśrodkuj";
+        static final String CMD_TL = "Górny-lewy róg";
+        static final String CMD_TR = "Górny-prawy róg";
+        static final String CMD_BL = "Dolny-lewy róg";
+        static final String CMD_BR = "Dolny-prawy róg";
+        static final String CMD_AT = "Względem góry";
+        static final String CMD_AB = "Wzgledem dołu";
+        static final String CMD_AL = "Względem lewej krawędzi";
+        static final String CMD_AR = "Względem prawej krawędzi";
 
         static final String[] commands = { CMD_TL, CMD_TR, CMD_CE, CMD_BL, CMD_BR, CMD_AT, CMD_AB, CMD_AL, CMD_AR };
 

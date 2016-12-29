@@ -2,6 +2,7 @@ package jmagination.operations;
 
 import jmagination.ConstantsInitializers;
 import jmagination.ImageServer;
+import jmagination.guitools.LineEditor;
 import jmagination.histogram.Histogram;
 import slider.RangeSlider;
 import util.ImageCursor;
@@ -23,6 +24,8 @@ public class OperationThreshold extends Operation {
     JLabel thresholdRangeLowJLabel;
     JLabel thresholdRangeHighJLabel;
     RangeSlider thresholdJRangeSlider;
+
+    LineEditor thresholdLineEditor;
 
     ButtonGroup buttonGroupOperationMode;
     JRadioButton jRadioButtonOperationModeBinary;
@@ -51,6 +54,8 @@ public class OperationThreshold extends Operation {
         thresholdJRangeSlider.setValue(0);
         thresholdJRangeSlider.setUpperValue(255);
         thresholdJRangeSlider.setMinimumSize(new Dimension(256,15));
+
+        thresholdLineEditor = new LineEditor(LineEditor.MIN_ORG_MODE, 0, 255, 0, 255);
 
 
         buttonGroupOperationMode = new ButtonGroup();
@@ -140,24 +145,30 @@ public class OperationThreshold extends Operation {
         c.gridwidth = 2;
         panel.add(thresholdRangeHighJLabel, c);
 
-        // wiersz sterowania wykonaniem
+        // wiersz edytora linii
         c.gridx = 0;
         c.gridy = 4;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        panel.add(thresholdLineEditor, c);
+
+        // wiersz sterowania wykonaniem
+        c.gridx = 0;
+        c.gridy = 5;
         c.gridwidth = 4;
         panel.add(jLabelColorMode, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 4;
+        c.gridy = 5;
         c.gridwidth = 4;
         panel.add(jRadioButtonColorModeRGB, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 4;
+        c.gridy = 5;
         c.gridwidth = 4;
         panel.add(jRadioButtonColorModeHSV, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 4;
+        c.gridy = 5;
         c.gridwidth = 4;
         panel.add(jButtonApply, c);
 
