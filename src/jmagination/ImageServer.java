@@ -31,7 +31,8 @@ public class ImageServer implements RunOperation {
     PresenterTabImage imageTab;
     PresenterTabProperties propertiesTab;
     PresenterTabImage historgamTab;
-    PresenterTabOperations operationsTab;
+    JScrollPane operationsTab;
+    PresenterTabOperations operationsTabPane;
 
 
     BufferedImage img;
@@ -97,7 +98,8 @@ public class ImageServer implements RunOperation {
         historgamTab = new PresenterTabImage(histogram.createImg("INTERLACED", histogramDimension));
         tpanel.addTab("Histogram", historgamTab);
 
-        operationsTab = new PresenterTabOperations(Operations.registerOperationsForImageServer(this), this);
+        operationsTabPane = new PresenterTabOperations(Operations.registerOperationsForImageServer(this), this);
+        operationsTab = new JScrollPane(operationsTabPane);
         tpanel.addTab("Operacje", operationsTab);
 
         window.setTitle(description);
@@ -183,7 +185,7 @@ public class ImageServer implements RunOperation {
         Histogram histogram = new Histogram(newBufferedImage);
         historgamTab.setImage(histogram.createImg("INTERLACED", new Dimension(img.getWidth(),img.getHeight())));
 
-        operationsTab.updateControls(true);
+        operationsTabPane.updateControls(true);
     }
 
     @Override
@@ -193,7 +195,7 @@ public class ImageServer implements RunOperation {
             historgamTab.setImage(histogram.createImg("INTERLACED", new Dimension(img.getWidth(),img.getHeight())));
         }
         operation.jButtonApply.setEnabled(true);
-        operationsTab.updateControls(false);
+        operationsTabPane.updateControls(false);
     }
 
     @Override
@@ -201,6 +203,6 @@ public class ImageServer implements RunOperation {
         ImageServer newImageServer = this.createChildImageServer(imageTab.getImage());
         newImageServer.toogleWindow();
         operation.jButtonApply.setEnabled(true);
-        operationsTab.updateControls(false);
+        operationsTabPane.updateControls(false);
     }
 }
