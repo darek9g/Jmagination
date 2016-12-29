@@ -1,9 +1,12 @@
+package jmagination;
+
+import jmagination.gui.GUIStyler;
+import jmagination.histogram.Histogram;
+import jmagination.operations.Operation;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +17,7 @@ import java.nio.file.Paths;
 /**
  * Created by darek on 26.10.16.
  */
-public class ImageServer implements RunOperation{
+public class ImageServer implements RunOperation {
 
     ImageManager imageManager;
     int id;
@@ -92,10 +95,10 @@ public class ImageServer implements RunOperation{
         Dimension histogramDimension = new Dimension(img.getWidth(), img.getHeight());
 
         historgamTab = new GUIStyler.PresenterTabImage(histogram.createImg("INTERLACED", histogramDimension));
-        tpanel.addTab("Histogram", historgamTab);
+        tpanel.addTab("jmagination.histogram.Histogram", historgamTab);
 
         operationsTab = new GUIStyler.PresenterTabOperations(Operations.registerOperationsForImageServer(this), this);
-        tpanel.addTab("Operations", operationsTab);
+        tpanel.addTab("jmagination.Operations", operationsTab);
 
         window.setTitle(description);
 

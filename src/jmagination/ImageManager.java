@@ -1,3 +1,5 @@
+package jmagination;
+
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -65,13 +67,13 @@ public class ImageManager {
         tree.expandPath(new TreePath(theNode));
     }
 /*
-    public void removeImage(ImageServer imageServer) {
+    public void removeImage(jmagination.ImageServer imageServer) {
         images.remove(imageServer);
     }
 
 
 
-    public void loadImageToWorkspace(ImageServer imageServer) {
+    public void loadImageToWorkspace(jmagination.ImageServer imageServer) {
         workspace.setImageserver(imageServer);
     }*/
 }

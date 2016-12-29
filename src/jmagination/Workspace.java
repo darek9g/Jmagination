@@ -1,3 +1,5 @@
+package jmagination;
+
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -8,6 +10,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+
+import jmagination.gui.GUIStyler;
+import jmagination.histogram.Histogram;
+import jmagination.operations.Operation;
+import jmagination.operations.OperationDuplicate;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.FileDialog;
@@ -15,7 +22,7 @@ import org.eclipse.swt.widgets.FileDialog;
 /**
  * Created by darek on 19.11.2016.
  */
-public class Workspace implements RunOperation{
+public class Workspace implements RunOperation {
 
     ImageServer srcImageServer;
 
@@ -374,7 +381,7 @@ public class Workspace implements RunOperation{
 
     private void buildWindow(JTree managerTree) {
 
-        window = new JFrame("Jmagination - Biurko");
+        window = new JFrame("jmagination.Jmagination - Biurko");
 
 
         window.setPreferredSize(windowDimension);
@@ -465,7 +472,7 @@ public class Workspace implements RunOperation{
         imagePanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imagePanelNorth.add(imagePanelLabel);
 
-        JLabel histogramPanelLabel = new JLabel("Histogram");
+        JLabel histogramPanelLabel = new JLabel("jmagination.histogram.Histogram");
         histogramPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         histogramPanelNorth.add(histogramPanelLabel);
 
@@ -478,22 +485,22 @@ public class Workspace implements RunOperation{
         managerPanelCentral.setViewportView(managerTree);
 
         level1Left = new JPanel(new BorderLayout());
-//        level1Left.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
+//        level1Left.setPreferredSize(jmagination.ConstantsInitializers.GUI_DIMENSION_level1Left);
         level1Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Left);
         level1Left.add(managerPanel);
 
         level1Right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, operationsPanel, histogramPanel);
-//        level1Right.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
+//        level1Right.setPreferredSize(jmagination.ConstantsInitializers.GUI_DIMENSION_level1Right);
         level1Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level1Right);
         level1Right.setOneTouchExpandable(true);
 
         level0Left = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, level1Left, level1Right);
-//        level0Left.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
+//        level0Left.setPreferredSize(jmagination.ConstantsInitializers.GUI_DIMENSION_level0Left);
         level0Left.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Left);
         level0Left.setOneTouchExpandable(true);
 
         level0Right = new JPanel(new BorderLayout());
-//        level0Right.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
+//        level0Right.setPreferredSize(jmagination.ConstantsInitializers.GUI_DIMENSION_level0Right);
         level0Right.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0Right);
 
         level1Right.setResizeWeight(0.5);
@@ -506,7 +513,7 @@ public class Workspace implements RunOperation{
 
         level0SplitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, level0Left, level0Right);
         level0SplitPane.setPreferredSize(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
-//        level0SplitPane.setMinimumSize(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
+//        level0SplitPane.setMinimumSize(jmagination.ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
         level0SplitPane.setOneTouchExpandable(true);
 
         level0SplitPane.setResizeWeight(0.25);

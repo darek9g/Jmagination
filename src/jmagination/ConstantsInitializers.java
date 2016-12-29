@@ -1,3 +1,5 @@
+package jmagination;
+
 import javax.swing.*;
 import java.awt.*;
 

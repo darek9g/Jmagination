@@ -1,3 +1,9 @@
+package jmagination.operations;
+
+import jmagination.RunOperation;
+import jmagination.gui.GUIStyler;
+import jmagination.histogram.Histogram;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -21,7 +27,7 @@ public abstract class Operation {
 
     // wspólne dla operacji elementy interfejsu
 
-    GUIStyler.JButtonJM jButtonApply  = new GUIStyler.JButtonJM("Wykonaj");
+    public GUIStyler.JButtonJM jButtonApply  = new GUIStyler.JButtonJM("Wykonaj");
 
     JLabel jLabelColorMode = new JLabel("Tryb");
     JRadioButton jRadioButtonColorModeHSV = new JRadioButton("HSV");

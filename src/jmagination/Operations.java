@@ -1,3 +1,8 @@
+package jmagination;
+
+import jmagination.ImageServer;
+import jmagination.operations.*;
+
 import java.util.ArrayList;
 
 /**

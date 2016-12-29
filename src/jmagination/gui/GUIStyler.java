@@ -1,4 +1,8 @@
-import com.sun.deploy.panel.JavaPanel;
+package jmagination.gui;
+
+import jmagination.ConstantsInitializers;
+import jmagination.RunOperation;
+import jmagination.operations.Operation;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -7,7 +11,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Set;
 
 /**
  * Created by darek on 27.10.16.
@@ -30,7 +33,7 @@ public class GUIStyler {
 
             setFont(ConstantsInitializers.GUI_SMALL_FONT);
 
-//            setPreferredSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
+//            setPreferredSize(jmagination.ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
             setMinimumSize(ConstantsInitializers.GUI_BUTTON_SIZE_SHORT);
 
         }

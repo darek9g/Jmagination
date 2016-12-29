@@ -1,4 +1,6 @@
-import java.awt.image.BufferedImage;
+package jmagination;
+
+import jmagination.operations.Operation;
 
 /**
  * Created by darek on 16.12.2016.

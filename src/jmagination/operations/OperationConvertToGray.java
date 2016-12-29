@@ -1,10 +1,13 @@
+package jmagination.operations;
+
+import jmagination.ConstantsInitializers;
+import jmagination.ImageServer;
+import jmagination.histogram.Histogram;
 import util.ImageCursor;
 import util.PixelHood;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 

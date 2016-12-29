@@ -1,14 +1,19 @@
+package jmagination.operations;
+
+import jmagination.ConstantsInitializers;
+import jmagination.ImageServer;
+import jmagination.histogram.Histogram;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 
 /**
  * Created by darek on 30.11.2016.
  */
 
-public class OperationNegation extends Operation {
+public class OperationNegation extends jmagination.operations.Operation {
 
     Parameters parameters;
 

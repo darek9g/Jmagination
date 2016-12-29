@@ -1,1 +1,1 @@
-# Jmagination
+# jmagination.Jmagination

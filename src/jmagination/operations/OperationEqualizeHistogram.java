@@ -1,3 +1,8 @@
+package jmagination.operations;
+
+import jmagination.ConstantsInitializers;
+import jmagination.ImageServer;
+import jmagination.histogram.Histogram;
 import util.ImageCursor;
 import util.PixelHood;
 
