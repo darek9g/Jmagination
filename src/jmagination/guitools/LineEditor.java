@@ -6,12 +6,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
 /**
  * Created by darek on 29.12.2016.
  */
-public class LineEditor extends JPanel implements MouseListener {
+public class LineEditor extends JPanel implements MouseListener, MouseMotionListener {
 
 
     public static final int MIN_ORG_MODE = 0;
@@ -65,12 +66,14 @@ public class LineEditor extends JPanel implements MouseListener {
         referenceLine.addPoint(xToPict(0), yToPict(0));
         referenceLine.addPoint(xToPict(maxXSetup - minXSetup), yToPict(maxYSetup - minYSetup));
 
-        finalLine.addPoint(xToPict(0), yToPict(0));
-        finalLine.addPoint(xToPict(maxXSetup - minXSetup), yToPict(maxYSetup - minYSetup));
+/*        finalLine.addPoint(xToPict(0), yToPict(0));
+        finalLine.addPoint(xToPict(maxXSetup - minXSetup), yToPict(maxYSetup - minYSetup));*/
 
-        handles.add(new Point(0, 0 ));
+//        handles.add(new Point(0, 0 ));
+        processHandles();
 
         addMouseListener(this);
+        addMouseMotionListener(this);
     }
 
     private int xToPict(int v) {
@@ -94,9 +97,6 @@ public class LineEditor extends JPanel implements MouseListener {
         boolean zeroHandle = false;
         for(Point h: handles) {
 
-            System.out.println("Process handles");
-
-
             if (h.x == 0) {
                 if (zeroHandle == true) {
                     continue;
@@ -105,16 +105,12 @@ public class LineEditor extends JPanel implements MouseListener {
             }
 
             int insertPos = 0;
-            boolean isBiggest = false;
             for (int i = 0; i < newHandles.size(); ++i) {
                 if (h.x > newHandles.get(i).x) {
-                    ++insertPos;
+                    insertPos = i + 1;
                 } else {
+                    insertPos = i;
                     break;
-                }
-
-                if (i == newHandles.size()) {
-                    isBiggest = true;
                 }
             }
 
@@ -123,16 +119,39 @@ public class LineEditor extends JPanel implements MouseListener {
         }
 
         for (int i=0; i<handles.size(); ++i) {
-            handles.remove(i);
+            System.out.println("Org " + handles.get(i));
         }
 
+        for (int i=0; i<newHandles.size(); ++i) {
+            System.out.println("New " + newHandles.get(i));
+        }
+
+        handles.clear();
+
+        if(zeroHandle == false) {
+            handles.add(new Point(0,0));
+        }
         handles.addAll(newHandles);
+
+        for (int i=0; i<handles.size(); ++i) {
+            System.out.println("Final " + handles.get(i));
+        }
     }
 
     public ArrayList<Point> getHandles() {
         ArrayList<Point> ret = new ArrayList<>(handles);
+        System.out.println("Initial");
+        for(Point h: ret) {
+//            System.out.println(h.toString());
+        }
         if(ret.size() % 2 == 1) {
             ret.remove(0);
+            System.out.println("Removing");
+        }
+
+        System.out.println("Final");
+        for(Point h: ret) {
+//            System.out.println(h.toString());
         }
         return ret;
     }
@@ -141,27 +160,17 @@ public class LineEditor extends JPanel implements MouseListener {
     public void paintComponent(Graphics graphics) {
         int width = maxXSetup - minXSetup;
         int height = maxYSetup - minYSetup;
-//        graphics.clearRect(0,0, width, height);
+
+
+        // rysowanie tła
 
         graphics.setColor(ConstantsInitializers.GUI_CHARTS_BG_COLOR);
         Polygon bgPolygon = new Polygon(new int[]{xToPict(0), xToPict(width), xToPict(width), xToPict(0)},
                 new int[]{yToPict(0), yToPict(0), yToPict(height), yToPict(height)}, 4);
         graphics.fillPolygon(bgPolygon);
 
-//        graphics.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
-        graphics.setColor(Color.orange);
-        graphics.drawPolygon(referenceLine);
 
-
-        for(Point p: handles) {
-            graphics.setColor(new Color(255, 175, 175));
-            graphics.drawLine(xToPict(p.x), yToPict(0), xToPict(p.x), yToPict(height));
-
-            graphics.fillOval(xToPict(p.x - marigin / 2 ), yToPict(height / 2 ), marigin, marigin);
-            graphics.setColor(new Color(255, 0, 0));
-            graphics.drawOval(xToPict(p.x - marigin / 2 ), yToPict(height / 2 ), marigin, marigin);
-        }
-
+        // rysowanie polygony opisującej schemat operacji
 
         ArrayList<Point> realHandles = getHandles();
 
@@ -174,17 +183,45 @@ public class LineEditor extends JPanel implements MouseListener {
 
             if(i % 2 == 0) {
                 finalLine.addPoint(xToPict(realHandles.get(i).x), yToPict(0));
-                finalLine.addPoint(xToPict(realHandles.get(i).x), yToPict(height));
-
+                finalLine.addPoint(xToPict(realHandles.get(i).x), yToPict(height/2));
             } else {
-                finalLine.addPoint(xToPict(realHandles.get(i).x), yToPict(height));
+                finalLine.addPoint(xToPict(realHandles.get(i).x), yToPict(height/2));
                 finalLine.addPoint(xToPict(realHandles.get(i).x), yToPict(0));
             }
         }
 
         finalLine.addPoint(xToPict(width), yToPict(0));
         graphics.drawPolygon(finalLine);
+        setOpaque(true);
+        graphics.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
+        graphics.fillPolygon(finalLine);
+        setOpaque(false);
 
+        // rysowanie lini odniesienia
+        graphics.setColor(Color.orange);
+        graphics.drawPolygon(referenceLine);
+
+
+        // rysowanie uchwytów i etykiet narzędzi edycji
+        for(Point p: handles) {
+            if(p==handlePressed) {
+                graphics.setColor(new Color(175, 255, 175));
+            } else {
+                graphics.setColor(new Color(255, 175, 175));
+            }
+            if(p.x != 0) {
+                graphics.drawLine(xToPict(p.x), yToPict(0), xToPict(p.x), yToPict(height));
+            }
+
+            graphics.fillOval(xToPict(p.x - marigin / 2 ), yToPict(height / 2 ), marigin, marigin);
+
+            if(p==handlePressed) {
+                graphics.setColor(new Color(0, 255, 0));
+            } else {
+                graphics.setColor(new Color(255, 0, 0));
+            }
+            graphics.drawOval(xToPict(p.x - marigin / 2 ), yToPict(height / 2 ), marigin, marigin);
+        }
 
     }
 
@@ -203,12 +240,11 @@ public class LineEditor extends JPanel implements MouseListener {
         for(Point h: handles) {
             int distX = eX - xToPict(h.x);
             int distY = eY - yToPict((maxYSetup - minYSetup) / 2 );
-            double dist = distX ^ 2 + distY ^ 2;
-            double range = ( marigin / 2 ) ^ 2;
+            double dist = Math.pow(distX, 2) + Math.pow(distY, 2);
+            double range = Math.pow( marigin, 2);
 
             if(dist < range) {
                 handlePressed = h;
-                System.out.println("Contact");
                 break;
             }
         }
@@ -218,18 +254,11 @@ public class LineEditor extends JPanel implements MouseListener {
     @Override
     public void mouseReleased(MouseEvent e) {
 
-        int eX = e.getX();
-        int eY = e.getY();
-
-        int handlePressedY = handlePressed.y;
-        if(handlePressed != null) {
-            handlePressed.setLocation(xFromPict(eX), handlePressedY);
-            System.out.println("Update");
+        if(handlePressed!=null) {
+            handlePressed = null;
+            processHandles();
+            getParent().repaint();
         }
-
-        handlePressed = null;
-        processHandles();
-        getParent().repaint();
     }
 
     @Override
@@ -239,6 +268,33 @@ public class LineEditor extends JPanel implements MouseListener {
 
     @Override
     public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        int eX = e.getX();
+        int eY = e.getY();
+
+        if(handlePressed != null) {
+            int handlePressedY = handlePressed.y;
+
+            if( xFromPict(eX) > maxXSetup - minXSetup ) {
+                eX = xToPict(maxXSetup - minXSetup );
+            }
+            if( xFromPict(eX) < 0 ) {
+                eX = xToPict(0);
+            }
+
+            handlePressed.setLocation(xFromPict(eX), handlePressedY);
+
+            getParent().repaint();
+        }
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
 
     }
 }
