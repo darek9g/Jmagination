@@ -1,5 +1,9 @@
 package jmagination.operations;
 
+/**
+ * Created by darek on 03.01.2017.
+ */
+
 import jmagination.ConstantsInitializers;
 import jmagination.ImageServer;
 import jmagination.guitools.LineEditor;
@@ -10,38 +14,48 @@ import util.PixelHood;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.util.ArrayList;
 
 
 /**
  * Created by darek on 30.11.2016.
  */
 
-public class OperationThreshold extends Operation {
+public class OperationThresholdSlider extends Operation {
 
     Parameters parameters;
-
-    LineEditor thresholdLineEditor;
+    JLabel thresholdRangeLowJLabel;
+    JLabel thresholdRangeHighJLabel;
+    RangeSlider thresholdJRangeSlider;
 
     ButtonGroup buttonGroupOperationMode;
     JRadioButton jRadioButtonOperationModeBinary;
     JRadioButton jRadioButtonOperationModeWithValues;
 
 
-    public OperationThreshold(ImageServer srcImageServer) {
+    public OperationThresholdSlider(ImageServer srcImageServer) {
         super();
-        this.label = "Proguj piksele";
+        this.label = "Proguj piksele - slider";
         categories.add("LAB 2");
         categories.add("Punktowe jednoargumentowe");
 
         parameters = new Parameters();
 
-        thresholdLineEditor = new LineEditor(LineEditor.MIN_MAX_MODE, 0, 255, 0, 255);
-        thresholdLineEditor.addActionListener(runOperationTrigger);
+        thresholdRangeLowJLabel = new JLabel(String.valueOf(parameters.thresholdRangeLow));
+        thresholdRangeLowJLabel.setPreferredSize(new Dimension(25,10));
+        thresholdRangeLowJLabel.setMinimumSize(new Dimension(25,10));
+        thresholdRangeLowJLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+        thresholdRangeHighJLabel = new JLabel(String.valueOf(parameters.thresholdRangeHigh));
+        thresholdRangeHighJLabel.setPreferredSize(new Dimension(25,10));
+        thresholdRangeHighJLabel.setMinimumSize(new Dimension(25,10));
+        thresholdRangeLowJLabel.setHorizontalAlignment(SwingConstants.LEFT);
+        thresholdJRangeSlider = new RangeSlider();
+        thresholdJRangeSlider.setMinimum(0);
+        thresholdJRangeSlider.setMaximum(255);
+        thresholdJRangeSlider.setValue(0);
+        thresholdJRangeSlider.setUpperValue(255);
+        thresholdJRangeSlider.setMinimumSize(new Dimension(256,15));
 
         buttonGroupOperationMode = new ButtonGroup();
 
@@ -62,9 +76,10 @@ public class OperationThreshold extends Operation {
         if(jRadioButtonOperationModeBinary.isSelected() == true) {
             parameters.mode = 1;
         }
-
-        parameters.operationMap = thresholdLineEditor.getOutputPoints();
-
+        parameters.thresholdRangeLow = thresholdJRangeSlider.getValue();
+        parameters.thresholdRangeHigh = thresholdJRangeSlider.getUpperValue();
+        thresholdRangeLowJLabel.setText(String.valueOf(parameters.thresholdRangeLow));
+        thresholdRangeHighJLabel.setText(String.valueOf(parameters.thresholdRangeHigh));
         return thresholdPixelsFunction(bufferedImage);
     }
 
@@ -105,11 +120,29 @@ public class OperationThreshold extends Operation {
         c.gridwidth = 8;
         panel.add(jRadioButtonOperationModeBinary, c);
 
-        // wiersz edytora linii
+/*        c.gridx+= c.gridwidth;
+        c.gridy = 2;
+        c.gridwidth = 2;
+        panel.add(thresholdRangeHighJLabel, c);*/
+
+
+        // wiersz suwaka
         c.gridx = 0;
-        c.gridy = 4;
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        panel.add(thresholdLineEditor, c);
+        c.gridy = 3;
+        c.gridwidth = 2;
+        panel.add(thresholdRangeLowJLabel, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 12;
+
+        thresholdJRangeSlider.addChangeListener(runOperationChangeTrigger);
+        panel.add(thresholdJRangeSlider, c);
+
+        c.gridx+= c.gridwidth;
+        c.gridy = 3;
+        c.gridwidth = 2;
+        panel.add(thresholdRangeHighJLabel, c);
 
         // wiersz sterowania wykonaniem
         c.gridx = 0;
@@ -153,7 +186,6 @@ public class OperationThreshold extends Operation {
 
         do {
             imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_MIN);
-
             int[] pixel = thresholdPixel(parameters.mode, parameters.thresholdRangeLow, parameters.thresholdRangeHigh, pixelHood.getPixel(0,0));
             outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
 
@@ -188,13 +220,7 @@ public class OperationThreshold extends Operation {
         int thresholdRangeLow = 0;
         int thresholdRangeHigh = 255;
 
-        ArrayList<Point> operationMap;
-
         int mode = 0;
-
-        {
-            operationMap = new ArrayList<>();
-        }
 
         public Parameters() {}
     }

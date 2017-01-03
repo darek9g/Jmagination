@@ -4,9 +4,7 @@ import jmagination.ConstantsInitializers;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 /**
@@ -34,12 +32,17 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
     ArrayList<Point> handles;
     Point handlePressed = null;
 
+    ArrayList<ActionListener> actionListeners;
+    private int actionEventId = 0;
+
     {
         referenceLine = new Polygon();
 
         finalLine = new Polygon();
 
         handles = new ArrayList<>();
+
+        actionListeners = new ArrayList<>();
 
     }
 
@@ -53,7 +56,7 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         this.minYSetup = minYSetup;
         this.maxYSetup = maxYSetup;
 
-        Dimension dimension = new Dimension( 2 * marigin + maxXSetup - minXSetup , 2 * marigin + maxYSetup - minYSetup );
+        Dimension dimension = new Dimension( 2 * marigin + maxXSetup - minXSetup + 1, 2 * marigin + maxYSetup - minYSetup + 1);
 
         this.setMinimumSize(dimension);
         this.setMaximumSize(dimension);
@@ -64,12 +67,8 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         // wartości absolutne
 
         referenceLine.addPoint(xToPict(0), yToPict(0));
-        referenceLine.addPoint(xToPict(maxXSetup - minXSetup), yToPict(maxYSetup - minYSetup));
+        referenceLine.addPoint(xToPict(maxXSetup - minXSetup ), yToPict(maxYSetup - minYSetup));
 
-/*        finalLine.addPoint(xToPict(0), yToPict(0));
-        finalLine.addPoint(xToPict(maxXSetup - minXSetup), yToPict(maxYSetup - minYSetup));*/
-
-//        handles.add(new Point(0, 0 ));
         processHandles();
 
         addMouseListener(this);
@@ -95,7 +94,10 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
     private void processHandles() {
         ArrayList<Point> newHandles = new ArrayList<>();
         boolean zeroHandle = false;
-        for(Point h: handles) {
+
+        for(int j=handles.size()-1;j>=0; --j) {
+
+            Point h = handles.get(j);
 
             if (h.x == 0) {
                 if (zeroHandle == true) {
@@ -106,7 +108,7 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
 
             int insertPos = 0;
             for (int i = 0; i < newHandles.size(); ++i) {
-                if (h.x > newHandles.get(i).x) {
+                if (h.x >= newHandles.get(i).x) {
                     insertPos = i + 1;
                 } else {
                     insertPos = i;
@@ -121,21 +123,29 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         handles.clear();
 
         if(zeroHandle == false) {
-            handles.add(new Point(0,( maxYSetup - minYSetup ) / 2));
+            handles.add(new Point(0,0));
         }
         handles.addAll(newHandles);
     }
 
+    public void removeDuplicateXHandles(Point active) {
+        for(Point passive: handles) {
+            if(passive.x == active.x) {
+                passive.y = active.y;
+            }
+        }
+    }
+
     public Polygon getOutputPolygon() {
         ArrayList<Point> points = new ArrayList<>(handles);
+        Polygon outputPolygon = new Polygon();
 
         if(points.size() % 2 == 1) {
             points.remove(0);
+            outputPolygon.addPoint(xToPict(0), yToPict(0));
         }
 
-        Polygon outputPolygon = new Polygon();
 
-        outputPolygon.addPoint(xToPict(0), yToPict(0));
 
         for(int i=0; i<points.size(); ++i) {
 
@@ -152,19 +162,64 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
                     y = points.get(i).y;
             }
 
-
-            if(i % 2 == 0) {
-                outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(0));
-                outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(y));
-            } else {
-                outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(y));
-                outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(0));
+            switch(operationMode) {
+                case FREE_MODE:
+                    outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(y));
+                    break;
+                default:
+                    if(i % 2 == 0) {
+                        outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(0));
+                        outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(y));
+                    } else {
+                        outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(y));
+                        outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(0));
+                    }
             }
+
         }
 
         outputPolygon.addPoint(xToPict(maxXSetup - minXSetup), yToPict(0));
 
         return outputPolygon;
+    }
+
+    public int[] getOutputPoints() {
+        ArrayList<Point> points = new ArrayList<>(handles);
+        int[] outputPoints = new int[maxXSetup - minXSetup + 1];
+
+        if(points.size() % 2 == 1) {
+            points.remove(0);
+        }
+
+        for(int i=0; i<outputPoints.length; ++i) {
+            outputPoints[i] = 0;
+        }
+
+
+/*        for(int i=0; i<points.size(); ++i) {
+
+
+            int y;
+            switch(operationMode) {
+                case MIN_ORG_MODE:
+                    y = points.get(i).x;
+                    break;
+                case MIN_MAX_MODE:
+                    y = maxYSetup - minYSetup;
+                    break;
+                case FREE_MODE:
+                default:
+                    y = points.get(i).y;
+            }
+
+            outputPoints.add(new Point(points.get(i).x, y));
+            if(points.get(i).x == maxXSetup - minXSetup) { maxHandle = true; }
+
+        }*/
+
+
+
+        return outputPoints;
     }
 
     @Override
@@ -264,6 +319,7 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
     public void mouseReleased(MouseEvent e) {
 
         if(handlePressed!=null) {
+            removeDuplicateXHandles(handlePressed);
             handlePressed = null;
 //            processHandles();
             getParent().repaint();
@@ -305,6 +361,7 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
 
             processHandles();
             getParent().repaint();
+            fireActionEvent();
         }
 
     }
@@ -312,5 +369,19 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    public void addActionListener(ActionListener actionListener) {
+        actionListeners.add(actionListener);
+    }
+
+    public void removeActionListener(ActionListener actionListener) {
+        actionListeners.remove(actionListener);
+    }
+
+    public void fireActionEvent() {
+        for(ActionListener actionListener: actionListeners) {
+            actionListener.actionPerformed(new ActionEvent((Object) this, actionEventId++, "User interacted" ));
+        }
     }
 }
