@@ -5,6 +5,8 @@ import jmagination.ConstantsInitializers;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 
 /**
@@ -37,15 +39,11 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
 
     {
         referenceLine = new Polygon();
-
         finalLine = new Polygon();
-
         handles = new ArrayList<>();
-
         actionListeners = new ArrayList<>();
 
     }
-
 
     public LineEditor(int operationMode, int minXSetup, int maxXSetup, int minYSetup, int maxYSetup) {
         super();
@@ -75,6 +73,15 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         addMouseMotionListener(this);
     }
 
+    public void setMode(int mode) {
+        operationMode = mode;
+        getParent().repaint();
+    }
+
+    public int getMode() {
+        return operationMode;
+    }
+
     private int xToPict(int v) {
         return v + marigin;
     }
@@ -83,11 +90,19 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         return v - marigin;
     }
 
+    private double xFromPict(double v) {
+        return v - marigin;
+    }
+
     private int yToPict(int v) {
         return maxYSetup - minYSetup + marigin - v;
     }
 
     private int yFromPict(int v) {
+        return - v +  maxYSetup - minYSetup + marigin;
+    }
+
+    private double yFromPict(double v) {
         return - v +  maxYSetup - minYSetup + marigin;
     }
 
@@ -183,41 +198,53 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         return outputPolygon;
     }
 
-    public int[] getOutputPoints() {
-        ArrayList<Point> points = new ArrayList<>(handles);
+    public int[] getOutputMap() {
         int[] outputPoints = new int[maxXSetup - minXSetup + 1];
+        Polygon polygon = getOutputPolygon();
 
-        if(points.size() % 2 == 1) {
-            points.remove(0);
-        }
 
         for(int i=0; i<outputPoints.length; ++i) {
             outputPoints[i] = 0;
         }
 
+        double Ax = 0;
+        double Ay = 0;
 
-/*        for(int i=0; i<points.size(); ++i) {
+        boolean firstSegment = true;
 
+        PathIterator pathIterator = polygon.getPathIterator(null);
+        do {
+            double[] segment = new double[6];
+            if(pathIterator.currentSegment(segment) != PathIterator.SEG_CLOSE) {
 
-            int y;
-            switch(operationMode) {
-                case MIN_ORG_MODE:
-                    y = points.get(i).x;
-                    break;
-                case MIN_MAX_MODE:
-                    y = maxYSetup - minYSetup;
-                    break;
-                case FREE_MODE:
-                default:
-                    y = points.get(i).y;
+                double Bx = xFromPict(segment[0]);
+                double By = yFromPict(segment[1]);
+
+                if(firstSegment==false) {
+                    if (Ax == Bx) {
+                        outputPoints[(int) Bx] = (int) By;
+                    } else {
+                        double lineCoeff = (By - Ay) / (Bx - Ax);
+                        int fromX = (int) Math.round(Ax);
+                        int toX = (int) Math.round(Bx);
+
+                        int fromY = (int) Math.round(Ay);
+
+                        for (int i = fromX; i <= toX; ++i) {
+                            outputPoints[i] = (int) Math.round(Ay + (i - fromX) * lineCoeff);
+                        }
+                    }
+                } else {
+                    firstSegment = false;
+                }
+
+                Ax = Bx;
+                Ay = By;
             }
 
-            outputPoints.add(new Point(points.get(i).x, y));
-            if(points.get(i).x == maxXSetup - minXSetup) { maxHandle = true; }
 
-        }*/
-
-
+            pathIterator.next();
+        } while(pathIterator.isDone()==false);
 
         return outputPoints;
     }
@@ -234,11 +261,6 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         Polygon bgPolygon = new Polygon(new int[]{xToPict(0), xToPict(width), xToPict(width), xToPict(0)},
                 new int[]{yToPict(0), yToPict(0), yToPict(height), yToPict(height)}, 4);
         graphics.fillPolygon(bgPolygon);
-
-        // rysowanie lini odniesienia
-        graphics.setColor(Color.orange);
-        graphics.drawPolygon(referenceLine);
-
 
         // rysowanie uchwytów i etykiet narzędzi edycji w tle
         for(Point p: handles) {
@@ -261,6 +283,11 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
 
         graphics.setColor(Color.BLACK);
         graphics.drawPolygon(finalLine);
+
+        // rysowanie lini odniesienia
+        graphics.setColor(Color.orange);
+        graphics.drawPolygon(referenceLine);
+
 
         // rysowanie uchwytów i etykiet narzędzi edycji na pierwszym planie
 

@@ -20,6 +20,7 @@ public class Operations {
         availableOperations.add(new OperationStrechHistogram(imageServer));
         availableOperations.add(new OperationNegation(imageServer));
         availableOperations.add(new OperationThreshold(imageServer));
+        availableOperations.add(new OperationThresholdSlider(imageServer));
 
         return availableOperations;
     }

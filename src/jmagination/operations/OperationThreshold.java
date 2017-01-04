@@ -9,6 +9,8 @@ import util.ImageCursor;
 import util.PixelHood;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -38,9 +40,9 @@ public class OperationThreshold extends Operation {
         categories.add("LAB 2");
         categories.add("Punktowe jednoargumentowe");
 
-        parameters = new Parameters();
+        parameters = new Parameters(256);
 
-        thresholdLineEditor = new LineEditor(LineEditor.MIN_MAX_MODE, 0, 255, 0, 255);
+        thresholdLineEditor = new LineEditor(LineEditor.MIN_ORG_MODE, 0, 255, 0, 255);
         thresholdLineEditor.addActionListener(runOperationTrigger);
 
         buttonGroupOperationMode = new ButtonGroup();
@@ -49,6 +51,26 @@ public class OperationThreshold extends Operation {
         jRadioButtonOperationModeWithValues.setSelected(true);
         jRadioButtonOperationModeBinary = new JRadioButton("Binaryzacja");
 
+        ChangeListener changeModeListener = new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if(jRadioButtonOperationModeWithValues.isSelected() == true) {
+                    parameters.mode = LineEditor.MIN_ORG_MODE;
+                }
+                if(jRadioButtonOperationModeBinary.isSelected() == true) {
+                    parameters.mode = LineEditor.MIN_MAX_MODE;
+                }
+
+                thresholdLineEditor.setMode(parameters.mode);
+
+                jButtonApply.setEnabled(false);
+                RunOperation(that);
+            }
+        };
+
+        jRadioButtonOperationModeBinary.addChangeListener(changeModeListener);
+        jRadioButtonOperationModeWithValues.addChangeListener(changeModeListener);
+
         buttonGroupOperationMode.add(jRadioButtonOperationModeWithValues);
         buttonGroupOperationMode.add(jRadioButtonOperationModeBinary);
 
@@ -56,14 +78,15 @@ public class OperationThreshold extends Operation {
 
     @Override
     public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
-        if(jRadioButtonOperationModeWithValues.isSelected() == true) {
-            parameters.mode = 0;
-        }
-        if(jRadioButtonOperationModeBinary.isSelected() == true) {
-            parameters.mode = 1;
-        }
 
-        parameters.operationMap = thresholdLineEditor.getOutputPoints();
+
+        parameters.operationMap = thresholdLineEditor.getOutputMap();
+
+/*        System.out.printf("Mapa: \n");
+        for(int i=0;i<parameters.operationMap.length; ++i) {
+            System.out.printf("%d ",parameters.operationMap[i]);
+        }
+        System.out.printf("\n");*/
 
         return thresholdPixelsFunction(bufferedImage);
     }
@@ -154,7 +177,7 @@ public class OperationThreshold extends Operation {
         do {
             imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_MIN);
 
-            int[] pixel = thresholdPixel(parameters.mode, parameters.thresholdRangeLow, parameters.thresholdRangeHigh, pixelHood.getPixel(0,0));
+            int[] pixel = thresholdPixel(parameters.operationMap, pixelHood.getPixel(0,0));
             outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
 
         } while (imageCursor.forward());
@@ -162,40 +185,23 @@ public class OperationThreshold extends Operation {
         return outImage;
     }
 
-    public static int[] thresholdPixel(int mode, int lowValue, int highValue, int... pixel){
+    public static int[] thresholdPixel(int[] map, int... pixel){
         int[] newPixel = new int[pixel.length];
         for (int i = 0; i < pixel.length; i++) {
-
-            if(pixel[i]<=lowValue) {
-                newPixel[i] = 0;
-            } else {
-                if (pixel[i]>highValue) { newPixel[i] = 0; } else {
-                    switch(mode) {
-                        case 0:
-                            newPixel[i] = pixel[i];
-                            break;
-                        case 1:
-                            newPixel[i] = 255;
-                            break;
-                    }
-                }
-            }
+            newPixel[i] = map[pixel[i]];
         }
         return newPixel;
     }
 
     private class Parameters {
-        int thresholdRangeLow = 0;
-        int thresholdRangeHigh = 255;
 
-        ArrayList<Point> operationMap;
+        int[] operationMap;
 
         int mode = 0;
 
-        {
-            operationMap = new ArrayList<>();
-        }
 
-        public Parameters() {}
+        public Parameters(int operationMapLength) {
+            operationMap = new int[operationMapLength];
+        }
     }
 }
