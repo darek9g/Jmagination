@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationThreshold extends Operation {
+public class OperationStretchRanges extends Operation {
 
     Parameters parameters;
 
@@ -34,45 +34,25 @@ public class OperationThreshold extends Operation {
     JRadioButton jRadioButtonOperationModeWithValues;
 
 
-    public OperationThreshold(ImageServer srcImageServer) {
+    public OperationStretchRanges(ImageServer srcImageServer) {
         super();
-        this.label = "Proguj piksele";
+        this.label = "Rozciągaj zakresami";
         categories.add("LAB 2");
         categories.add("Punktowe jednoargumentowe");
 
         parameters = new Parameters(256);
 
-        thresholdLineEditor = new LineEditor(LineEditor.MIN_ORG_MODE, 0, 255, 0, 255);
+        thresholdLineEditor = new LineEditor(LineEditor.STRECH_MODE, 0, 255, 0, 255);
         thresholdLineEditor.addActionListener(runOperationTrigger);
-
-        buttonGroupOperationMode = new ButtonGroup();
-
-        jRadioButtonOperationModeWithValues = new JRadioButton("Zachowanie wartości");
-        jRadioButtonOperationModeWithValues.setSelected(true);
-        jRadioButtonOperationModeBinary = new JRadioButton("Binaryzacja");
 
         ChangeListener changeModeListener = new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if(jRadioButtonOperationModeWithValues.isSelected() == true) {
-                    parameters.mode = LineEditor.MIN_ORG_MODE;
-                }
-                if(jRadioButtonOperationModeBinary.isSelected() == true) {
-                    parameters.mode = LineEditor.MIN_MAX_MODE;
-                }
-
-                thresholdLineEditor.setMode(parameters.mode);
 
                 jButtonApply.setEnabled(false);
                 RunOperation(that);
             }
         };
-
-        jRadioButtonOperationModeBinary.addChangeListener(changeModeListener);
-        jRadioButtonOperationModeWithValues.addChangeListener(changeModeListener);
-
-        buttonGroupOperationMode.add(jRadioButtonOperationModeWithValues);
-        buttonGroupOperationMode.add(jRadioButtonOperationModeBinary);
 
     }
 
@@ -106,27 +86,16 @@ public class OperationThreshold extends Operation {
         c.gridx =0;
         c.gridy =0;
         c.gridwidth = 16;
-        JLabel title = new JLabel("Progowanie");
+        JLabel title = new JLabel("Rozciąganie zakresami do zakresu 0 - maksimum");
         panel.add(title, c);
 
         // opis
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 16;
-        JTextArea description = new JTextArea("Ustawienie minimalnej jasności pikselom spoza określonego \nzakresu jasności");
+        JTextArea description = new JTextArea("Skalowanie wartości z wybranych zakresów do zakresu 0 - maks.\nUstawienie minimalnej jasności pikselom spoza określonych \nzakresów jasności.");
         description.setEditable(false);
         panel.add(description, c);
-
-        // wiersz wyboru trybu
-        c.gridx = 0;
-        c.gridy = 2;
-        c.gridwidth = 8;
-        panel.add(jRadioButtonOperationModeWithValues, c);
-
-        c.gridx+= c.gridwidth;
-        c.gridy = 2;
-        c.gridwidth = 8;
-        panel.add(jRadioButtonOperationModeBinary, c);
 
         // wiersz edytora linii
         c.gridx = 0;
@@ -196,9 +165,6 @@ public class OperationThreshold extends Operation {
     private class Parameters {
 
         int[] operationMap;
-
-        int mode = 0;
-
 
         public Parameters(int operationMapLength) {
             operationMap = new int[operationMapLength];
