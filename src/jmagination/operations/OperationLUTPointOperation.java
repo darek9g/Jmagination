@@ -23,36 +23,29 @@ import java.util.ArrayList;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationStretchRanges extends Operation {
+public class OperationLUTPointOperation extends Operation {
 
     Parameters parameters;
 
     LineEditor thresholdLineEditor;
 
-    ButtonGroup buttonGroupOperationMode;
-    JRadioButton jRadioButtonOperationModeBinary;
-    JRadioButton jRadioButtonOperationModeWithValues;
-
-
-    public OperationStretchRanges(ImageServer srcImageServer) {
-        super();
-        this.label = "Rozciągaj zakresami";
-        categories.add("LAB 2");
-        categories.add("Punktowe jednoargumentowe");
+    {
+        label = "Uniwersalna operacja punktowa";
+        header = "Uniwersalna operacja punktowa - UOP";
+        description = "Skalowanie wartości z według lini skalowania.";
 
         parameters = new Parameters(256);
 
-        thresholdLineEditor = new LineEditor(LineEditor.STRECH_MODE, 0, 255, 0, 255);
+        thresholdLineEditor = new LineEditor(LineEditor.FREE_MODE, 0, 255, 0, 255);
         thresholdLineEditor.addActionListener(runOperationTrigger);
 
-        ChangeListener changeModeListener = new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
+    }
 
-                jButtonApply.setEnabled(false);
-                RunOperation(that);
-            }
-        };
+
+    public OperationLUTPointOperation() {
+        super();
+        categories.add("LAB 2");
+        categories.add("Punktowe jednoargumentowe");
 
     }
 
@@ -86,16 +79,16 @@ public class OperationStretchRanges extends Operation {
         c.gridx =0;
         c.gridy =0;
         c.gridwidth = 16;
-        JLabel title = new JLabel("Rozciąganie zakresami do zakresu 0 - maksimum");
+        JLabel title = new JLabel(header);
         panel.add(title, c);
 
         // opis
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 16;
-        JTextArea description = new JTextArea("Skalowanie wartości z wybranych zakresów do zakresu 0 - maks.\nUstawienie minimalnej jasności pikselom spoza określonych \nzakresów jasności.");
-        description.setEditable(false);
-        panel.add(description, c);
+        JTextArea jTextAreadescription = new JTextArea(description);
+        jTextAreadescription.setEditable(false);
+        panel.add(jTextAreadescription, c);
 
         // wiersz edytora linii
         c.gridx = 0;
@@ -130,7 +123,7 @@ public class OperationStretchRanges extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationThreshold(null);
+        return new OperationLUTNegation();
     }
 
     public BufferedImage remapPixelsFunction(BufferedImage inImage) {
@@ -162,7 +155,7 @@ public class OperationStretchRanges extends Operation {
         return newPixel;
     }
 
-    private class Parameters {
+    protected class Parameters {
 
         int[] operationMap;
 

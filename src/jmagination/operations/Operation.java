@@ -18,6 +18,8 @@ import java.util.ArrayList;
 public abstract class Operation {
 
     String label = "Dummy";
+    String header = "Dummy";
+    String description = "Dummy";
     ArrayList<String> categories = new ArrayList<>();
     boolean hsvModeAllowed = false;
     Operation that = this;

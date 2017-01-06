@@ -24,7 +24,7 @@ public class OperationStrechHistogram extends Operation {
         super();
         this.label = "Rozciągnij histogramu";
         categories.add("LAB 1");
-        categories.add("Wielopunktowe");
+        categories.add("Histogramowe");
 
         parameters = new Parameters();
     }

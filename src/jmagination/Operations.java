@@ -18,11 +18,18 @@ public class Operations {
         availableOperations.add(new OperationConvertToGray(imageServer));
         availableOperations.add(new OperationEqualizeHistogram(imageServer));
         availableOperations.add(new OperationStrechHistogram(imageServer));
-        availableOperations.add(new OperationNegation(imageServer));
-        availableOperations.add(new OperationThreshold(imageServer));
+//        availableOperations.add(new OperationNegation(imageServer));
+//        availableOperations.add(new OperationThreshold(imageServer));
 //        availableOperations.add(new OperationThresholdSlider(imageServer));
-        availableOperations.add(new OperationStretchRanges(imageServer));
-        availableOperations.add(new OperationScale(imageServer));
+//        availableOperations.add(new OperationStretchRanges(imageServer));
+//        availableOperations.add(new OperationScale(imageServer));
+        availableOperations.add(new OperationLUTPointOperation());
+        availableOperations.add(new OperationLUTThreshold());
+        availableOperations.add(new OperationLUTBinarization());
+        availableOperations.add(new OperationLUTStretchInRanges());
+        availableOperations.add(new OperationLUTScaleDown());
+        availableOperations.add(new OperationLUTScale());
+        availableOperations.add(new OperationLUTNegation());
 
         return availableOperations;
     }

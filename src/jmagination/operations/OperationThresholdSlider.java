@@ -22,6 +22,7 @@ import java.awt.image.WritableRaster;
  * Created by darek on 30.11.2016.
  */
 
+@Deprecated
 public class OperationThresholdSlider extends Operation {
 
     Parameters parameters;
@@ -171,7 +172,7 @@ public class OperationThresholdSlider extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationThreshold(null);
+        return new OperationThresholdSlider(null);
     }
 
     public BufferedImage thresholdPixelsFunction(BufferedImage inImage) {

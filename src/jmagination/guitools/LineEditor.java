@@ -20,6 +20,9 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
     public static final int FREE_MODE = 2;
     public static final int STRECH_MODE = 3;
     public static final int SCALE_MODE = 4;
+    public static final int SCALEDOWN_MODE = 5;
+    public static final int NEGATE_MODE = 6;
+    private static final int LINE_MODE = 99;
 
 
     private int marigin = 20;
@@ -32,6 +35,7 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
     int limitYSetup = 10;
 
     int operationMode = 0;
+    boolean editableMode = true;
 
     Polygon referenceLine;
     Polygon finalLine;
@@ -54,6 +58,8 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         super();
 
         this.operationMode = operationMode;
+        this.editableMode = editableMode;
+
         this.minXSetup = minXSetup;
         this.maxXSetup = maxXSetup;
         this.minYSetup = minYSetup;
@@ -73,10 +79,13 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         referenceLine.addPoint(xToPict(minXSetup), yToPict(minYSetup));
         referenceLine.addPoint(xToPict(maxXSetup - minXSetup ), yToPict(maxYSetup - minYSetup));
 
+        setInitialHandles();
         processHandles();
 
-        addMouseListener(this);
-        addMouseMotionListener(this);
+        if(editableMode == true) {
+            addMouseListener(this);
+            addMouseMotionListener(this);
+        }
     }
 
     public LineEditor(int operationMode, int minXSetup, int maxXSetup, int minYSetup, int maxYSetup, int limitYSetup) {
@@ -125,10 +134,27 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         return - v +  maxYSetup - minYSetup + marigin;
     }
 
+    private void setInitialHandles() {
+        switch(operationMode) {
+            case NEGATE_MODE:
+                handles.add(new Point(minXSetup, maxYSetup - minYSetup));
+                handles.add(new Point(maxXSetup - minXSetup, minYSetup));
+                break;
+        }
+
+        if(operationMode == NEGATE_MODE) {
+            operationMode = LINE_MODE;
+            editableMode = false;
+        }
+
+    }
+
     private void processHandles() {
 
         switch (operationMode) {
             case SCALE_MODE:
+            case SCALEDOWN_MODE:
+            case LINE_MODE:
                 if(handles.size() != 2) {
                     handles.add(new Point(maxXSetup - minXSetup, maxYSetup - minYSetup));
                 }
@@ -194,6 +220,8 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
                 break;
             case FREE_MODE:
             case SCALE_MODE:
+            case SCALEDOWN_MODE:
+            case LINE_MODE:
                 outputPolygon.addPoint(xToPict(minXSetup), yToPict(minYSetup));
             default:
         }
@@ -214,6 +242,8 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
                     break;
                 case FREE_MODE:
                 case SCALE_MODE:
+                case SCALEDOWN_MODE:
+                case LINE_MODE:
                 default:
                     y = points.get(i).y;
             }
@@ -221,6 +251,8 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
             switch(operationMode) {
                 case FREE_MODE:
                 case SCALE_MODE:
+                case SCALEDOWN_MODE:
+                case LINE_MODE:
                     outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(y));
                     break;
                 case STRECH_MODE:
@@ -362,6 +394,8 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
 
             switch(operationMode) {
                 case SCALE_MODE:
+                case SCALEDOWN_MODE:
+                case LINE_MODE:
                     graphics.drawString(String.valueOf(p.y), xToPict(p.x - 2 ), yToPict(p.y + 2 + handleSize / 2));
                     break;
                 default:
@@ -393,6 +427,12 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
             double range = Math.pow( handleSize, 2);
 
             if(dist < range) {
+
+                switch(operationMode) {
+                    case SCALEDOWN_MODE:
+                        if(h.x == minXSetup) { return; }
+                }
+
                 handlePressed = h;
                 break;
             }
@@ -429,7 +469,10 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         if(handlePressed != null) {
 
             switch (operationMode) {
+
                 case SCALE_MODE:
+                case SCALEDOWN_MODE:
+                case LINE_MODE:
                     if(handlePressed.x <= minXSetup) {
                         eX = xToPict(minXSetup);
                     } else {

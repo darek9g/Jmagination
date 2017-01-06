@@ -31,7 +31,7 @@ public class OperationEqualizeHistogram extends Operation {
         super();
         this.label = "Wyrównaj histogram";
         categories.add("LAB 1");
-        categories.add("Wielopunktowe");
+        categories.add("Histogramowe");
 
         parameters = new Parameters();
 
