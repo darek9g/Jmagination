@@ -33,6 +33,10 @@ public final class ConstantsInitializers {
     public static final int GUI_CHART_X_GRID_POINTS = 7;
     public static final int GUI_CHART_Y_GRID_POINTS = 15;
 
+    public static final Dimension GUI_LARGE_IMAGEICON_SIZE = new Dimension(200, 130);
+
+    public static final int GUI_LARGE_IMAGEICON_COMBOBOX_DISPLAYED = 3;
+
 
     private static final int commonNorthHeight = 30;
     private static final int commonSouthHeight = 40;
@@ -116,6 +120,8 @@ public final class ConstantsInitializers {
     public static final Dimension GUI_DIMENSION_level0Left = new Dimension((int) ( GUI_DIMENSION_level1Left.getWidth() + GUI_DIMENSION_splitPaneDividerSize + GUI_DIMENSION_level1Right.getWidth()), (int) ( GUI_DIMENSION_level1Left.getHeight() ) );
 
     public static final Dimension GUI_DIMENSION_level0SplitPane = new Dimension((int) ( GUI_DIMENSION_level0Left.getWidth() + GUI_DIMENSION_splitPaneDividerSize + GUI_DIMENSION_level0Right.getWidth()), (int) ( GUI_DIMENSION_level0Left.getHeight() ) );
+
+
 
 
     private ConstantsInitializers() {

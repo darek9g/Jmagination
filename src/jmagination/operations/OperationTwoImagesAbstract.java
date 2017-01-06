@@ -2,6 +2,7 @@ package jmagination.operations;
 
 import jmagination.ConstantsInitializers;
 import jmagination.ImageServer;
+import jmagination.gui.ImagesComboBox;
 import jmagination.histogram.Histogram;
 
 import javax.swing.*;
@@ -65,15 +66,9 @@ public abstract class OperationTwoImagesAbstract extends Operation{
         // wybór obrazu
         c.gridx = 0;
         c.gridy = 2;
-        c.gridwidth = 4;
-        String imagesList = "";
-        for(ImageServer s: runOperation.supplyAvailableImages()) {
-            imagesList = imagesList.concat(s.toString() + "\n");
-        }
-        System.out.println(imagesList);
-        JTextArea jTextAreaPicturesList = new JTextArea(imagesList);
-        jTextAreaPicturesList.setEditable(false);
-        panel.add(jTextAreaPicturesList, c);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        ImagesComboBox imagesComboBox = new ImagesComboBox(runOperation.supplyAvailableImages(), ConstantsInitializers.GUI_LARGE_IMAGEICON_SIZE.width, ConstantsInitializers.GUI_LARGE_IMAGEICON_SIZE.height);
+        panel.add(imagesComboBox, c);
 
 
         // wiersz sterowania wykonaniem
