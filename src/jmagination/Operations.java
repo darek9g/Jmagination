@@ -11,18 +11,16 @@ import java.util.ArrayList;
 public class Operations {
 
 
-    public static ArrayList<Operation> registerOperationsForImageServer(ImageServer imageServer) {
+    public static ArrayList<Operation> registerOperations() {
         ArrayList<Operation>availableOperations = new ArrayList<Operation>();
 
-        availableOperations.add(new OperationDuplicate(imageServer));
-        availableOperations.add(new OperationConvertToGray(imageServer));
-        availableOperations.add(new OperationEqualizeHistogram(imageServer));
-        availableOperations.add(new OperationStrechHistogram(imageServer));
-//        availableOperations.add(new OperationNegation(imageServer));
-//        availableOperations.add(new OperationThreshold(imageServer));
+        availableOperations.add(new OperationDuplicate());
+        availableOperations.add(new OperationConvertToGray());
+        availableOperations.add(new OperationEqualizeHistogram());
+        availableOperations.add(new OperationStrechHistogram());
+
 //        availableOperations.add(new OperationThresholdSlider(imageServer));
-//        availableOperations.add(new OperationStretchRanges(imageServer));
-//        availableOperations.add(new OperationScale(imageServer));
+
         availableOperations.add(new OperationLUTPointOperation());
         availableOperations.add(new OperationLUTThreshold());
         availableOperations.add(new OperationLUTBinarization());
@@ -30,6 +28,8 @@ public class Operations {
         availableOperations.add(new OperationLUTScaleDown());
         availableOperations.add(new OperationLUTScale());
         availableOperations.add(new OperationLUTNegation());
+
+        availableOperations.add(new OperationTwoImagesTest());
 
         return availableOperations;
     }

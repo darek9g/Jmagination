@@ -7,6 +7,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 /**
@@ -66,6 +67,36 @@ public class ImageManager {
         model.nodeChanged(theNode);
         tree.expandPath(new TreePath(theNode));
     }
+
+    public DefaultMutableTreeNode[] getNodesArray() {
+
+        ArrayList<DefaultMutableTreeNode> nodesList = new ArrayList<>();
+
+        for(int i=0; i< top.getChildCount(); ++i) {
+
+            DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) top.getChildAt(i);
+            extractTreeBranch(childNode, nodesList);
+        }
+
+        return nodesList.toArray(new DefaultMutableTreeNode[0]);
+    }
+
+    private void extractTreeBranch(DefaultMutableTreeNode node, ArrayList<DefaultMutableTreeNode> list) {
+
+        list.add(node);
+
+        for(int i=0; i< node.getChildCount(); ++i) {
+
+            DefaultMutableTreeNode childNode = (DefaultMutableTreeNode) node.getChildAt(i);
+            if (childNode.isLeaf() == false) {
+                extractTreeBranch(childNode, list);
+            } else {
+                list.add(childNode);
+            }
+        }
+    }
+
+
 /*
     public void removeImage(jmagination.ImageServer imageServer) {
         images.remove(imageServer);

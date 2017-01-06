@@ -19,4 +19,9 @@ public class OperationLUTStretchInRanges extends OperationLUTPointOperation {
         thresholdLineEditor.addActionListener(runOperationTrigger);
 
     }
+
+    @Override
+    public Operation Clone() {
+        return new OperationLUTStretchInRanges();
+    }
 }

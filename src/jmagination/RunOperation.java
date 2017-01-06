@@ -9,5 +9,6 @@ public interface RunOperation {
     public void runOperation(Operation operation);
     public void discardOperation(Operation operation);
     public void saveOperationsOutput(Operation operation);
+    public ImageServer[] supplyAvailableImages();
 
 }

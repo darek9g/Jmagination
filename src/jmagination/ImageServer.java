@@ -6,12 +6,14 @@ import jmagination.operations.Operation;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 
 /**
@@ -98,7 +100,7 @@ public class ImageServer implements RunOperation {
         historgamTab = new PresenterTabImage(histogram.createImg("INTERLACED", histogramDimension));
         tpanel.addTab("Histogram", historgamTab);
 
-        operationsTabPane = new PresenterTabOperations(Operations.registerOperationsForImageServer(this), this);
+        operationsTabPane = new PresenterTabOperations(Operations.registerOperations(), this);
         operationsTab = new JScrollPane(operationsTabPane);
         tpanel.addTab("Operacje", operationsTab);
 
@@ -204,5 +206,14 @@ public class ImageServer implements RunOperation {
         newImageServer.toogleWindow();
         operation.jButtonApply.setEnabled(true);
         operationsTabPane.updateControls(false);
+    }
+
+    @Override
+    public ImageServer[] supplyAvailableImages() {
+        ArrayList<ImageServer> imageServersList = new ArrayList<>();
+        for(DefaultMutableTreeNode n: imageManager.getNodesArray()) {
+            imageServersList.add((ImageServer)n.getUserObject());
+        }
+        return imageServersList.toArray(new ImageServer[0]);
     }
 }

@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
 
 import jmagination.gui.GUIStyler;
 import jmagination.gui.ImagePanel3;
@@ -420,8 +421,8 @@ public class Workspace implements RunOperation {
         histogramPanelCentral = new JScrollPane(histogramPanelCont);
         histogramPanelSouth = new JPanel();
         operationsPanelNorth = new JPanel();
-//        operationsPanelCentralPane = new PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral, this);
-        operationsPanelCentralPane = new PresenterTabOperations(Operations.registerOperationsForImageServer(srcImageServer), this);
+//        operationsPanelCentralPane = new PresenterTabOperations(Operations.registerOperations(), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral, this);
+        operationsPanelCentralPane = new PresenterTabOperations(Operations.registerOperations(), this);
         operationsPanelCentral = new JScrollPane(operationsPanelCentralPane);
         operationsPanelSouth = new JPanel();
 
@@ -572,6 +573,15 @@ public class Workspace implements RunOperation {
         setImageServer(newImageServer);
         operation.jButtonApply.setEnabled(true);
         operationsPanelCentralPane.updateControls(false);
+    }
+
+    @Override
+    public ImageServer[] supplyAvailableImages() {
+        ArrayList<ImageServer> imageServersList = new ArrayList<>();
+        for(DefaultMutableTreeNode n: imageManager.getNodesArray()) {
+            imageServersList.add((ImageServer)n.getUserObject());
+        }
+        return imageServersList.toArray(new ImageServer[0]);
     }
 
 }

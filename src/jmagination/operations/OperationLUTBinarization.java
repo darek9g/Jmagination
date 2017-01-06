@@ -19,4 +19,9 @@ public class OperationLUTBinarization extends OperationLUTPointOperation {
         thresholdLineEditor.addActionListener(runOperationTrigger);
 
     }
+
+    @Override
+    public Operation Clone() {
+        return new OperationLUTBinarization();
+    }
 }

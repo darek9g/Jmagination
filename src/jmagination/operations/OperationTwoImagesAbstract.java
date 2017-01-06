@@ -7,28 +7,33 @@ import jmagination.histogram.Histogram;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
+import java.util.ArrayList;
 
 /**
- * Created by darek on 30.11.2016.
+ * Created by darek on 06.01.2017.
  */
-public class OperationDuplicate extends Operation {
+public abstract class OperationTwoImagesAbstract extends Operation{
 
     Parameters parameters;
-
-    public OperationDuplicate() {
-        super();
-        this.label = "Zduplikuj obraz";
-        categories.add("LAB 1");
-        categories.add("Ogólne");
+    {
+        label = "Dummy - dwuobrazowa";
+        header = "Dummy - oparacja arytmetyczna lub logiczna";
+        description = "Dummy - wyznaczanie wartości według na odpowiadających sobie pikesli z dwóch obrazów.";
 
         parameters = new Parameters();
+
+    }
+
+    public OperationTwoImagesAbstract() {
+        super();
+
+        categories.add("LAB 2");
+
     }
 
     @Override
     public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
-        return duplicateImageFunction(bufferedImage);
+        return twoImagesFunction(bufferedImage);
     }
 
     @Override
@@ -46,16 +51,30 @@ public class OperationDuplicate extends Operation {
         c.gridx =0;
         c.gridy =0;
         c.gridwidth = 16;
-        JLabel title = new JLabel("Duplikowanie obrazu");
+        JLabel title = new JLabel(header);
         panel.add(title, c);
 
         // opis
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 16;
-        JTextArea description = new JTextArea("Kopiuje obraz do nowego bufora");
-        description.setEditable(false);
-        panel.add(description, c);
+        JTextArea jTextAreadescription = new JTextArea(description);
+        jTextAreadescription.setEditable(false);
+        panel.add(jTextAreadescription, c);
+
+        // wybór obrazu
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = 4;
+        String imagesList = "";
+        for(ImageServer s: runOperation.supplyAvailableImages()) {
+            imagesList = imagesList.concat(s.toString() + "\n");
+        }
+        System.out.println(imagesList);
+        JTextArea jTextAreaPicturesList = new JTextArea(imagesList);
+        jTextAreaPicturesList.setEditable(false);
+        panel.add(jTextAreaPicturesList, c);
+
 
         // wiersz sterowania wykonaniem
         c.gridx = 0;
@@ -82,19 +101,11 @@ public class OperationDuplicate extends Operation {
         configureColorModeControls();
     }
 
-    @Override
-    public Operation Clone() {
-        return new OperationDuplicate();
-    }
+    public abstract BufferedImage twoImagesFunction(BufferedImage srcImage);
 
-    public static BufferedImage duplicateImageFunction(BufferedImage srcImage) {
-        ColorModel cm = srcImage.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = srcImage.copyData(null);
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-    }
+    protected class Parameters {
 
-    private class Parameters {
+        ArrayList<BufferedImage> operands;
 
         public Parameters() {}
     }

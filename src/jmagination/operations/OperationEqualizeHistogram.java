@@ -27,7 +27,7 @@ public class OperationEqualizeHistogram extends Operation {
     String[] neighborhoodSizesStrings = { "3x3", "5x5", "7x7", "9x9", "11x11", "13x13"};
     JComboBox<String> neighborhoodSizeSelect = new JComboBox<>(neighborhoodSizesStrings);
 
-    public OperationEqualizeHistogram(ImageServer srcImageServer) {
+    public OperationEqualizeHistogram() {
         super();
         this.label = "Wyrównaj histogram";
         categories.add("LAB 1");
@@ -138,7 +138,7 @@ public class OperationEqualizeHistogram extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationEqualizeHistogram(null);
+        return new OperationEqualizeHistogram();
     }
 
 

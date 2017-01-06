@@ -19,7 +19,7 @@ public class OperationConvertToGray extends Operation {
 
     Parameters parameters;
 
-    public OperationConvertToGray(ImageServer srcImageServer) {
+    public OperationConvertToGray() {
         super();
         this.label = "Konwertuj na obraz w odcieniach szarości";
         categories.add("LAB 1");
@@ -86,7 +86,7 @@ public class OperationConvertToGray extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationConvertToGray(null);
+        return new OperationConvertToGray();
     }
 
     public BufferedImage convertToGrayFunction(BufferedImage inImage) {

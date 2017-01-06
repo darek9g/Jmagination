@@ -123,7 +123,7 @@ public class OperationLUTPointOperation extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationLUTNegation();
+        return new OperationLUTPointOperation();
     }
 
     public BufferedImage remapPixelsFunction(BufferedImage inImage) {

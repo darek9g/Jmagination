@@ -20,7 +20,7 @@ public class OperationStrechHistogram extends Operation {
 
     Parameters parameters;
 
-    public OperationStrechHistogram(ImageServer srcImageServer) {
+    public OperationStrechHistogram() {
         super();
         this.label = "Rozciągnij histogramu";
         categories.add("LAB 1");
@@ -87,7 +87,7 @@ public class OperationStrechHistogram extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationStrechHistogram(null);
+        return new OperationStrechHistogram();
     }
 
     public static BufferedImage equalizeHistogramFunction(BufferedImage inImage, Histogram histogram) {

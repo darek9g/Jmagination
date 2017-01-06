@@ -19,4 +19,9 @@ public class OperationLUTNegation extends OperationLUTPointOperation {
         thresholdLineEditor.addActionListener(runOperationTrigger);
 
     }
+
+    @Override
+    public Operation Clone() {
+        return new OperationLUTNegation();
+    }
 }
