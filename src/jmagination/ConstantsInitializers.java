@@ -33,7 +33,7 @@ public final class ConstantsInitializers {
     public static final int GUI_CHART_X_GRID_POINTS = 7;
     public static final int GUI_CHART_Y_GRID_POINTS = 15;
 
-    public static final Dimension GUI_LARGE_IMAGEICON_SIZE = new Dimension(200, 130);
+    public static final Dimension GUI_LARGE_IMAGEICON_SIZE = new Dimension(160, 130);
 
     public static final int GUI_LARGE_IMAGEICON_COMBOBOX_DISPLAYED = 3;
 
@@ -55,7 +55,7 @@ public final class ConstantsInitializers {
     private static int totalHeight = operationsPanelHeight + GUI_DIMENSION_splitPaneDividerSize + histogramPanelHeight;
 
     private static final int managerPanelNorthHeight = commonNorthHeight;
-    private static final int managerPanelSouthHeight = commonSouthHeight;
+    private static final int managerPanelSouthHeight = 4 * commonSouthHeight;
     private static final int managerPanelCentralHeight = totalHeight - operationsPanelNorthHeight - managerPanelSouthHeight;
     private static final int managerPanelHeight = totalHeight;
 

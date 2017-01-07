@@ -32,7 +32,7 @@ public class OperationLUTPointOperation extends Operation {
     {
         label = "Uniwersalna operacja punktowa";
         header = "Uniwersalna operacja punktowa - UOP";
-        description = "Skalowanie wartości z według lini skalowania.";
+        description = "Skalowanie wartości według lini skalowania.";
 
         parameters = new Parameters(256);
 

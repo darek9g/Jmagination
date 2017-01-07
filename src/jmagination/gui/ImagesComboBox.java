@@ -47,20 +47,28 @@ public class ImagesComboBox extends JPanel{
 
     JComboBox jComboBox;
     Integer[] indexes;
-    BufferedImage[] images;
     ImageIcon[] icons;
     String[] labels;
 
     public ImagesComboBox(ImageServer[] imageServers, int width, int height) {
 
-        indexes = new Integer[imageServers.length];
-        images = new BufferedImage[imageServers.length];
-        icons = new ImageIcon[imageServers.length];
-        labels = new String[imageServers.length];
+        if(imageServers.length == 0) {
+            indexes = new Integer[1];
+            indexes[0] = new Integer(0);
+            icons = new ImageIcon[1];
+            icons[0] = null;
+            labels = new String[1];
+            labels[0] = "Nie wczytano żadnego obrazu";
+        } else {
+
+            indexes = new Integer[imageServers.length];
+            icons = new ImageIcon[imageServers.length];
+            labels = new String[imageServers.length];
+        }
+
 
         for(int i=0;i<imageServers.length;++i) {
             indexes[i] = new Integer(i);
-            //images[i] = resizeBufferedImageToFit(imageServers[i].getImg(), width, height);
             icons[i] = new ImageIcon(resizeBufferedImageToFit(imageServers[i].getImg(), width, height));
             labels[i] = new String(imageServers[i].toString());
         }
@@ -68,7 +76,7 @@ public class ImagesComboBox extends JPanel{
         jComboBox = new JComboBox(indexes);
 
         ComboBoxRenderer renderer= new ComboBoxRenderer();
-        renderer.setPreferredSize(new Dimension(2 * width, height));
+        renderer.setPreferredSize(new Dimension(2 * width, 2 + height));
         jComboBox.setRenderer(renderer);
         jComboBox.setMaximumRowCount(ConstantsInitializers.GUI_LARGE_IMAGEICON_COMBOBOX_DISPLAYED);
 
@@ -78,7 +86,10 @@ public class ImagesComboBox extends JPanel{
 
     }
 
-    // Licence
+    public JComboBox getjComboBox() {
+        return jComboBox;
+    }
+
     private BufferedImage resizeBufferedImageToFit(BufferedImage inputImage, int maxWidth, int maxHeight) {
         int inputWidth = inputImage.getWidth();
         int inputHeight = inputImage.getHeight();
@@ -105,8 +116,6 @@ public class ImagesComboBox extends JPanel{
 
         return outputImage;
     }
-
-
 
     class ComboBoxRenderer extends JLabel implements ListCellRenderer {
 
@@ -146,21 +155,11 @@ public class ImagesComboBox extends JPanel{
             ImageIcon icon = icons[selectedIndex];
             String label = labels[selectedIndex];
             setIcon(icon);
-            if (icon != null) {
-                setText(label);
-                setFont(list.getFont());
-            } else {
-                setUhOhText(label + " (no image available)",
-                        list.getFont());
-            }
+            setText(label);
+            setFont(list.getFont());
+
 
             return this;
-        }
-
-        //Set the font and text when no image was found.
-        protected void setUhOhText(String uhOhText, Font normalFont) {
-            setFont(ConstantsInitializers.GUI_SMALL_FONT);
-            setText(uhOhText);
         }
     }
 }

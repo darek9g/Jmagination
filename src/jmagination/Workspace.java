@@ -17,6 +17,7 @@ import jmagination.gui.ImagePanel3;
 import jmagination.gui.PresenterTabOperations;
 import jmagination.histogram.Histogram;
 import jmagination.operations.Operation;
+import jmagination.operations.OperationConvertToGray;
 import jmagination.operations.OperationDuplicate;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -229,8 +230,8 @@ public class Workspace implements RunOperation {
     ImageManager imageManager;
 
     JButton jButtonOpenFile;
+    JCheckBox jCheckBoxOpenInGrayScale;
 
-    BufferedImage bufferedImage;
     BufferedImage histogramImage;
     ImagePanel3 imagePanelCont = new ImagePanel3(null);
     ImagePanel3 histogramPanelCont = new ImagePanel3(null);
@@ -325,6 +326,9 @@ public class Workspace implements RunOperation {
 
     private void setupJButtonOpenFile() {
 
+        jCheckBoxOpenInGrayScale = new JCheckBox("W odcieniach szarości");
+        jCheckBoxOpenInGrayScale.setSelected(false);
+
         jButtonOpenFile = new JButton("Otwórz plik");
 
         jButtonOpenFile.addActionListener(new ActionListener() {
@@ -335,6 +339,12 @@ public class Workspace implements RunOperation {
                     File file = new File(src);
                     BufferedImage loaded = ImageServer.LoadImageFromFile(file.getAbsolutePath());
                     if(loaded!=null) {
+
+                        OperationConvertToGray toGray = new OperationConvertToGray();
+                        if(jCheckBoxOpenInGrayScale.isSelected() == true) {
+                            loaded = toGray.RunOperationFunction(loaded, null);
+                        }
+
                         ImageServer imageServer;
                         imageServer = ImageServer.createLoadedImageServer(loaded, file.getAbsolutePath(), imageManager);
                         setImageServer(imageServer);
@@ -413,7 +423,7 @@ public class Workspace implements RunOperation {
         // content direct holders
         managerPanelNorth = new JPanel();
         managerPanelCentral = new JScrollPane();
-        managerPanelSouth = new JPanel();
+        managerPanelSouth = new JPanel(new GridLayout(2,1));
         imagePanelNorth = new JPanel();
         imagePanelCentral = new JScrollPane(imagePanelCont);
         imagePanelSouth = new JPanel();
@@ -488,6 +498,7 @@ public class Workspace implements RunOperation {
 
         // static content
         managerPanelSouth.add(jButtonOpenFile);
+        managerPanelSouth.add(jCheckBoxOpenInGrayScale);
         managerPanelCentral.setViewportView(managerTree);
 
         level1Left = new JPanel(new BorderLayout());

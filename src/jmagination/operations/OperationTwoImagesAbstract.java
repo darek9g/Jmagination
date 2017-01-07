@@ -16,10 +16,24 @@ import java.util.ArrayList;
 public abstract class OperationTwoImagesAbstract extends Operation{
 
     Parameters parameters;
+
+    ImagesComboBox imagesComboBox;
+
+    ButtonGroup buttonGroupOperationMode;
+    JRadioButton jRadioButtonCutToLeft;
+    JRadioButton jRadioButtonCutToRight;
+    JRadioButton jRadioButtonCutToMinimum;
+    JRadioButton jRadioButtonCutToMaximum;
+
+
+
+
+
     {
         label = "Dummy - dwuobrazowa";
         header = "Dummy - oparacja arytmetyczna lub logiczna";
-        description = "Dummy - wyznaczanie wartości według na odpowiadających sobie pikesli z dwóch obrazów.";
+        description = "Dummy - wyznaczanie wartości według odpowiadających\n" +
+                "sobie pikesli dwóch obrazów.";
 
         parameters = new Parameters();
 
@@ -30,6 +44,19 @@ public abstract class OperationTwoImagesAbstract extends Operation{
 
         categories.add("LAB 2");
 
+        buttonGroupOperationMode = new ButtonGroup();
+
+        jRadioButtonCutToLeft = new JRadioButton("Do wielkości głównego obrazu (lewy operand)");
+        jRadioButtonCutToRight = new JRadioButton("Do wielkości wybranego obrazu (prawy operand)");
+        jRadioButtonCutToMinimum = new JRadioButton("Do minimalnej szerokości i wysokości");
+        jRadioButtonCutToMaximum = new JRadioButton("Do maksymalnej szerokości i wysokości");
+
+        buttonGroupOperationMode.add(jRadioButtonCutToLeft);
+        buttonGroupOperationMode.add(jRadioButtonCutToRight);
+        buttonGroupOperationMode.add(jRadioButtonCutToMinimum);
+        buttonGroupOperationMode.add(jRadioButtonCutToMaximum);
+
+        jRadioButtonCutToLeft.setSelected(true);
     }
 
     @Override
@@ -63,32 +90,59 @@ public abstract class OperationTwoImagesAbstract extends Operation{
         jTextAreadescription.setEditable(false);
         panel.add(jTextAreadescription, c);
 
+        // etykieta
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        panel.add(new JLabel("Wybierz prawy operand"), c);
+
         // wybór obrazu
         c.gridx = 0;
-        c.gridy = 2;
+        c.gridy = 5;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        ImagesComboBox imagesComboBox = new ImagesComboBox(runOperation.supplyAvailableImages(), ConstantsInitializers.GUI_LARGE_IMAGEICON_SIZE.width, ConstantsInitializers.GUI_LARGE_IMAGEICON_SIZE.height);
+        imagesComboBox = new ImagesComboBox(runOperation.supplyAvailableImages(), ConstantsInitializers.GUI_LARGE_IMAGEICON_SIZE.width, ConstantsInitializers.GUI_LARGE_IMAGEICON_SIZE.height);
         panel.add(imagesComboBox, c);
+
+        // wybór sposobu wyznaczenia rozmiaru wynikowego obrazu
+        c.gridx = 0;
+        c.gridy = 6;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        panel.add(jRadioButtonCutToLeft, c);
+
+        c.gridx = 0;
+        c.gridy = 7;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        panel.add(jRadioButtonCutToRight, c);
+
+        c.gridx = 0;
+        c.gridy = 8;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        panel.add(jRadioButtonCutToMinimum, c);
+
+        c.gridx = 0;
+        c.gridy = 9;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        panel.add(jRadioButtonCutToMaximum, c);
 
 
         // wiersz sterowania wykonaniem
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 12;
         c.gridwidth = 4;
         panel.add(jLabelColorMode, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 3;
+        c.gridy = 12;
         c.gridwidth = 4;
         panel.add(jRadioButtonColorModeRGB, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 3;
+        c.gridy = 12;
         c.gridwidth = 4;
         panel.add(jRadioButtonColorModeHSV, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 3;
+        c.gridy = 12;
         c.gridwidth = 4;
         panel.add(jButtonApply, c);
 
