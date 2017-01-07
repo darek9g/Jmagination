@@ -200,7 +200,7 @@ public class Workspace implements RunOperation {
 
      */
 
-    Dimension windowDimension = new Dimension(1200,800);
+    Dimension windowDimension = new Dimension(1200,900);
 
     Dimension level0SplitPaneDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
     Dimension level0LeftDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level0Left);
@@ -340,14 +340,16 @@ public class Workspace implements RunOperation {
                     BufferedImage loaded = ImageServer.LoadImageFromFile(file.getAbsolutePath());
                     if(loaded!=null) {
 
-                        OperationConvertToGray toGray = new OperationConvertToGray();
-                        if(jCheckBoxOpenInGrayScale.isSelected() == true) {
-                            loaded = toGray.RunOperationFunction(loaded, null);
-                        }
-
                         ImageServer imageServer;
                         imageServer = ImageServer.createLoadedImageServer(loaded, file.getAbsolutePath(), imageManager);
                         setImageServer(imageServer);
+
+                        OperationConvertToGray toGray = new OperationConvertToGray();
+                        if(jCheckBoxOpenInGrayScale.isSelected() == true) {
+                            runOperation(toGray);
+                            saveOperationsOutput(toGray);
+                        }
+
                     }
                 }
             }
@@ -522,6 +524,7 @@ public class Workspace implements RunOperation {
 
         level1Right.setResizeWeight(0.5);
         level1Right.setDividerSize(ConstantsInitializers.GUI_DIMENSION_splitPaneDividerSize);
+        level1Right.setDividerLocation(0.2d);
 
         level0Left.setResizeWeight(0.5);
         level0Left.setDividerSize(ConstantsInitializers.GUI_DIMENSION_splitPaneDividerSize);

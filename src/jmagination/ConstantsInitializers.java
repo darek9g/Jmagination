@@ -44,12 +44,12 @@ public final class ConstantsInitializers {
 
     private static final int operationsPanelNorthHeight = commonNorthHeight;
     private static final int operationsPanelSouthHeight = 0;
-    private static final int operationsPanelCentralHeight = 200;
+    private static final int operationsPanelCentralHeight = 400;
     private static final int operationsPanelHeight = operationsPanelNorthHeight + operationsPanelCentralHeight + operationsPanelSouthHeight;
 
     private static final int histogramPanelNorthHeight = commonNorthHeight;
     private static final int histogramPanelSouthHeight = 0;
-    private static final int histogramPanelCentralHeight = 400;
+    private static final int histogramPanelCentralHeight = 300;
     private static final int histogramPanelHeight = histogramPanelNorthHeight + histogramPanelCentralHeight + histogramPanelSouthHeight;
 
     private static int totalHeight = operationsPanelHeight + GUI_DIMENSION_splitPaneDividerSize + histogramPanelHeight;
