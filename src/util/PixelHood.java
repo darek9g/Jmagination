@@ -9,6 +9,7 @@ public class PixelHood <E> {
 
     private int horizontalBorderSize;
     private int verticalBorderSize;
+    private int dataSize;
 
     private ArrayList<E> data;
 
@@ -16,7 +17,7 @@ public class PixelHood <E> {
         this.horizontalBorderSize = horizontalBorderSize;
         this.verticalBorderSize = verticalBorderSize;
 
-        int dataSize= (1 + 2 * this.horizontalBorderSize) * (1 + 2 * this.verticalBorderSize);
+        dataSize= (1 + 2 * this.horizontalBorderSize) * (1 + 2 * this.verticalBorderSize);
 
         data = new ArrayList<>(dataSize);
         for(int i=0;i<dataSize;++i) {
@@ -45,5 +46,13 @@ public class PixelHood <E> {
             throw new IndexOutOfBoundsException();
         }
         return x + horizontalBorderSize + ( y + verticalBorderSize ) * (1 + 2 * horizontalBorderSize);
+    }
+
+    public int getDataSize(){
+        return dataSize;
+    }
+
+    public E getPixel(int index) {
+        return data.get(index);
     }
 }

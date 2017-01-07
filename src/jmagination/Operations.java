@@ -1,6 +1,5 @@
 package jmagination;
 
-import jmagination.ImageServer;
 import jmagination.operations.*;
 
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ public class Operations {
         availableOperations.add(new OperationLUTScaleDown());
         availableOperations.add(new OperationLUTScale());
         availableOperations.add(new OperationLUTNegation());
+        availableOperations.add(new OperationLlinearSmoothing());
 
         availableOperations.add(new OperationTwoImagesTest());
 
