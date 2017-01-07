@@ -154,6 +154,8 @@ public class OperationEqualizeHistogram extends Operation {
 
         int bands = histogram.getData().size();
 
+        System.out.println("Bands " + bands);
+
         ArrayList<Integer[]> leftLevelLimits = new ArrayList<>();
         ArrayList<Integer[]> rightLevelLimits = new ArrayList<>();
         ArrayList<Integer[]> newLevels = new ArrayList<>();
@@ -187,11 +189,11 @@ public class OperationEqualizeHistogram extends Operation {
 
                 switch(parameters.method) {
                     case "Średnich":
-                        if(pixel[i] == newLevelsChannel[pixel[i]]) { continue; };
+//                        if(pixel[i] == newLevelsChannel[pixel[i]]) { continue; };
                         newPixel[i] = newLevelsChannel[pixel[i]];
                         break;
                     case "Losowa":
-                        if(pixel[i] == newLevelsChannel[pixel[i]]) { continue; };
+//                        if(pixel[i] == newLevelsChannel[pixel[i]]) { continue; };
                         int r = ThreadLocalRandom.current().nextInt(0, newLevelsChannel[pixel[i]]+1);
                         newPixel[i] = leftLevelLimitsChannel[pixel[i]] + r;
                         break;
@@ -213,7 +215,7 @@ public class OperationEqualizeHistogram extends Operation {
                             }
                         }
                         if(neighborhoodCount>0) {
-                            neighborhoodLevel = neighborhoodLevel / neighborhoodCount;
+                            neighborhoodLevel = neighborhoodLevel / ( neighborhoodCount + 0.0d );
                         }
 
                         if(neighborhoodLevel>rightLevelLimitsChannel[pixel[i]]) {
@@ -286,17 +288,24 @@ public class OperationEqualizeHistogram extends Operation {
 
                 while (Hint>histogramAverages[i]) {
                     Hint -= histogramAverages[i];
-                    ++R;
+                    if(R<levels-1) {
+                        ++R;
+                    }
                 }
                 rightLevelLimits.get(i)[level] = R;
 
                 switch(method) {
                     case "Średnich":
-                        newLevels.get(i)[level] = (int) ( ( leftLevelLimits.get(i)[level] + rightLevelLimits.get(i)[level]) / 2.0 );
+                        newLevels.get(i)[level] = (int) Math.round( ( leftLevelLimits.get(i)[level] + rightLevelLimits.get(i)[level]) / 2.0d );
                         break;
                     case "Losowa":
                         newLevels.get(i)[level] = rightLevelLimits.get(i)[level] - leftLevelLimits.get(i)[level];
+                        break;
+                    default:
+                        newLevels.get(i)[level] = 0;
                 }
+
+                System.out.printf("%d %d %d %d %d\n", histogramAverages[i], level, newLevels.get(i)[level], leftLevelLimits.get(i)[level], rightLevelLimits.get(i)[level]);
 
             }
         }
