@@ -15,6 +15,8 @@ import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static jmagination.ConstantsInitializers.BR;
+
 /**
  * Created by darek on 30.11.2016.
  */
@@ -84,7 +86,7 @@ public class OperationEqualizeHistogram extends Operation {
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 16;
-        JTextArea description = new JTextArea("Nadaje pikselom nowe wartości bliższe średniej wartości");
+        JTextArea description = new JTextArea("Nadaje pikselom nowe wartości" + BR + "bliższe średniej wartości");
         description.setEditable(false);
         panel.add(description, c);
 

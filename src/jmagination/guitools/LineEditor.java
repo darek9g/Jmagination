@@ -284,7 +284,6 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
         int[] outputPoints = new int[maxXSetup - minXSetup + 1];
         Polygon polygon = getOutputPolygon();
 
-
         for(int i=0; i<outputPoints.length; ++i) {
             outputPoints[i] = minYSetup;
         }
@@ -304,16 +303,20 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
 
                 if(firstSegment==false) {
                     if (Ax == Bx) {
-                        outputPoints[(int) Bx] = (int) By;
+                        int candidate = (int) (Ay > By ? Ay : By);
+                        if(candidate > outputPoints[(int) Ax]) {
+                            outputPoints[(int) Ax] = candidate;
+                        }
                     } else {
                         double lineCoeff = (By - Ay) / (Bx - Ax);
                         int fromX = (int) Math.round(Ax);
                         int toX = (int) Math.round(Bx);
 
-                        int fromY = (int) Math.round(Ay);
-
                         for (int i = fromX; i <= toX; ++i) {
-                            outputPoints[i] = (int) Math.round(Ay + (i - fromX) * lineCoeff);
+                            int candidate = (int) Math.round(Ay + (i - fromX) * lineCoeff);
+                            if(candidate > outputPoints[i]) {
+                                outputPoints[i] = candidate;
+                            }
                         }
                     }
                 } else {
@@ -323,8 +326,6 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
                 Ax = Bx;
                 Ay = By;
             }
-
-
             pathIterator.next();
         } while(pathIterator.isDone()==false);
 
@@ -448,6 +449,8 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
             handlePressed = null;
 //            processHandles();
             getParent().repaint();
+            // opcja performance
+            fireActionEvent();
         }
     }
 
@@ -502,7 +505,8 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
 
             processHandles();
             getParent().repaint();
-            fireActionEvent();
+            // opcja quality
+//            fireActionEvent();
         }
 
     }

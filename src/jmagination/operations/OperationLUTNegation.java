@@ -2,6 +2,8 @@ package jmagination.operations;
 
 import jmagination.guitools.LineEditor;
 
+import static jmagination.ConstantsInitializers.BR;
+
 /**
  * Created by darek on 06.01.2017.
  */
@@ -11,7 +13,7 @@ public class OperationLUTNegation extends OperationLUTPointOperation {
 
         label = "Negowanie";
         header = "Negowanie wartości jasności pikseli";
-        description = "Nadaje pikselom nowe wartości dopełniające wartości bieżące\ndo maksimum.";
+        description = "Nadaje pikselom nowe wartości," + BR + "dopełniające wartości bieżące\ndo maksimum.";
 
         parameters = new Parameters(256);
 

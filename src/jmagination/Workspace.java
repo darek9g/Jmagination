@@ -200,7 +200,7 @@ public class Workspace implements RunOperation {
 
      */
 
-    Dimension windowDimension = new Dimension(1200,900);
+    Dimension windowDimension = new Dimension(1200,700);
 
     Dimension level0SplitPaneDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level0SplitPane);
     Dimension level0LeftDimension = new Dimension(ConstantsInitializers.GUI_DIMENSION_level0Left);

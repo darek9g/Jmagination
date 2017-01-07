@@ -182,7 +182,7 @@ public class ImageCursor {
         return raster.getPixel(x, y, new int[raster.getNumBands()]);
     }
 
-    private boolean checkXYinRange(int x, int y) {
+    public boolean checkXYinRange(int x, int y) {
         if( x>=0 && x<width && y>=0 && y<height ) {
             return true;
         } else {
@@ -205,4 +205,5 @@ public class ImageCursor {
         }
         return ret;
     }
+
 }

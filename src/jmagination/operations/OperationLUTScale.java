@@ -2,6 +2,8 @@ package jmagination.operations;
 
 import jmagination.guitools.LineEditor;
 
+import static jmagination.ConstantsInitializers.BR;
+
 /**
  * Created by darek on 06.01.2017.
  */
@@ -11,7 +13,7 @@ public class OperationLUTScale extends OperationLUTPointOperation {
 
         label = "Liniowa operacja punktowa";
         header = "Skalowanie wartości piksel";
-        description = "Skalowanie wartości jasności według prostej lini skalowania.";
+        description = "Skalowanie wartości jasności" + BR + "według prostej lini skalowania.";
 
         parameters = new Parameters(256);
 

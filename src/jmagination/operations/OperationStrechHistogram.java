@@ -12,6 +12,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 
+import static jmagination.ConstantsInitializers.BR;
+
 /**
  * Created by darek on 30.11.2016.
  */
@@ -56,7 +58,7 @@ public class OperationStrechHistogram extends Operation {
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 16;
-        JTextArea description = new JTextArea("Dystrybuuje wartości kolorów równomiernie na całą\nprzestrzeń wartości");
+        JTextArea description = new JTextArea("Dystrybuuje wartości kolorów równomiernie na całą" + BR + "przestrzeń wartości");
         description.setEditable(false);
         panel.add(description, c);
 

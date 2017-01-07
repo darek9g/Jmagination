@@ -2,6 +2,8 @@ package jmagination.operations;
 
 import jmagination.guitools.LineEditor;
 
+import static jmagination.ConstantsInitializers.BR;
+
 /**
  * Created by darek on 06.01.2017.
  */
@@ -11,7 +13,7 @@ public class OperationLUTThreshold extends OperationLUTPointOperation {
 
         label = "Proguj piksele";
         header = "Progowanie";
-        description = "Ustawienie minimalnej jasności pikselom spoza określonego \nzakresu jasności.";
+        description = "Ustawienie minimalnej jasności pikselom" + BR + "spoza określonego zakresu jasności.";
 
         parameters = new Parameters(256);
 

@@ -121,6 +121,7 @@ public final class ConstantsInitializers {
 
     public static final Dimension GUI_DIMENSION_level0SplitPane = new Dimension((int) ( GUI_DIMENSION_level0Left.getWidth() + GUI_DIMENSION_splitPaneDividerSize + GUI_DIMENSION_level0Right.getWidth()), (int) ( GUI_DIMENSION_level0Left.getHeight() ) );
 
+    public static final String BR = System.getProperty("line.separator");
 
 
 

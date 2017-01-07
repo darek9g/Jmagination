@@ -11,6 +11,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
+import static jmagination.ConstantsInitializers.BR;
+
 /**
  * Created by darek on 30.11.2016.
  */
@@ -55,7 +57,7 @@ public class OperationConvertToGray extends Operation {
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 16;
-        JTextArea description = new JTextArea("Uśrednia jasności kolorów każdego piksela\ni zapisuje go w odcieniu szarości");
+        JTextArea description = new JTextArea("Uśrednia jasności kolorów każdego piksela" + BR +"i zapisuje go w odcieniu szarości");
         description.setEditable(false);
         panel.add(description, c);
 

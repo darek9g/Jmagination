@@ -28,8 +28,7 @@ public class Operations {
         availableOperations.add(new OperationLUTScale());
         availableOperations.add(new OperationLUTNegation());
         availableOperations.add(new OperationLlinearSmoothing());
-
-        availableOperations.add(new OperationTwoImagesTest());
+        availableOperations.add(new OperationTwoImagesArithmAdd());
 
         return availableOperations;
     }

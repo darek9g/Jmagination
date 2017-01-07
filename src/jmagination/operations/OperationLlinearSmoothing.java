@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 
+import static jmagination.ConstantsInitializers.BR;
+
 /**
  * Created by Rideau on 2017-01-06.
  */
@@ -142,7 +144,7 @@ public class OperationLlinearSmoothing extends Operation{
         c.gridx = 0;
         c.gridy = 1;
         c.gridwidth = 16;
-        JTextArea description = new JTextArea("Nadaje pikselom nowe wartości bliższe wartościom z najbliższego otoczenia");
+        JTextArea description = new JTextArea("Nadaje pikselom nowe wartości," + BR +"bliższe wartościom z najbliższego otoczenia");
         description.setEditable(false);
         panel.add(description, c);
 

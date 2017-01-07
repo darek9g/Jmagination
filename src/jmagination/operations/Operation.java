@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import static jmagination.ConstantsInitializers.BR;
+
 /**
  * Created by darek on 03.12.2016.
  */
@@ -19,7 +21,7 @@ public abstract class Operation {
 
     String label = "Dummy";
     String header = "Dummy";
-    String description = "Dummy";
+    String description = "Foo" + BR + "Bar";
     ArrayList<String> categories = new ArrayList<>();
     boolean hsvModeAllowed = false;
     Operation that = this;

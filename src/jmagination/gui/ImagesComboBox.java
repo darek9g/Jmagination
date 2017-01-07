@@ -45,12 +45,16 @@ import java.awt.image.BufferedImage;
 
 public class ImagesComboBox extends JPanel{
 
+    ImageServer[] imageServers;
+
     JComboBox jComboBox;
     Integer[] indexes;
     ImageIcon[] icons;
     String[] labels;
 
     public ImagesComboBox(ImageServer[] imageServers, int width, int height) {
+
+        this.imageServers = imageServers;
 
         if(imageServers.length == 0) {
             indexes = new Integer[1];
@@ -86,8 +90,8 @@ public class ImagesComboBox extends JPanel{
 
     }
 
-    public JComboBox getjComboBox() {
-        return jComboBox;
+    public ImageServer getSelectedImageServer() {
+        return imageServers[jComboBox.getSelectedIndex()];
     }
 
     private BufferedImage resizeBufferedImageToFit(BufferedImage inputImage, int maxWidth, int maxHeight) {
