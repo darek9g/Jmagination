@@ -14,6 +14,11 @@ public class SimpleHSVBufferedImage extends BufferedImage {
 
     private float[][][] hsv;
 
+    public SimpleHSVBufferedImage(BufferedImage srcImage) {
+        super(srcImage.getColorModel(),srcImage.copyData(null), srcImage.getColorModel().isAlphaPremultiplied(), null);
+        fillHsv();
+    }
+
     public SimpleHSVBufferedImage(int width, int height, int imageType) {
         super(width, height, imageType);
         fillHsv();
