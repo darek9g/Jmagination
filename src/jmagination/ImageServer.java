@@ -3,6 +3,7 @@ package jmagination;
 import jmagination.gui.*;
 import jmagination.histogram.Histogram;
 import jmagination.operations.Operation;
+import util.SimpleHSVBufferedImage;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -163,10 +164,10 @@ public class ImageServer implements RunOperation {
     }
 
     public static BufferedImage LoadImageFromFile(String filePath) {
-        BufferedImage bufferedImage = null;
+        SimpleHSVBufferedImage bufferedImage = null;
 
         try {
-            bufferedImage = ImageIO.read(new File(filePath));
+            bufferedImage = new SimpleHSVBufferedImage(ImageIO.read(new File(filePath)));
         } catch (IOException e) {
             System.out.println("Błąd otwarcia obrazu z pliku");
         }
