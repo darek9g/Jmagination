@@ -1,14 +1,13 @@
 package jmagination.operations;
 
 import jmagination.ConstantsInitializers;
-import jmagination.ImageServer;
 import jmagination.histogram.Histogram;
 import util.ImageCursor;
 import util.PixelHood;
+import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 
@@ -32,7 +31,7 @@ public class OperationStrechHistogram extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
+    public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
         return equalizeHistogramFunction(bufferedImage, histogram);
     }
 
@@ -92,11 +91,11 @@ public class OperationStrechHistogram extends Operation {
         return new OperationStrechHistogram();
     }
 
-    public static BufferedImage equalizeHistogramFunction(BufferedImage inImage, Histogram histogram) {
+    public static SimpleHSVBufferedImage equalizeHistogramFunction(SimpleHSVBufferedImage inImage, Histogram histogram) {
 
         int width = inImage.getWidth();
         int height = inImage.getHeight();
-        BufferedImage outImage = new BufferedImage(width, height, inImage.getType());
+        SimpleHSVBufferedImage outImage = new SimpleHSVBufferedImage(width, height, inImage.getType());
         WritableRaster raster = inImage.getRaster();
         WritableRaster outRaster = outImage.getRaster();
 

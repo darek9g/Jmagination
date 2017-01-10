@@ -38,7 +38,7 @@ public class ImageServer implements RunOperation {
     PresenterTabOperations operationsTabPane;
 
 
-    BufferedImage img;
+    SimpleHSVBufferedImage img;
     Histogram histogram;
 
 
@@ -61,7 +61,7 @@ public class ImageServer implements RunOperation {
 
     }
 
-    ImageServer(BufferedImage img, ImageManager imageManager, String filePath, boolean fromFile) {
+    ImageServer(SimpleHSVBufferedImage img, ImageManager imageManager, String filePath, boolean fromFile) {
         this(imageManager);
         this.img = img;
         this.fromFile = fromFile;
@@ -74,13 +74,17 @@ public class ImageServer implements RunOperation {
         }
     }
 
+    ImageServer(BufferedImage img, ImageManager imageManager, String filePath, boolean fromFile) {
+        this(new SimpleHSVBufferedImage(img), imageManager, filePath, fromFile);
+    }
+
     public static ImageServer createLoadedImageServer(BufferedImage img, String filePath, ImageManager imageManager) {
         ImageServer child = new ImageServer(img, imageManager, filePath, true);
         imageManager.addLoadedImage(child);
         return child;
     }
 
-    public ImageServer createChildImageServer(BufferedImage img) {
+    public ImageServer createChildImageServer(SimpleHSVBufferedImage img) {
         ImageServer child = new ImageServer(img, imageManager, this.srcFilePath, false);
         imageManager.addCreatedImage(child, this);
         return child;
@@ -155,7 +159,7 @@ public class ImageServer implements RunOperation {
         window.toFront();
     }
 
-    public BufferedImage getImg() {
+    public SimpleHSVBufferedImage getImg() {
         return img;
     };
 
@@ -164,10 +168,10 @@ public class ImageServer implements RunOperation {
     }
 
     public static BufferedImage LoadImageFromFile(String filePath) {
-        SimpleHSVBufferedImage bufferedImage = null;
+        BufferedImage bufferedImage = null;
 
         try {
-            bufferedImage = new SimpleHSVBufferedImage(ImageIO.read(new File(filePath)));
+            bufferedImage = ImageIO.read(new File(filePath));
         } catch (IOException e) {
             System.out.println("Błąd otwarcia obrazu z pliku");
         }
@@ -179,7 +183,7 @@ public class ImageServer implements RunOperation {
     @Override
     public void runOperation(Operation operation) {
 
-        BufferedImage newBufferedImage;
+        SimpleHSVBufferedImage newBufferedImage;
 
         newBufferedImage = operation.RunOperationFunction(img, histogram);
 
@@ -203,7 +207,7 @@ public class ImageServer implements RunOperation {
 
     @Override
     public void saveOperationsOutput(Operation operation) {
-        ImageServer newImageServer = this.createChildImageServer(imageTab.getImage());
+        ImageServer newImageServer = this.createChildImageServer((SimpleHSVBufferedImage) imageTab.getImage());
         newImageServer.toogleWindow();
         operation.jButtonApply.setEnabled(true);
         operationsTabPane.updateControls(false);

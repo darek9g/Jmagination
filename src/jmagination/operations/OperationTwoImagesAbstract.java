@@ -6,10 +6,10 @@ import jmagination.gui.ImagesComboBox;
 import jmagination.histogram.Histogram;
 import util.ImageCursor;
 import util.PixelHood;
+import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 
@@ -62,7 +62,7 @@ public abstract class OperationTwoImagesAbstract extends Operation{
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
+    public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
         if(jRadioButtonCutToLeft.isSelected()) {
             parameters.cutMode = Parameters.CUT_TO_LEFT;
@@ -169,11 +169,11 @@ public abstract class OperationTwoImagesAbstract extends Operation{
         configureColorModeControls();
     }
 
-    public BufferedImage twoImagesFunction(BufferedImage leftImage) {
+    public SimpleHSVBufferedImage twoImagesFunction(SimpleHSVBufferedImage leftImage) {
         int leftWidth = leftImage.getWidth();
         int leftHeight = leftImage.getHeight();
 
-        BufferedImage rightImage = parameters.operands.get(0).getImg();
+        SimpleHSVBufferedImage rightImage = parameters.operands.get(0).getImg();
 
         int rightWidth = rightImage.getWidth();
         int rightHeigth = rightImage.getHeight();
@@ -207,7 +207,7 @@ public abstract class OperationTwoImagesAbstract extends Operation{
                 throw new IllegalStateException("Nieobsłużona tryb wyznaczania nowej wartości obrazu.");
         }
 
-        BufferedImage outImage = new BufferedImage(outWidth, outHeight, leftImage.getType());
+        SimpleHSVBufferedImage outImage = new SimpleHSVBufferedImage(outWidth, outHeight, leftImage.getType());
         WritableRaster outRaster = outImage.getRaster();
         WritableRaster leftRaster = leftImage.getRaster();
         WritableRaster rightRaster = rightImage.getRaster();

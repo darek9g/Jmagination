@@ -1,6 +1,7 @@
 package jmagination.gui;
 
 import jmagination.ConstantsInitializers;
+import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +14,6 @@ import java.awt.image.BufferedImage;
  */
 public class PresenterTabImage extends PresenterTab {
 
-    BufferedImage img;
     ImagePanel imagePanel;
     JPanel controlsPanel;
 
@@ -33,7 +33,6 @@ public class PresenterTabImage extends PresenterTab {
     public PresenterTabImage(BufferedImage img) {
         super();
         setLayout(new BoxLayout(this,BoxLayout.LINE_AXIS));
-        this.img = img;
 
         imagePanel = new ImagePanel(img);
         imagePanel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
@@ -48,12 +47,11 @@ public class PresenterTabImage extends PresenterTab {
     }
 
     public void setImage(BufferedImage bufferedImage) {
-        img = bufferedImage;
         imagePanel.setImage(bufferedImage);
     }
 
     public BufferedImage getImage() {
-        return img;
+        return imagePanel.getImage();
     }
 
     public PresenterTabImage(BufferedImage img, Dimension dimension) {

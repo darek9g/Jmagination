@@ -1,22 +1,15 @@
 package jmagination.operations;
 
 import jmagination.ConstantsInitializers;
-import jmagination.ImageServer;
 import jmagination.guitools.LineEditor;
 import jmagination.histogram.Histogram;
-import slider.RangeSlider;
 import util.ImageCursor;
 import util.PixelHood;
+import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.util.ArrayList;
 
 
 /**
@@ -50,7 +43,7 @@ public class OperationLUTPointOperation extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
+    public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
 
         parameters.operationMap = thresholdLineEditor.getOutputMap();
@@ -126,10 +119,10 @@ public class OperationLUTPointOperation extends Operation {
         return new OperationLUTPointOperation();
     }
 
-    public BufferedImage remapPixelsFunction(BufferedImage inImage) {
+    public SimpleHSVBufferedImage remapPixelsFunction(SimpleHSVBufferedImage inImage) {
         int width = inImage.getWidth();
         int height = inImage.getHeight();
-        BufferedImage outImage = new BufferedImage(width, height, inImage.getType());
+        SimpleHSVBufferedImage outImage = new SimpleHSVBufferedImage(width, height, inImage.getType());
         WritableRaster raster = inImage.getRaster();
         WritableRaster outRaster = outImage.getRaster();
 

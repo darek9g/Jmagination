@@ -3,13 +3,13 @@ package jmagination.operations;
 import jmagination.RunOperation;
 import jmagination.gui.GUIStyler;
 import jmagination.histogram.Histogram;
+import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import static jmagination.ConstantsInitializers.BR;
@@ -76,7 +76,7 @@ public abstract class Operation {
         return label;
     }
 
-    public abstract BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram);
+    public abstract SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram);
 
     public void RunOperation(Operation operation) {
         runOperation.runOperation(operation);

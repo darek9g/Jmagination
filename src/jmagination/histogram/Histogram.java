@@ -3,6 +3,7 @@ package jmagination.histogram;
 import jmagination.ConstantsInitializers;
 import util.ImageCursor;
 import util.PixelHood;
+import util.SimpleHSVBufferedImage;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -16,7 +17,7 @@ import java.util.Collections;
 
 public class Histogram {
 
-    BufferedImage img;
+    SimpleHSVBufferedImage img;
     WritableRaster raster;
     int scaleWidth;
     int bands;
@@ -26,7 +27,7 @@ public class Histogram {
     ArrayList<Integer[]> data;
 
 
-    public Histogram(BufferedImage img) {
+    public Histogram(SimpleHSVBufferedImage img) {
         this.img = img;
         this.raster = img.getRaster();
         this.scaleWidth = 256;

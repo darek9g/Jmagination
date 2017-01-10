@@ -1,12 +1,11 @@
 package jmagination.operations;
 
 import jmagination.ConstantsInitializers;
-import jmagination.ImageServer;
 import jmagination.histogram.Histogram;
+import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 
@@ -27,7 +26,7 @@ public class OperationDuplicate extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
+    public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
         return duplicateImageFunction(bufferedImage);
     }
 
@@ -87,11 +86,11 @@ public class OperationDuplicate extends Operation {
         return new OperationDuplicate();
     }
 
-    public static BufferedImage duplicateImageFunction(BufferedImage srcImage) {
+    public static SimpleHSVBufferedImage duplicateImageFunction(SimpleHSVBufferedImage srcImage) {
         ColorModel cm = srcImage.getColorModel();
         boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
         WritableRaster raster = srcImage.copyData(null);
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+        return new SimpleHSVBufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
     private class Parameters {

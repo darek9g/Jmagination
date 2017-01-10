@@ -22,6 +22,7 @@ import jmagination.operations.OperationDuplicate;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.FileDialog;
+import util.SimpleHSVBufferedImage;
 
 /**
  * Created by darek on 19.11.2016.
@@ -235,7 +236,7 @@ public class Workspace implements RunOperation {
     BufferedImage histogramImage;
     ImagePanel3 imagePanelCont = new ImagePanel3(null);
     ImagePanel3 histogramPanelCont = new ImagePanel3(null);
-    BufferedImage originalBufferedImage = null;
+    SimpleHSVBufferedImage originalBufferedImage = null;
 
     public Workspace(ImageManager imageManager) {
 
@@ -560,7 +561,7 @@ public class Workspace implements RunOperation {
             return;
         }
 
-        BufferedImage newBufferedImage;
+        SimpleHSVBufferedImage newBufferedImage;
 
         newBufferedImage = operation.RunOperationFunction(originalBufferedImage, srcImageServer.getHistogram());
 
@@ -583,7 +584,7 @@ public class Workspace implements RunOperation {
 
     @Override
     public void saveOperationsOutput(Operation operation) {
-        ImageServer newImageServer = srcImageServer.createChildImageServer(imagePanelCont.getImage());
+        ImageServer newImageServer = srcImageServer.createChildImageServer((SimpleHSVBufferedImage) imagePanelCont.getImage());
         setImageServer(newImageServer);
         operation.jButtonApply.setEnabled(true);
         operationsPanelCentralPane.updateControls(false);

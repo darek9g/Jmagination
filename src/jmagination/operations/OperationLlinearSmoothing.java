@@ -1,15 +1,14 @@
 package jmagination.operations;
 
 import jmagination.ConstantsInitializers;
-import jmagination.ImageServer;
 import jmagination.histogram.Histogram;
 import util.ImageCursor;
 import util.MaskGenerator;
 import util.PixelHood;
+import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 
@@ -34,10 +33,10 @@ public class OperationLlinearSmoothing extends Operation{
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
+    public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
-        BufferedImage outImage = new BufferedImage(width, height, bufferedImage.getType());
+        SimpleHSVBufferedImage outImage = new SimpleHSVBufferedImage(width, height, bufferedImage.getType());
         WritableRaster raster = bufferedImage.getRaster();
         WritableRaster outRaster = outImage.getRaster();
         int hoodSize = neighborhoodSizeSelect.getSelectedIndex()+1;

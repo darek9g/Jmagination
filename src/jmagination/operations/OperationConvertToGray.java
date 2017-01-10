@@ -1,10 +1,10 @@
 package jmagination.operations;
 
 import jmagination.ConstantsInitializers;
-import jmagination.ImageServer;
 import jmagination.histogram.Histogram;
 import util.ImageCursor;
 import util.PixelHood;
+import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +31,7 @@ public class OperationConvertToGray extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
+    public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
         return convertToGrayFunction(bufferedImage);
     }
 
@@ -91,10 +91,10 @@ public class OperationConvertToGray extends Operation {
         return new OperationConvertToGray();
     }
 
-    public BufferedImage convertToGrayFunction(BufferedImage inImage) {
+    public SimpleHSVBufferedImage convertToGrayFunction(SimpleHSVBufferedImage inImage) {
         int width = inImage.getWidth();
         int height = inImage.getHeight();
-        BufferedImage outImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        SimpleHSVBufferedImage outImage = new SimpleHSVBufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         WritableRaster raster = inImage.getRaster();
         WritableRaster outRaster = outImage.getRaster();
 

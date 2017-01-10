@@ -1,16 +1,15 @@
 package jmagination.operations;
 
 import jmagination.ConstantsInitializers;
-import jmagination.ImageServer;
 import jmagination.histogram.Histogram;
 import util.ImageCursor;
 import util.PixelHood;
+import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -54,7 +53,7 @@ public class OperationEqualizeHistogram extends Operation {
     }
 
     @Override
-    public BufferedImage RunOperationFunction(BufferedImage bufferedImage, Histogram histogram) {
+    public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
         String method = (String) methodSelect.getSelectedItem();
         parameters.method = method;
@@ -145,12 +144,12 @@ public class OperationEqualizeHistogram extends Operation {
 
 
 
-    public BufferedImage normalizeHistogramFunction(BufferedImage inImage, Histogram histogram) {
+    public SimpleHSVBufferedImage normalizeHistogramFunction(SimpleHSVBufferedImage inImage, Histogram histogram) {
 
         int width = inImage.getWidth();
         int height = inImage.getHeight();
 
-        BufferedImage outImage = new BufferedImage(width, height, inImage.getType());
+        SimpleHSVBufferedImage outImage = new SimpleHSVBufferedImage(width, height, inImage.getType());
         WritableRaster raster = inImage.getRaster();
         WritableRaster outRaster = outImage.getRaster();
 
@@ -242,7 +241,7 @@ public class OperationEqualizeHistogram extends Operation {
         return outImage;
     }
 
-    private void fillStatisticsTables(String method, BufferedImage inImage, Histogram histogram, ArrayList<Integer[]> leftLevelLimits, ArrayList<Integer[]> rightLevelLimits, ArrayList<Integer[]> newLevels) {
+    private void fillStatisticsTables(String method, SimpleHSVBufferedImage inImage, Histogram histogram, ArrayList<Integer[]> leftLevelLimits, ArrayList<Integer[]> rightLevelLimits, ArrayList<Integer[]> newLevels) {
         int width = inImage.getWidth();
         int height = inImage.getHeight();
 
