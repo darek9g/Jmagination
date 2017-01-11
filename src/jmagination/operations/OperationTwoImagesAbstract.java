@@ -266,8 +266,18 @@ public abstract class OperationTwoImagesAbstract extends Operation{
                                 pixel[b] = fakePixel[b];
                             }
                             for (int b = 0; b < (pixel.length < leadingPixel.length ? pixel.length : leadingPixel.length); ++b) {
-                                pixel[b] = leadingPixel[b];
+//                                pixel[b] = leadingPixel[b];
+                                pixel[b] = 355;
                             }
+                            outImage.setPixel(j, i, pixel);
+
+                            int[] testPixel = outImage.getPixel(j,i);
+                            System.out.printf("Test pixel ");
+                            for(int p=0;p<testPixel.length;p++) {
+                                System.out.printf("%d ", testPixel[p]);
+                            }
+                            System.out.printf("\n");
+
                             outRaster.setPixel(j, i, pixel);
                         }
                     }

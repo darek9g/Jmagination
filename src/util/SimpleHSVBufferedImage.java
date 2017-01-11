@@ -1,10 +1,7 @@
 package util;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
+import java.awt.image.*;
 import java.util.Hashtable;
 
 /**
@@ -13,15 +10,19 @@ import java.util.Hashtable;
 public class SimpleHSVBufferedImage extends BufferedImage {
 
     private float[][][] hsv;
+    private DataBufferInt opDataBuffer;
 
     public SimpleHSVBufferedImage(BufferedImage srcImage) {
         super(srcImage.getColorModel(),srcImage.copyData(null), srcImage.getColorModel().isAlphaPremultiplied(), null);
         fillHsv();
+        System.out.println("Construction happening...");
+        opDataBuffer = new DataBufferInt(srcImage.getWidth() * srcImage.getHeight(), srcImage.getRaster().getNumBands());
     }
 
     public SimpleHSVBufferedImage(int width, int height, int imageType) {
         super(width, height, imageType);
         fillHsv();
+        opDataBuffer = new DataBufferInt(width * height, super.getRaster().getNumBands());
     }
 
     public SimpleHSVBufferedImage(int width, int height, int imageType, IndexColorModel cm) {
@@ -79,5 +80,23 @@ public class SimpleHSVBufferedImage extends BufferedImage {
             default:
                 throw new java.lang.IllegalArgumentException("Niedozwolona liczba argumentów (1 dla GREY, 3 dla RGB, 4 dla RGBA).");
         }
+    }
+
+    public void setPixel(int x, int y, int[] iArray) {
+        WritableRaster raster = getRaster();
+        raster.setPixel(x, y, iArray);
+
+        for(int i=0;i<iArray.length;i++) {
+            System.out.println("Width? " + getWidth());
+            opDataBuffer.setElem(i,y * getWidth() + x, iArray[i]);
+        }
+    }
+
+    public int[] getPixel(int x, int y) {
+        int[] iArray = new int[opDataBuffer.getNumBanks()];
+        for(int i=0;i<iArray.length;i++) {
+            iArray[i] = opDataBuffer.getElem(i, y * getWidth() + x);
+        }
+        return iArray;
     }
 }
