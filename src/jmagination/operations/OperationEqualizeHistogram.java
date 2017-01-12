@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static jmagination.ConstantsInitializers.BR;
+import static util.SimpleHSVBufferedImage.NORMALIZATION_MODE_PROPORTIONAL;
+import static util.SimpleHSVBufferedImage.NORMALIZATION_MODE_THREE_VALUED;
+import static util.SimpleHSVBufferedImage.NORMALIZATION_MODE_VOID;
 
 /**
  * Created by darek on 30.11.2016.
@@ -22,8 +25,14 @@ import static jmagination.ConstantsInitializers.BR;
 
 public class OperationEqualizeHistogram extends Operation {
 
+    public static final int MODE_AVARAGES = 0;
+    public static final int MODE_RANDOM = 1;
+    public static final int MODE_NEIGHBORHOOD = 2;
+
+
     Parameters parameters;
     String[] runModes = { "Średnich", "Losowa", "Według sąsiedztwa"};
+
     JComboBox<String> methodSelect = new JComboBox<>(runModes);
     String[] neighborhoodSizesStrings = { "3x3", "5x5", "7x7", "9x9", "11x11", "13x13"};
     JComboBox<String> neighborhoodSizeSelect = new JComboBox<>(neighborhoodSizesStrings);
@@ -155,8 +164,6 @@ public class OperationEqualizeHistogram extends Operation {
 
         int bands = histogram.getData().size();
 
-        System.out.println("Bands " + bands);
-
         ArrayList<Integer[]> leftLevelLimits = new ArrayList<>();
         ArrayList<Integer[]> rightLevelLimits = new ArrayList<>();
         ArrayList<Integer[]> newLevels = new ArrayList<>();
@@ -230,13 +237,15 @@ public class OperationEqualizeHistogram extends Operation {
                         }
                         break;
                 }
-
-
             }
 
-            outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), newPixel);
+            outImage.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), newPixel);
+
+//            outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), newPixel);
 
         } while (imageCursor.forward());
+
+        outImage.normalize(NORMALIZATION_MODE_PROPORTIONAL);
 
         return outImage;
     }
@@ -289,9 +298,7 @@ public class OperationEqualizeHistogram extends Operation {
 
                 while (Hint>histogramAverages[i]) {
                     Hint -= histogramAverages[i];
-                    if(R<levels-1) {
                         ++R;
-                    }
                 }
                 rightLevelLimits.get(i)[level] = R;
 
@@ -305,8 +312,6 @@ public class OperationEqualizeHistogram extends Operation {
                     default:
                         newLevels.get(i)[level] = 0;
                 }
-
-                System.out.printf("%d %d %d %d %d\n", histogramAverages[i], level, newLevels.get(i)[level], leftLevelLimits.get(i)[level], rightLevelLimits.get(i)[level]);
 
             }
         }

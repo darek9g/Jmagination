@@ -9,20 +9,49 @@ import java.util.Hashtable;
  */
 public class SimpleHSVBufferedImage extends BufferedImage {
 
+    public final static int NORMALIZATION_MODE_VOID = 0;
+    public final static int NORMALIZATION_MODE_PROPORTIONAL = 1;
+    public final static int NORMALIZATION_MODE_THREE_VALUED = 2;
+    public final static int NORMALIZATION_MODE_CUTTING = 3;
+
+
+
+    // dla obrazów o zakresie jasności RGB innym niż 0-255
+    int[] imageMinValues;
+    int[] imageMaxValues;
+
     private float[][][] hsv;
     private DataBufferInt opDataBuffer;
+    boolean opDataBufferDirty;
+
+    // dla procedur normalizacji
+    int[] opDataBufferMinValues;
+    int[] opDataBufferMaxValues;
+
+    int defaultNormalizationMode = NORMALIZATION_MODE_VOID;
+
+    {
+        opDataBufferDirty = false;
+        opDataBufferMinValues = new int[this.getRaster().getNumBands()];
+        opDataBufferMaxValues = new int[this.getRaster().getNumBands()];
+        imageMinValues = new int[this.getRaster().getNumBands()];
+        imageMaxValues = new int[this.getRaster().getNumBands()];
+
+        for(int i=0;i<imageMinValues.length;i++) {
+            imageMinValues[i] = 0;
+            imageMaxValues[i] = 255;
+        }
+    }
+
 
     public SimpleHSVBufferedImage(BufferedImage srcImage) {
         super(srcImage.getColorModel(),srcImage.copyData(null), srcImage.getColorModel().isAlphaPremultiplied(), null);
         fillHsv();
-        System.out.println("Construction happening...");
-        opDataBuffer = new DataBufferInt(srcImage.getWidth() * srcImage.getHeight(), srcImage.getRaster().getNumBands());
     }
 
     public SimpleHSVBufferedImage(int width, int height, int imageType) {
         super(width, height, imageType);
         fillHsv();
-        opDataBuffer = new DataBufferInt(width * height, super.getRaster().getNumBands());
     }
 
     public SimpleHSVBufferedImage(int width, int height, int imageType, IndexColorModel cm) {
@@ -83,12 +112,20 @@ public class SimpleHSVBufferedImage extends BufferedImage {
     }
 
     public void setPixel(int x, int y, int[] iArray) {
-        WritableRaster raster = getRaster();
-        raster.setPixel(x, y, iArray);
+
+        maintainOpDataBuffer();
+
+        opDataBufferDirty = true;
 
         for(int i=0;i<iArray.length;i++) {
-            System.out.println("Width? " + getWidth());
             opDataBuffer.setElem(i,y * getWidth() + x, iArray[i]);
+
+            if(iArray[i] > opDataBufferMaxValues[i]) {
+                opDataBufferMaxValues[i] = iArray[i];
+            }
+            if(iArray[i] < opDataBufferMinValues[i]) {
+                opDataBufferMinValues[i] = iArray[i];
+            }
         }
     }
 
@@ -99,4 +136,109 @@ public class SimpleHSVBufferedImage extends BufferedImage {
         }
         return iArray;
     }
+
+    public void normalize(int mode) {
+
+        maintainOpDataBuffer();
+
+        if(opDataBufferDirty == false) return;
+
+        WritableRaster raster = this.getRaster();
+
+        for(int i=0;i<this.getHeight();i++) {
+            for(int j=0;j<this.getWidth();j++) {
+
+                int[] pixel = new int[opDataBuffer.getNumBanks()];
+                for(int b=0;b<opDataBuffer.getNumBanks();b++) {
+                    pixel[b] = opDataBuffer.getElem(b, i * getWidth() + j);
+                }
+
+                int newPixel[];
+
+                switch(mode) {
+                    case NORMALIZATION_MODE_PROPORTIONAL:
+                        newPixel = normalizePixelProportional(pixel);
+                        break;
+                    case NORMALIZATION_MODE_THREE_VALUED:
+                        newPixel = normalizePixel3Valued(pixel);
+                        break;
+                    case  NORMALIZATION_MODE_VOID:
+                    case  NORMALIZATION_MODE_CUTTING:
+                        newPixel = pixel;
+                        break;
+                    default:
+                        throw new java.lang.IllegalArgumentException("Nieprawidłowa wartość dla trybu normalizacji.");
+                }
+
+                raster.setPixel(j, i, newPixel);
+            }
+        }
+
+        opDataBufferDirty = false;
+    }
+
+    public void normalize() {
+        normalize(defaultNormalizationMode);
+    }
+
+    private int[] normalizePixelVoid(int[] pixel) {
+        int[] newPixel = new int[pixel.length];
+
+        for(int i=0; i<pixel.length; i++) {
+            newPixel[i] =  pixel[i];
+        }
+
+        return newPixel;
+    }
+
+    private int[] normalizePixelProportional(int[] pixel) {
+        int[] newPixel = new int[pixel.length];
+
+        for(int i=0; i<pixel.length; i++) {
+            newPixel[i] =  (int) Math.round(
+                    ( ( pixel[i] - opDataBufferMinValues[i] + 0.0 ) / ( opDataBufferMaxValues[i] - opDataBufferMinValues[i] )
+                    ) * (
+                            imageMaxValues[i] - imageMinValues[i] - 1
+                    )
+                            + imageMinValues[i]
+                    );
+        }
+
+        return newPixel;
+    }
+
+    private int[] normalizePixel3Valued(int[] pixel) {
+        int[] newPixel = new int[pixel.length];
+
+        for(int i=0; i<pixel.length; i++) {
+            if(pixel[i] < imageMinValues[i]) {
+                newPixel[i] = imageMinValues[i];
+            } else {
+                if(pixel[i] > imageMinValues[i]) {
+                    newPixel[i] = imageMaxValues[i];
+                } else {
+                    newPixel[i] =  (int) Math.round( ( imageMaxValues[i] - imageMinValues[i] ) / 2.0 + imageMinValues[i]);
+                }
+
+            }
+        }
+
+        return newPixel;
+    }
+
+    private void maintainOpDataBuffer() {
+        if(opDataBuffer == null) {
+            opDataBuffer = new DataBufferInt(this.getWidth() * this.getHeight(), this.getRaster().getNumBands());
+        }
+
+        if(opDataBufferDirty == false) {
+
+            for(int i=0; i<this.getRaster().getNumBands(); i++) {
+                opDataBufferMinValues[i] = Integer.MAX_VALUE;
+                opDataBufferMaxValues[i] = Integer.MIN_VALUE;
+            }
+
+        }
+    }
+
 }
