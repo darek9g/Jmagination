@@ -20,6 +20,7 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
     public static final int FREE_MODE = 2;
     public static final int STRECH_MODE = 3;
     public static final int SCALE_MODE = 4;
+    // TODO zupełnie do poprawy SCALEDOWN_MODE, obecny algorytm nie prowadzi do posteryzacji
     public static final int SCALEDOWN_MODE = 5;
     public static final int NEGATE_MODE = 6;
     private static final int LINE_MODE = 99;

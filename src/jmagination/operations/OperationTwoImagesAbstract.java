@@ -302,16 +302,20 @@ public abstract class OperationTwoImagesAbstract extends Operation{
                 rightImageCursor.fillPixelHood(rightPixelHood, ImageCursor.COMPLETE_COPY);
                 int[] rightPixel = rightPixelHood.getPixel(0);
 
-                int[] pixel = twoImagesPixelFunction(outRaster, leftPixel, rightPixel, parameters.fillValue);
+                int[] pixel = twoImagesPixelFunction(outImage, leftPixel, rightPixel, parameters.fillValue);
                 outRaster.setPixel(j,i,pixel);
             }
         }
+
+//        normalizeOutImage();
 
         return outImage;
 
     }
 
-    public abstract int[] twoImagesPixelFunction(WritableRaster outRaster, int[] leftPixel, int[] rightPixel, int fillValue);
+    public abstract int[] twoImagesPixelFunction(SimpleHSVBufferedImage outImage, int[] leftPixel, int[] rightPixel, int fillValue);
+
+//    public abstract  void normalizeOutImage();
 
     protected class Parameters {
 

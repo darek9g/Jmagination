@@ -1,24 +1,20 @@
 package jmagination.operations;
 
-import util.ImageCursor;
-import util.PixelHood;
 import util.SimpleHSVBufferedImage;
 
-import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.util.ArrayList;
 
 import static jmagination.ConstantsInitializers.BR;
 
 /**
  * Created by darek on 06.01.2017.
  */
-public class OperationTwoImagesArithmAdd extends OperationTwoImagesAbstract {
+public class OperationTwoImagesArithmDiff extends OperationTwoImagesAbstract {
 
     {
-        label = "Dodawanie arytmetyczne";
-        header = "Dodawanie arytmetyczne";
-        description = "Nadanie wynikowym pikselom wartości" + BR + "sumy odpowiadających sobie pikesli z dwóch obrazów.";
+        label = "Znajdowanie różnic";
+        header = "Znajdowanie różnic";
+        description = "Nadanie wynikowym pikselom wartości maksymalnej bądź minimalnej" + BR + "w zależności od wówności pikseli z dwóch obrazów";
 
         parameters = new Parameters();
 
@@ -39,7 +35,12 @@ public class OperationTwoImagesArithmAdd extends OperationTwoImagesAbstract {
         }
 
         for(int i=0; i<(leftPixel.length < rightPixel.length ? leftPixel.length : rightPixel.length); ++i) {
-            newPixel[i] = (int) Math.round( ( leftPixel[i] + rightPixel[i] ) / 2.0 );
+
+            if(leftPixel[i] == rightPixel[i]) {
+                newPixel[i] = outImage.getImageMaxValues()[i];
+            } else {
+                newPixel[i] = outImage.getImageMinValues()[i];
+            }
         }
 
         return newPixel;

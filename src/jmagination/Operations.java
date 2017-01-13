@@ -29,6 +29,11 @@ public class Operations {
         availableOperations.add(new OperationLUTNegation());
         availableOperations.add(new OperationLlinearSmoothing());
         availableOperations.add(new OperationTwoImagesArithmAdd());
+        availableOperations.add(new OperationTwoImagesArithmSub());
+        availableOperations.add(new OperationTwoImagesArithmDiff());
+        availableOperations.add(new OperationTwoImagesLogicOR());
+        availableOperations.add(new OperationTwoImagesLogicAND());
+        availableOperations.add(new OperationTwoImagesLogicXOR());
 
         return availableOperations;
     }

@@ -137,6 +137,14 @@ public class SimpleHSVBufferedImage extends BufferedImage {
         return iArray;
     }
 
+    public int[] getImageMinValues() {
+        return  imageMinValues;
+    }
+
+    public int[] getImageMaxValues() {
+        return  imageMaxValues;
+    }
+
     public void normalize(int mode) {
 
         maintainOpDataBuffer();
