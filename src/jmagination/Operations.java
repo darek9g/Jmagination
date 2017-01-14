@@ -24,7 +24,7 @@ public class Operations {
         availableOperations.add(new OperationLUTThreshold());
         availableOperations.add(new OperationLUTBinarization());
         availableOperations.add(new OperationLUTStretchInRanges());
-        availableOperations.add(new OperationLUTScaleDown());
+        availableOperations.add(new OperationLUTPosterize());
         availableOperations.add(new OperationLUTScale());
         availableOperations.add(new OperationLUTNegation());
         availableOperations.add(new OperationLlinearSmoothing());

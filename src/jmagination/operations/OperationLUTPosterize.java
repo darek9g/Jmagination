@@ -7,7 +7,7 @@ import static jmagination.ConstantsInitializers.BR;
 /**
  * Created by darek on 06.01.2017.
  */
-public class OperationLUTScaleDown extends OperationLUTPointOperation {
+public class OperationLUTPosterize extends OperationLUTPointOperation {
 
     {
 
@@ -17,13 +17,13 @@ public class OperationLUTScaleDown extends OperationLUTPointOperation {
 
         parameters = new Parameters(256);
 
-        thresholdLineEditor = new LineEditor(LineEditor.SCALEDOWN_MODE, 0, 255, 0, 255);
+        thresholdLineEditor = new LineEditor(LineEditor.POSTER_MODE, 0, 255, 0, 255);
         thresholdLineEditor.addActionListener(runOperationTrigger);
 
     }
 
     @Override
     public Operation Clone() {
-        return new OperationLUTScaleDown();
+        return new OperationLUTPosterize();
     }
 }

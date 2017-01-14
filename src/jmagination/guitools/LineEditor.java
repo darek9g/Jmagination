@@ -20,13 +20,12 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
     public static final int FREE_MODE = 2;
     public static final int STRECH_MODE = 3;
     public static final int SCALE_MODE = 4;
-    // TODO zupełnie do poprawy SCALEDOWN_MODE, obecny algorytm nie prowadzi do posteryzacji
-    public static final int SCALEDOWN_MODE = 5;
+    public static final int POSTER_MODE = 5;
     public static final int NEGATE_MODE = 6;
     private static final int LINE_MODE = 99;
 
 
-    private int marigin = 20;
+    private int marigin = 24;
     private int handleSize = 10;
 
     int minXSetup = 10;
@@ -154,7 +153,7 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
 
         switch (operationMode) {
             case SCALE_MODE:
-            case SCALEDOWN_MODE:
+            case POSTER_MODE:
             case LINE_MODE:
                 if(handles.size() != 2) {
                     handles.add(new Point(maxXSetup - minXSetup, maxYSetup - minYSetup));
@@ -221,7 +220,6 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
                 break;
             case FREE_MODE:
             case SCALE_MODE:
-            case SCALEDOWN_MODE:
             case LINE_MODE:
                 outputPolygon.addPoint(xToPict(minXSetup), yToPict(minYSetup));
             default:
@@ -243,16 +241,28 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
                     break;
                 case FREE_MODE:
                 case SCALE_MODE:
-                case SCALEDOWN_MODE:
                 case LINE_MODE:
                 default:
                     y = points.get(i).y;
             }
 
             switch(operationMode) {
+                case POSTER_MODE:
+                    if(points.get(i).x>minXSetup) {
+                        double constrValue = ( maxYSetup - minYSetup + 1.0 ) / ( points.get(i).y + 1.0 );
+                        for(int v=1; v * constrValue <= maxYSetup - minYSetup + 1; v++ ) {
+                            if(v==1) {
+                                outputPolygon.addPoint(xToPict(minXSetup), yToPict( minYSetup));
+                                outputPolygon.addPoint(xToPict(minXSetup + (int) Math.round(constrValue * v ) - 1), yToPict(minYSetup));
+                            } else {
+                                outputPolygon.addPoint(xToPict(minXSetup + (int) Math.round(constrValue * (v - 1)) - 1), yToPict(minYSetup + (int) Math.round(constrValue * (v - 1) - 1)));
+                                outputPolygon.addPoint(xToPict(minXSetup + (int) Math.round(constrValue * v ) - 1), yToPict(minYSetup + (int) Math.round(constrValue * (v - 1) - 1 )));
+                            }
+                        }
+                    }
+                    break;
                 case FREE_MODE:
                 case SCALE_MODE:
-                case SCALEDOWN_MODE:
                 case LINE_MODE:
                     outputPolygon.addPoint(xToPict(points.get(i).x), yToPict(y));
                     break;
@@ -396,9 +406,11 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
 
             switch(operationMode) {
                 case SCALE_MODE:
-                case SCALEDOWN_MODE:
                 case LINE_MODE:
-                    graphics.drawString(String.valueOf(p.y), xToPict(p.x - 2 ), yToPict(p.y + 2 + handleSize / 2));
+                    graphics.drawString(String.valueOf(p.y), xToPict(p.x + 4 ), yToPict(p.y + 2 + handleSize / 2));
+                    break;
+                case POSTER_MODE:
+                    graphics.drawString(String.valueOf( p.y ), xToPict(p.x + 4 ), yToPict(p.y + 2 + handleSize / 2));
                     break;
                 default:
                     if( p.x > 0 && p.x < maxXSetup - minXSetup) {
@@ -431,7 +443,7 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
             if(dist < range) {
 
                 switch(operationMode) {
-                    case SCALEDOWN_MODE:
+                    case POSTER_MODE:
                         if(h.x == minXSetup) { return; }
                 }
 
@@ -475,7 +487,7 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
             switch (operationMode) {
 
                 case SCALE_MODE:
-                case SCALEDOWN_MODE:
+                case POSTER_MODE:
                 case LINE_MODE:
                     if(handlePressed.x <= minXSetup) {
                         eX = xToPict(minXSetup);
@@ -496,9 +508,10 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
 
             if( yFromPict(eY) > maxYSetup - minYSetup ) {
                 eY = yToPict(maxYSetup - minYSetup );
-            }
-            if( yFromPict(eY) < minYSetup ) {
-                eY = yToPict(minYSetup);
+            } else {
+                if (yFromPict(eY) < minYSetup) {
+                    eY = yToPict(minYSetup);
+                }
             }
 
 
@@ -509,6 +522,7 @@ public class LineEditor extends JPanel implements MouseListener, MouseMotionList
             // opcja quality
 //            fireActionEvent();
         }
+
 
     }
 
