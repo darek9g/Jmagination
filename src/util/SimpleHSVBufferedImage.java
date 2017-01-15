@@ -13,6 +13,7 @@ public class SimpleHSVBufferedImage extends BufferedImage {
     public final static int NORMALIZATION_MODE_PROPORTIONAL = 1;
     public final static int NORMALIZATION_MODE_THREE_VALUED = 2;
     public final static int NORMALIZATION_MODE_CUTTING = 3;
+    public final static int NORMALIZATION_MODE_BINARY = 4;
 
 
 
@@ -170,6 +171,9 @@ public class SimpleHSVBufferedImage extends BufferedImage {
                     case NORMALIZATION_MODE_THREE_VALUED:
                         newPixel = normalizePixel3Valued(pixel);
                         break;
+                    case NORMALIZATION_MODE_BINARY:
+                        newPixel = normalizePixelBinary(pixel);
+                        break;
                     case  NORMALIZATION_MODE_VOID:
                     case  NORMALIZATION_MODE_CUTTING:
                         newPixel = pixel;
@@ -229,6 +233,16 @@ public class SimpleHSVBufferedImage extends BufferedImage {
                 }
 
             }
+        }
+
+        return newPixel;
+    }
+
+    private int[] normalizePixelBinary(int[] pixel) {
+        int[] newPixel = new int[pixel.length];
+
+        for(int i=0; i<pixel.length; i++) {
+            newPixel[i] =  pixel[i] > 0 ? imageMaxValues[i] : imageMinValues[i];
         }
 
         return newPixel;
