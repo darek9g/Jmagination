@@ -2,6 +2,7 @@ package util.test;
 
 import util.ImageCursor;
 import util.PixelHood;
+import util.SimpleHSVBufferedImage;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -16,7 +17,7 @@ public class TestCursorWithHood {
         int bufferedImageWidth = 1;
         int bufferedImageHeight = 2;
 
-        BufferedImage bufferedImage = new BufferedImage(bufferedImageWidth, bufferedImageHeight, BufferedImage.TYPE_INT_RGB);
+        SimpleHSVBufferedImage bufferedImage = new SimpleHSVBufferedImage(bufferedImageWidth, bufferedImageHeight, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = bufferedImage.getRaster();
 
         for(int y = 0; y<bufferedImageHeight; ++y) {

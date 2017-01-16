@@ -14,7 +14,7 @@ public class ImageCursor {
     public static final int COMPLETE_COPY = 2;
 
 
-    private BufferedImage img;
+    private SimpleHSVBufferedImage img;
     WritableRaster raster;
 
     private int posX;
@@ -23,7 +23,7 @@ public class ImageCursor {
     private int height;
     private int width;
 
-    public ImageCursor(BufferedImage bufferedImage) {
+    public ImageCursor(SimpleHSVBufferedImage bufferedImage) {
         this.img = bufferedImage;
         raster = this.img.getRaster();
 
@@ -102,11 +102,19 @@ public class ImageCursor {
         fillPixelHood(pixelHood, commonCompleteMode, commonCompleteMode, commonCompleteMode, commonCompleteMode);
     }
 
+    public void fillPixelHood(PixelHood<int[]> pixelHood, int bufferId, int commonCompleteMode) {
+        fillPixelHood(pixelHood, bufferId, commonCompleteMode, commonCompleteMode, commonCompleteMode, commonCompleteMode);
+    }
+
     public void fillPixelHood(PixelHood<int[]> pixelHood, int leftCompleteMode, int rightCompleteMode, int topCompleteMode, int bottomCompleteMode) {
+        fillPixelHood(pixelHood, 0, leftCompleteMode, rightCompleteMode, topCompleteMode, bottomCompleteMode);
+    }
+
+    public void fillPixelHood(PixelHood<int[]> pixelHood, int bufferId, int leftCompleteMode, int rightCompleteMode, int topCompleteMode, int bottomCompleteMode) {
 
         // single pixel acceleration
         if( pixelHood.getHorizontalBorderSize() == 0 || pixelHood.getVerticalBorderSize() == 0 ) {
-            pixelHood.setPixel(0, 0, getPixelValue(posX, posY));
+            pixelHood.setPixel(0, 0, getPixelValue(posX, posY, bufferId));
             return;
         }
 
@@ -124,7 +132,7 @@ public class ImageCursor {
                             int globalX = posX + sx;
                             int globalY = posY + sy;
                             if (checkXYinRange(globalX, globalY) == true) {
-                                pixelHood.setPixel(sx, sy, getPixelValue(globalX, globalY));
+                                pixelHood.setPixel(sx, sy, getPixelValue(globalX, globalY, bufferId));
                             } else {
 
 //                                System.out.printf("Y X MODY MODX SY SX: %d %d %d %d %d %d\n", y, x, mody, modx,sy, sx);
@@ -178,7 +186,19 @@ public class ImageCursor {
         return getPixelValue(posX, posY);
     }
 
+    private int[] getPixelValue(int bufferId) {
+        return getPixelValue(posX, posY, bufferId);
+    }
+
     private int[] getPixelValue(int x, int y) {
+        return getPixelValue(x, y, 0);
+    }
+
+    private int[] getPixelValue(int x, int y, int bufferId) {
+        switch (bufferId) {
+            case 1:
+                return img.getPixel(x, y);
+        }
         return raster.getPixel(x, y, new int[raster.getNumBands()]);
     }
 
@@ -193,7 +213,7 @@ public class ImageCursor {
     private int[] getPixelMinPossibleValue() {
         int[] ret = new int[raster.getNumBands()];
         for(int i=0;i<raster.getNumBands();++i) {
-            ret[i] = 0;
+            ret[i] = img.getImageMinValues()[i];
         }
         return ret;
     }
@@ -201,7 +221,7 @@ public class ImageCursor {
     private int[] getPixelMaxPossibleValue() {
         int[] ret = new int[raster.getNumBands()];
         for(int i=0;i<raster.getNumBands();++i) {
-            ret[i] = 255;
+            ret[i] = img.getImageMaxValues()[i];
         }
         return ret;
     }
