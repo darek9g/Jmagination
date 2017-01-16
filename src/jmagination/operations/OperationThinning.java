@@ -55,7 +55,7 @@ public class OperationThinning extends Operation {
         super();
         this.label = "Ścienianie";
         categories.add("LAB 4");
-        categories.add("Analiza otoczenia");
+        categories.add("Morfologiczne");
         methodSelect.setSelectedIndex(0);
 
     }
@@ -324,6 +324,24 @@ public class OperationThinning extends Operation {
                     } while (imageCursor.forward());
                 }
             }
+
+
+            ImageCursor imageCursor = new ImageCursor(outImage);
+            PixelHood<int[]> pixelBuf = new PixelHood<>(0, 0, new int[outImage.getRaster().getNumBands()]);
+            imageCursor.reset();
+
+            do {
+                imageCursor.fillPixelHood(pixelBuf, 1, ImageCursor.COMPLETE_COPY);
+
+                int[] pixel = pixelBuf.getPixel(0,0);
+
+                if(pixel[b] == parameters.keepValue) {
+                    pixel[b] = parameters.objectValue;
+                }
+
+                outImage.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
+
+            } while (imageCursor.forward());
         }
 
 
