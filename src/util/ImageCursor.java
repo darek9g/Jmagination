@@ -12,6 +12,7 @@ public class ImageCursor {
     public static final int COMPLETE_MIN = 0;
     public static final int COMPLETE_MAX = 1;
     public static final int COMPLETE_COPY = 2;
+    public static final int COMPLETE_SKIP = 4;
 
 
     private SimpleHSVBufferedImage img;
@@ -157,6 +158,8 @@ public class ImageCursor {
                                 }
 
                                 switch(completeModeTest) {
+                                    case COMPLETE_SKIP:
+                                        break;
                                     case COMPLETE_MIN:
                                         pixelHood.setPixel(sx, sy, getPixelMinPossibleValue());
                                         break;

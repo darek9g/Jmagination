@@ -26,25 +26,36 @@ import static util.SimpleHSVBufferedImage.NORMALIZATION_MODE_VOID;
 
 public class OperationThinning extends Operation {
 
-    public static final int COMPLETE_MIN = 0;
-    public static final int COMPLETE_MAX = 1;
-    public static final int COMPLETE_COPY = 2;
-    public static final int COMPLETE_SKIP = 3;
+
 
 
     Parameters parameters;
-    String[] edgeModes = { "Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
 
-    JComboBox<String> methodSelect = new JComboBox<>(edgeModes);
+
+    JComboBox<String> methodSelect;
+
+    ButtonGroup buttonGroupObjectChoice;
+    JRadioButton jRadioButtonBlackObject;
+    JRadioButton jRadioButtonWhiteObject;
+
+    {
+        parameters = new Parameters();
+
+        methodSelect = new JComboBox<>(parameters.edgeModes);
+
+        buttonGroupObjectChoice = new ButtonGroup();
+        jRadioButtonBlackObject = new JRadioButton("Ciemny objekt, jasne tło");
+        buttonGroupObjectChoice.add(jRadioButtonBlackObject);
+        jRadioButtonWhiteObject = new JRadioButton("Jasny objekt, ciemne tło");
+        buttonGroupObjectChoice.add(jRadioButtonWhiteObject);
+        jRadioButtonBlackObject.setSelected(true);
+    }
 
     public OperationThinning() {
         super();
         this.label = "Ścienianie";
         categories.add("LAB 4");
         categories.add("Analiza otoczenia");
-
-        parameters = new Parameters();
-
         methodSelect.setSelectedIndex(0);
 
     }
@@ -52,8 +63,12 @@ public class OperationThinning extends Operation {
     @Override
     public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
-        String method = (String) methodSelect.getSelectedItem();
-        parameters.method = method;
+        parameters.edgeNeighborMode = methodSelect.getSelectedIndex();
+        if(jRadioButtonWhiteObject.isSelected() == true) {
+            parameters.setObject(true);
+        } else {
+            parameters.setObject(false);
+        }
 
         return thinningFunction(bufferedImage, histogram);
     }
@@ -86,34 +101,50 @@ public class OperationThinning extends Operation {
 
         // parametryzacja
         c.gridx = 0;
-        c.gridy = 2;
+        c.gridy = 3;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        JLabel jLabelObjectSelect = new JLabel("Określenie obiektu i tła:");
+        panel.add(jLabelObjectSelect, c);
+
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        panel.add(jRadioButtonBlackObject, c);
+
+        c.gridx = 0;
+        c.gridy = 5;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        panel.add(jRadioButtonWhiteObject, c);
+
+        c.gridx = 0;
+        c.gridy = 7;
         c.gridwidth = GridBagConstraints.REMAINDER;
         JLabel jLabelMethodSelect = new JLabel("Sąsiedztwo pikseli brzegowch:");
         panel.add(jLabelMethodSelect, c);
 
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 8;
         c.gridwidth = GridBagConstraints.REMAINDER;
         panel.add(methodSelect, c);
 
         // wiersz sterowania wykonaniem
         c.gridx = 0;
-        c.gridy = 6;
+        c.gridy = 9;
         c.gridwidth = 4;
         panel.add(jLabelColorMode, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 6;
+        c.gridy = 10;
         c.gridwidth = 4;
         panel.add(jRadioButtonColorModeRGB, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 6;
+        c.gridy = 10;
         c.gridwidth = 4;
         panel.add(jRadioButtonColorModeHSV, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 6;
+        c.gridy = 10;
         c.gridwidth = 4;
         panel.add(jButtonApply, c);
 
@@ -212,7 +243,17 @@ public class OperationThinning extends Operation {
                     ImageCursor imageCursor = new ImageCursor(outImage);
 
                     do {
-                        imageCursor.fillPixelHood(pixelHood, 1, ImageCursor.COMPLETE_COPY);
+
+                        if(parameters.edgeNeighborMode == parameters.COMPLETE_SKIP) {
+                            int x = imageCursor.getPosX();
+                            int y = imageCursor.getPosY();
+
+                            if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                                continue;
+                            }
+                        }
+
+                        imageCursor.fillPixelHood(pixelHood, 1, parameters.edgeNeighborMode);
 
 
                         int[] pixel = pixelHood.getPixel(0, 0);
@@ -319,13 +360,33 @@ public class OperationThinning extends Operation {
     }
 
     private class Parameters {
-        String method = "Wartości minimalne";
 
-        int objectValue = 1;
-        int bgValue = 0;
+        public static final int COMPLETE_MIN = 0;
+        public static final int COMPLETE_MAX = 1;
+        public static final int COMPLETE_COPY = 2;
+        public static final int COMPLETE_SKIP = 3;
+
+        public String[] edgeModes = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
+        int edgeNeighborMode = 0;
+
+        private final int[] sceneSetup = { 0, 1};
+
+        int objectValue = sceneSetup[0];
+        int bgValue = sceneSetup[1];
+
         int keepValue = 2;
         int deleteValue = 3;
 
         public Parameters() {}
+
+        public void setObject(boolean isWhite) {
+            if(isWhite==true) {
+                objectValue = sceneSetup[1];
+                bgValue = sceneSetup[0];
+            } else {
+                objectValue = sceneSetup[0];
+                bgValue = sceneSetup[1];
+            }
+        }
     }
 }
