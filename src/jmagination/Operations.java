@@ -36,6 +36,8 @@ public class Operations {
         availableOperations.add(new OperationTwoImagesLogicXOR());
 
         availableOperations.add(new OperationThinning());
+        availableOperations.add(new OperationErosion());
+        availableOperations.add(new OperationDilatation());
 
         return availableOperations;
     }
