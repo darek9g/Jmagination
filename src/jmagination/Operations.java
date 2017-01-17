@@ -38,6 +38,8 @@ public class Operations {
         availableOperations.add(new OperationThinning());
         availableOperations.add(new OperationErosion());
         availableOperations.add(new OperationDilatation());
+        availableOperations.add(new OperationMorphOpenning());
+        availableOperations.add(new OperationMorphClosing());
 
         return availableOperations;
     }

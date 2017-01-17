@@ -69,7 +69,7 @@ public class OperationErosion extends Operation {
             parameters.setPixelConnections(false);
         }
 
-        return morphFunction(bufferedImage, histogram);
+        return morphFunctionInterface(bufferedImage, histogram);
     }
 
     @Override
@@ -156,7 +156,11 @@ public class OperationErosion extends Operation {
         return new OperationErosion();
     }
 
-    public SimpleHSVBufferedImage morphFunction(SimpleHSVBufferedImage inImage, Histogram histogram) {
+    public SimpleHSVBufferedImage morphFunctionInterface(SimpleHSVBufferedImage inImage, Histogram histogram) {
+        return morphFunction(inImage, parameters.promotingBrighter);
+    }
+
+    public SimpleHSVBufferedImage morphFunction(SimpleHSVBufferedImage inImage, boolean promotingBrighter) {
 
         SimpleHSVBufferedImage outImage = duplicateImageFunction(inImage);
 
@@ -176,7 +180,7 @@ public class OperationErosion extends Operation {
                     for(int j=0; j<2; j++) {
 
                         if(parameters.pixelNeighborHoodDefinition4 == true && i!=j && i*j!=0) { continue; }
-                        if ( parameters.promotingBrighter == true ) {
+                        if ( promotingBrighter == true ) {
                             if (pixelHood.getPixel(j,i)[b] > newValue) { newValue = pixelHood.getPixel(j,i)[b]; }
                         } else {
                             if (pixelHood.getPixel(j,i)[b] < newValue) { newValue = pixelHood.getPixel(j,i)[b]; }

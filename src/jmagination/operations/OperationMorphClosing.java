@@ -9,21 +9,20 @@ import static jmagination.ConstantsInitializers.BR;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationDilatation extends OperationErosion {
+public class OperationMorphClosing extends OperationMorphOpenning {
 
     {
-        label = "Dylatacja";
-        header = "Dylatacja";
+        label = "Zamknięcie";
+        header = "Zamknięcie";
         description = "Foo" + BR + "bar.";
 
         parameters = new Parameters();
         parameters.promotingBrighter = true;
-
     }
 
     @Override
     public Operation Clone() {
-        return new OperationDilatation();
+        return new OperationMorphClosing();
     }
 
 }
