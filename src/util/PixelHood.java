@@ -7,11 +7,11 @@ import java.util.ArrayList;
  */
 public class PixelHood <E> {
 
-    private int horizontalBorderSize;
-    private int verticalBorderSize;
-    private int dataSize;
+    protected int horizontalBorderSize;
+    protected int verticalBorderSize;
+    protected int dataSize;
 
-    private ArrayList<E> data;
+    protected ArrayList<E> data;
 
     public PixelHood(int horizontalBorderSize, int verticalBorderSize, E initializer) {
         this.horizontalBorderSize = horizontalBorderSize;
@@ -35,6 +35,13 @@ public class PixelHood <E> {
 
     public void setPixel(int x, int y, E e) {
         data.set(getIndex(x,y), e);
+    }
+
+    public void setPixel(int index, E e) {
+        if(index>dataSize) {
+            throw new IndexOutOfBoundsException();
+        }
+        data.set(index, e);
     }
 
     public E getPixel(int x, int y) {

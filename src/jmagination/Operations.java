@@ -40,6 +40,7 @@ public class Operations {
         availableOperations.add(new OperationDilatation());
         availableOperations.add(new OperationMorphOpenning());
         availableOperations.add(new OperationMorphClosing());
+        availableOperations.add(new OperationSharpening());
 
         return availableOperations;
     }

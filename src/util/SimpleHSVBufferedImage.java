@@ -15,6 +15,7 @@ public class SimpleHSVBufferedImage extends BufferedImage {
     public final static int NORMALIZATION_MODE_CUTTING = 3;
     public final static int NORMALIZATION_MODE_BINARY = 4;
 
+    public final static String[] normalizationModeStrings = { "Bez normalizacji", "Proporcjonalna", "Trzy-wartościowa", "Obcinająca", "Binarna"};
 
 
     // dla obrazów o zakresie jasności RGB innym niż 0-255
