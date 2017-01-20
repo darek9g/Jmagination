@@ -7,7 +7,8 @@ public class MaskGenerator {
     public enum MaskType{
         AVERAGING(1),
         CROSS(2),
-        PIRAMIDE(3)
+        PIRAMIDE(3),
+        COHERENT4(4)
         ;
         int type;
         MaskType(int i) {
@@ -23,12 +24,30 @@ public class MaskGenerator {
             case PIRAMIDE:
                 fillPiramideTable(size, values);
                 break;
+            case COHERENT4:
+                fill4CoherentTable(size, values);
+                break;
             default:
                 for(int i = 0; i < size; i++) for(int j = 0; j < size; j++) values[i][j] = 1;
                 break;
         }
 
         return values;
+    }
+
+    private static void fill4CoherentTable(int size, int[][] values) {
+        int pol = (size-1)/2;
+        for(int i = 0; i < size; i++){
+            for(int j = 0; j < size; j++) {
+                if (i == pol && j == pol) {
+                    values[i][j] = 2;
+                } else if (i == pol || j == pol) {
+                    values[i][j] = 1;
+                } else {
+                    values[i][j] = 0;
+                }
+            }
+        }
     }
 
     public static int pow2(int b) {

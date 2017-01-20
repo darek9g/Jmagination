@@ -2,13 +2,11 @@ package jmagination.operations;
 
 import jmagination.ConstantsInitializers;
 import jmagination.histogram.Histogram;
-import util.ImageCursor;
-import util.MaskGenerator;
-import util.PixelHood;
-import util.SimpleHSVBufferedImage;
+import util.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 
@@ -19,7 +17,7 @@ import static jmagination.ConstantsInitializers.BR;
  */
 public class OperationLlinearSmoothing extends Operation{
 
-    String[] runModes = { "Uśrednienie", "Mediana", "Filtr krzyżyzowy", "Filtr piramidalny"};
+    String[] runModes = { "Uśrednienie", "Mediana", "Filtr krzyżyzowy", "Filtr piramidalny", "4-spójna"};
     JComboBox<String> methodSelect = new JComboBox<>(runModes);
     String[] neighborhoodSizesStrings = { "3x3", "5x5", "7x7", "9x9", "11x11", "13x13"};
     JComboBox<String> neighborhoodSizeSelect = new JComboBox<>(neighborhoodSizesStrings);
@@ -34,6 +32,57 @@ public class OperationLlinearSmoothing extends Operation{
 
     @Override
     public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
+        if (jRadioButtonColorModeRGB.isSelected()) {
+            return runSmoothFunctionRGB(bufferedImage);
+        } else {
+            bufferedImage.fillHsv();
+            return runSmoothFunctionHSV(bufferedImage, jCheckBoxHue.isSelected(), jCheckBoxSaturation.isSelected(), jCheckBoxValue.isSelected());
+        }
+    }
+
+    private SimpleHSVBufferedImage runSmoothFunctionHSV(SimpleHSVBufferedImage bufferedImage, boolean h, boolean s, boolean v) {
+        int width = bufferedImage.getWidth();
+        int height = bufferedImage.getHeight();
+        boolean hsvChangeMatrix[] = new boolean[]{h,s,v};
+        float hsvOutMatrix[][][] = new float[width][height][3];
+        int hoodSize = neighborhoodSizeSelect.getSelectedIndex()+1;
+        PixelHood<float[]> pixelHood = new PixelHood<>(hoodSize, hoodSize, new float[3]);
+        HSVImageCursor imageCursor = new HSVImageCursor(bufferedImage.getHsv(), width, height);
+
+        do {
+            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+            float[] pixel;
+            switch (methodSelect.getSelectedIndex()) {
+                case 0:
+                    pixel = smoothHSVPixel(pixelHood, MaskGenerator.getMask(hoodSize*2+1,
+                            MaskGenerator.MaskType.AVERAGING), hsvChangeMatrix);
+                    break;
+                case 1:
+                    pixel = medianSmoothHSV(pixelHood);
+                    break;
+                case 2:
+                    pixel = smoothHSVPixel(pixelHood, MaskGenerator.getMask(hoodSize*2+1,
+                            MaskGenerator.MaskType.CROSS), hsvChangeMatrix);
+                    break;
+                case 3:
+                    pixel = smoothHSVPixel(pixelHood, MaskGenerator.getMask(hoodSize*2+1,
+                            MaskGenerator.MaskType.PIRAMIDE), hsvChangeMatrix);
+                    break;
+                case 4:
+                    pixel = smoothHSVPixel(pixelHood, MaskGenerator.getMask(hoodSize*2+1,
+                            MaskGenerator.MaskType.COHERENT4), hsvChangeMatrix);
+                    break;
+                default:
+                    throw new IllegalStateException("Nieobsłużona operacja wygładzania.");
+            }
+            hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
+
+        } while (imageCursor.forward());
+
+        return new SimpleHSVBufferedImage(width, height, bufferedImage.getType(), hsvOutMatrix);
+    }
+
+    private SimpleHSVBufferedImage runSmoothFunctionRGB(SimpleHSVBufferedImage bufferedImage) {
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
         SimpleHSVBufferedImage outImage = new SimpleHSVBufferedImage(width, height, bufferedImage.getType());
@@ -48,19 +97,23 @@ public class OperationLlinearSmoothing extends Operation{
             int[] pixel;
             switch (methodSelect.getSelectedIndex()) {
                 case 0:
-                    pixel = smooth(outRaster.getNumBands(), pixelHood,
+                    pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood,
                             MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.AVERAGING));
                     break;
                 case 1:
                     pixel = medianSmooth(outRaster.getNumBands(), pixelHood);
                     break;
                 case 2:
-                    pixel = smooth(outRaster.getNumBands(), pixelHood,
+                    pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood,
                             MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.CROSS));
                     break;
                 case 3:
-                    pixel = smooth(outRaster.getNumBands(), pixelHood,
+                    pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood,
                             MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.PIRAMIDE));
+                    break;
+                case 4:
+                    pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood,
+                            MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.COHERENT4));
                     break;
                 default:
                     throw new IllegalStateException("Nieobsłużona operacja wygładzania.");
@@ -72,7 +125,31 @@ public class OperationLlinearSmoothing extends Operation{
         return outImage;
     }
 
-    private int[] smooth(int numBands, PixelHood<int[]> pixelHood, int[][] mask) {
+    private float[] smoothHSVPixel(PixelHood<float[]> pixelHood, int[][] mask, boolean[] hsvChange) {
+        int dzielnik = 0;
+        for (int[] items : mask)
+            for (int item : items)
+                dzielnik += item;
+
+        int hor = pixelHood.getHorizontalBorderSize();
+        int vert = pixelHood.getVerticalBorderSize();
+        float[] newPixel = new float[3];
+        for (int band = 0; band < 3; band++) {
+            if (hsvChange[band]) {
+                float tmp = 0;
+                for (int i = -hor; i <= hor; i++)
+                    for (int j = -vert; j <= vert; j++) {
+                        tmp += (pixelHood.getPixel(i, j)[band]) * mask[i + hor][j + vert] / dzielnik;
+                    }
+                newPixel[band] = tmp;
+            } else {
+                newPixel[band] = pixelHood.getPixel(0,0)[band];
+            }
+        }
+        return newPixel;
+    }
+
+    private int[] smoothRGBPixel(int numBands, PixelHood<int[]> pixelHood, int[][] mask) {
         int dzielnik = 0;
         for (int[] items : mask)
             for (int item : items)
@@ -93,7 +170,7 @@ public class OperationLlinearSmoothing extends Operation{
     }
 
     @Deprecated
-    private int[] smooth(int numBands, PixelHood<int[]> pixelHood) {
+    private int[] smoothRGBPixel(int numBands, PixelHood<int[]> pixelHood) {
         int hor = pixelHood.getHorizontalBorderSize();
         int vert = pixelHood.getVerticalBorderSize();
         int[] newPixel = new int[numBands];
@@ -112,6 +189,19 @@ public class OperationLlinearSmoothing extends Operation{
         int[] newPixel = new int[numBands];
         for (int band = 0; band < numBands; band++) {
             int[] values = new int[pixelHood.getDataSize()];
+            for (int i = 0; i < pixelHood.getDataSize(); i++) {
+                values[i] = pixelHood.getPixel(i)[band];
+            }
+            Arrays.sort(values);
+            newPixel[band] = values[(pixelHood.getDataSize()-1)/2];
+        }
+        return newPixel;
+    }
+
+    private float[] medianSmoothHSV(PixelHood<float[]> pixelHood) {
+        float[] newPixel = new float[3];
+        for (int band = 0; band < 3; band++) {
+            float[] values = new float[pixelHood.getDataSize()];
             for (int i = 0; i < pixelHood.getDataSize(); i++) {
                 values[i] = pixelHood.getPixel(i)[band];
             }
@@ -172,9 +262,9 @@ public class OperationLlinearSmoothing extends Operation{
 
         // wiersz sterowania wykonaniem
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 4;
         c.gridwidth = 4;
-        panel.add(jLabelColorMode, c);
+        panel.add(jLabelHSVComponentsSelet, c);
 
         c.gridx+= c.gridwidth;
         c.gridy = 3;
@@ -191,7 +281,31 @@ public class OperationLlinearSmoothing extends Operation{
         c.gridwidth = 4;
         panel.add(jButtonApply, c);
 
+        // wiersz wyboru HSV
+        c.gridx = 0;
+        c.gridy = 4;
+        c.gridwidth = 4;
+        panel.add(jCheckBoxHue, c);
 
+        c.gridx += c.gridwidth;
+        c.gridy = 4;
+        c.gridwidth = 4;
+        panel.add(jCheckBoxHue, c);
+
+        c.gridx += c.gridwidth;
+        c.gridy = 4;
+        c.gridwidth = 4;
+        panel.add(jCheckBoxSaturation, c);
+
+        c.gridx += c.gridwidth;
+        c.gridy = 4;
+        c.gridwidth = 4;
+        panel.add(jCheckBoxValue, c);
+
+        this.jCheckBoxSaturation.setSelected(true);
+        this.jCheckBoxValue.setSelected(true);
+        this.hsvSpecificModeAllowed = true;
+        this.hsvModeAllowed = true;
         configureColorModeControls();
     }
 

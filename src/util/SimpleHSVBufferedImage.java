@@ -53,12 +53,15 @@ public class SimpleHSVBufferedImage extends BufferedImage {
 
     public SimpleHSVBufferedImage(int width, int height, int imageType) {
         super(width, height, imageType);
-        fillHsv();
     }
 
     public SimpleHSVBufferedImage(int width, int height, int imageType, IndexColorModel cm) {
         super(width, height, imageType, cm);
-        fillHsv();
+    }
+    public SimpleHSVBufferedImage(int width, int height, int imageType, float[][][] hsvMatrix) {
+        super(width, height, imageType);
+        this.hsv = hsvMatrix;
+        fillRGB();
     }
 
     public SimpleHSVBufferedImage(ColorModel cm, WritableRaster raster, boolean isRasterPremultiplied, Hashtable<?, ?> properties) {
@@ -74,26 +77,19 @@ public class SimpleHSVBufferedImage extends BufferedImage {
                 Color color = new Color(this.getRGB(x,y));
                 temp = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), new float[3]);
                 hsv[x][y][0] = temp[0];
-                hsv[x][y][0] = temp[1];
-                hsv[x][y][0] = temp[2];
+                hsv[x][y][1] = temp[1];
+                hsv[x][y][2] = temp[2];
             }
         }
     }
 
-    public SimpleHSVBufferedImage getRgbFromHsv() {
-        return  getRgbFromHsv(this.getWidth(), this.getHeight(), this.getHsv());
-    }
-
-
-    public static SimpleHSVBufferedImage getRgbFromHsv(int width, int height, float[][][] hsvTable) {
-        SimpleHSVBufferedImage simpleHSVBufferedImage = new SimpleHSVBufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        for(int x = 0; x < width; x++){
-            for (int y = 0; y < height; y++) {
-                Color color = Color.getHSBColor(hsvTable[x][y][0], hsvTable[x][y][1], hsvTable[x][y][2]);
-                simpleHSVBufferedImage.setRGB(x, y, color.getRGB());
+    public void fillRGB() {
+        for(int x = 0; x < getWidth(); x++){
+            for (int y = 0; y < getHeight(); y++) {
+                Color color = Color.getHSBColor(hsv[x][y][0], hsv[x][y][1], hsv[x][y][2]);
+                setRGB(x, y, color.getRGB());
             }
         }
-        return  simpleHSVBufferedImage;
     }
 
     public float[][][] getHsv() {
