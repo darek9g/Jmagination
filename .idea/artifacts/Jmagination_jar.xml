@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Jmagination:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Jmagination_jar</output-path>
+    <root id="archive" name="Jmagination.jar">
+      <element id="module-output" name="Jmagination" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/org.eclipse.swt.win32.win32.x86_64-4.3.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

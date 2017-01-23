@@ -26,7 +26,7 @@ public class OperationLlinearSmoothing extends Operation{
         super();
         this.label = "Wygładzanie";
         categories.add("LAB 3");
-        categories.add("Wielopunktowe");
+        categories.add("Sąsiedztwa");
 
     }
 
