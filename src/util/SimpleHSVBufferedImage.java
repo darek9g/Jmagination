@@ -252,7 +252,7 @@ public class SimpleHSVBufferedImage extends BufferedImage {
         int[] newPixel = new int[pixel.length];
 
         for(int i=0; i<pixel.length; i++) {
-            newPixel[i] =  pixel[i] > 0 ? imageMaxValues[i] : imageMinValues[i];
+            newPixel[i] =  pixel[i] > imageMinValues[i] ? imageMaxValues[i] : imageMinValues[i];
         }
 
         return newPixel;
@@ -397,7 +397,7 @@ public class SimpleHSVBufferedImage extends BufferedImage {
 
         for(int i=0; i<pixel.length; i++) {
             if(changeMatrix[i]) {
-                newPixel[i] = pixel[i] > 0 ? hsvImageMaxValues[i] : hsvImageMinValues[i];
+                newPixel[i] = pixel[i] > hsvImageMinValues[i] ? hsvImageMaxValues[i] : hsvImageMinValues[i];
             } else {
                 newPixel[i] = pixel[i];
             }
