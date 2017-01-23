@@ -219,12 +219,10 @@ public class ImageServer implements RunOperation {
         Matcher m = Pattern.compile(".*\\.([^.]*)").matcher(filename);
         if(m.matches()) {
             extension = m.group(1);
-            System.out.println("Znalezione rozszerzenie: " + extension);
         }
 
         if(extension.matches("^$")) {
             format = "png";
-            System.out.println("Ciągle bez rozszerzenia");
             JOptionPane.showMessageDialog(frame,
                     "W nazwie pliku nie ma rozszerzenia" + BR + "Użyty będzie format " + format,
                     "Informacja o formacie pliku",

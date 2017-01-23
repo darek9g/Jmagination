@@ -393,7 +393,6 @@ public class Workspace implements RunOperation {
             public void actionPerformed(ActionEvent actionEvent) {
                 String[] src = selectFiles();
                 for(int i=0;i<src.length; i++) {
-                    System.out.println(src[i]);
                     File file = new File(src[i]);
                     BufferedImage loaded = ImageServer.LoadImageFromFile(file.getAbsolutePath(), window);
                     if(loaded!=null) {

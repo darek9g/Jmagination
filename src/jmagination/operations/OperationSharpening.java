@@ -2,15 +2,13 @@ package jmagination.operations;
 
 import jmagination.ConstantsInitializers;
 import jmagination.histogram.Histogram;
-import util.ImageCursor;
-import util.PixelHood;
-import util.PixelMask;
-import util.SimpleHSVBufferedImage;
+import util.*;
 
 import javax.swing.*;
 import java.awt.*;
 
 import static jmagination.ConstantsInitializers.BR;
+import static jmagination.operations.OperationConstants.*;
 import static jmagination.operations.OperationDuplicate.duplicateImageFunction;
 
 /**
@@ -33,6 +31,9 @@ public class OperationSharpening extends Operation {
         header = "Wyostrzanie";
         description = "Foo" + BR + "bar.";
 
+        hsvModeAllowed = true;
+        hsvSpecificModeAllowed = true;
+
         parameters = new Parameters();
 
         parameters.serializedMask = parameters.maskValues[0];
@@ -54,6 +55,25 @@ public class OperationSharpening extends Operation {
 
         normalizationSelect = new JComboBox<>(parameters.normalizationModeStrings);
         normalizationSelect.setSelectedIndex(0);
+
+        if(parameters.hsvChangeMatrix[0] == true) {
+            jCheckBoxHue.setSelected(true);
+        } else {
+            jCheckBoxHue.setSelected(false);
+        }
+
+        if(parameters.hsvChangeMatrix[1] == true) {
+            jCheckBoxSaturation.setSelected(true);
+        } else {
+            jCheckBoxSaturation.setSelected(false);
+        }
+
+        if(parameters.hsvChangeMatrix[2] == true) {
+            jCheckBoxValue.setSelected(true);
+        } else {
+            jCheckBoxValue.setSelected(false);
+        }
+
     }
 
     @Override
@@ -63,6 +83,29 @@ public class OperationSharpening extends Operation {
         parameters.edgeModeIndex = edgeNeighborModeSelect.getSelectedIndex();
         parameters.normalizationModeIndex = normalizationSelect.getSelectedIndex();
 
+        if (jRadioButtonColorModeRGB.isSelected()) {
+            parameters.colorMode = OP_MODE_RGB;
+        } else {
+            parameters.colorMode = OP_MODE_HSV;
+
+            if(jCheckBoxHue.isSelected() == true) {
+                parameters.hsvChangeMatrix[0] = true;
+            } else {
+                parameters.hsvChangeMatrix[0] = false;
+            }
+
+            if(jCheckBoxSaturation.isSelected() == true) {
+                parameters.hsvChangeMatrix[1] = true;
+            } else {
+                parameters.hsvChangeMatrix[1] = false;
+            }
+
+            if(jCheckBoxValue.isSelected() == true) {
+                parameters.hsvChangeMatrix[2] = true;
+            } else {
+                parameters.hsvChangeMatrix[2] = false;
+            }
+        }
 
         return maskFunctionInterface(bufferedImage, histogram);
     }
@@ -130,7 +173,7 @@ public class OperationSharpening extends Operation {
 
         // wiersz sterowania wykonaniem
         c.gridx = 0;
-        c.gridy = 9;
+        c.gridy = 10;
         c.gridwidth = 4;
         panel.add(jLabelColorMode, c);
 
@@ -149,6 +192,27 @@ public class OperationSharpening extends Operation {
         c.gridwidth = 4;
         panel.add(jButtonApply, c);
 
+        // ruchomy wiersz sterowania wykonaniem HSV
+        c.gridx = 0;
+        c.gridy = 11;
+        c.gridwidth = 4;
+        panel.add(jLabelHSVComponentsSelet, c);
+
+        c.gridx += c.gridwidth;
+        c.gridy = 11;
+        c.gridwidth = 4;
+        panel.add(jCheckBoxHue, c);
+
+        c.gridx += c.gridwidth;
+        c.gridy = 11;
+        c.gridwidth = 4;
+        panel.add(jCheckBoxSaturation, c);
+
+        c.gridx += c.gridwidth;
+        c.gridy = 11;
+        c.gridwidth = 4;
+        panel.add(jCheckBoxValue, c);
+
 
         configureColorModeControls();
     }
@@ -163,12 +227,23 @@ public class OperationSharpening extends Operation {
     }
 
     public SimpleHSVBufferedImage maskFunction(SimpleHSVBufferedImage inImage, int[][] serializedMask) {
+        switch(parameters.colorMode) {
+            case OP_MODE_RGB:
+                return maskFunctionRGB(inImage);
+            case OP_MODE_HSV:
+                return maskFunctionHSV(inImage);
+            default:
+                throw new IllegalStateException("Nieobsłużona tryb koloru.");
+        }
+    }
+
+    public SimpleHSVBufferedImage maskFunctionRGB(SimpleHSVBufferedImage inImage) {
 
         SimpleHSVBufferedImage outImage = duplicateImageFunction(inImage);
 
         int bands = outImage.getRaster().getNumBands();
 
-        PixelMask<int[]> pixelMask = new PixelMask<>(serializedMask, new int[bands]);
+        PixelMask<int[]> pixelMask = new PixelMask<>(parameters.serializedMask, new int[bands]);
 
             ImageCursor imageCursor = new ImageCursor(outImage);
 
@@ -179,9 +254,10 @@ public class OperationSharpening extends Operation {
 
                 int[] pixel = pixelHood.getPixel(0,0);
 
-                double newValue = 0;
 
                 for(int b = 0; b< bands; ++b) {
+                        double newValue = 0;
+
                         for(int i=-1; i<2; i++) {
                             for(int j=-1; j<2; j++) {
                                 newValue += pixelMask.getPixel(j,i)[b] * pixelHood.getPixel(j,i)[b];
@@ -201,22 +277,53 @@ public class OperationSharpening extends Operation {
         return outImage;
     }
 
+    public SimpleHSVBufferedImage maskFunctionHSV(SimpleHSVBufferedImage inImage) {
+
+        int width = inImage.getWidth();
+        int height = inImage.getHeight();
+
+        float hsvOutMatrix[][][] = new float[width][height][3];
+        PixelHood<float[]> pixelHood = new PixelHood<>(1, 1, new float[3]);
+        HSVImageCursor imageCursor = new HSVImageCursor(inImage.getHsv(), width, height);
+
+        PixelMask<int[]> pixelMask = new PixelMask<>(parameters.serializedMask, new int[3]);
+
+        do {
+            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+            float[] pixel = pixelHood.getPixel(0,0);
+            float[] newPixel = new float[3];
+
+
+            for(int b = 0; b<3; ++b) {
+
+                if(parameters.hsvChangeMatrix[b] == true) {
+
+                    double newValue = 0;
+                    for (int i = -1; i < 2; i++) {
+                        for (int j = -1; j < 2; j++) {
+                            newValue += pixelMask.getPixel(j, i)[b] * pixelHood.getPixel(j, i)[b];
+                        }
+                    }
+
+                    newPixel[b] = (float) Math.round(newValue / pixelHood.getDataSize());
+                } else {
+                    newPixel[b] = pixel[b];
+                }
+            }
+
+            hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = newPixel;
+
+        } while (imageCursor.forward());
+
+        return new SimpleHSVBufferedImage(width, height, inImage.getType(), hsvOutMatrix);
+    }
+
     protected static class Parameters {
 
-        public static final int[][] gradientXSerializedValues = { { -1, -2, -1},
-                                                                {  0,  0,  0},
-                                                                {  1,  2,  1} };
 
-        public static final int[][] gradientYSerializedValues = { { -1,  0,  1},
-                                                                { -2,  0,  2},
-                                                                { -1,  0,  1} };
-
-        public static final int[][] laplaceSerializedValues =   { {  0,  1,  0},
-                                                                {  1, -4,  1},
-                                                                {  0,  1,  0} };
 
         public static final String[] maskStrings = {"Gradient poziomy", "Gradient pionowy", "Laplasjan"};
-        public static final int[][][] maskValues = {gradientXSerializedValues, gradientYSerializedValues, laplaceSerializedValues};
+        public static final int[][][] maskValues = {MASK_GRADIENT_X_SAMPLE, MASK_GRADIENT_Y_SAMPLE, MASK_LAPLACE_SAMPLE};
 
         public static final String[] edgeModeStrings = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
 
@@ -226,10 +333,17 @@ public class OperationSharpening extends Operation {
         int edgeModeIndex;
         int normalizationModeIndex;
 
+        int colorMode;
+        boolean[] hsvChangeMatrix;
+
         public Parameters() {
             serializedMask = maskValues[0];
             edgeModeIndex = 0;
             normalizationModeIndex = 0;
+
+            colorMode = OP_MODE_RGB;
+//            hsvChangeMatrix = new boolean[]{true,true,true};
+            hsvChangeMatrix = new boolean[]{true,false,false};
         }
 
     }
