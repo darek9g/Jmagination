@@ -34,8 +34,11 @@ public final class ConstantsInitializers {
     public static final int GUI_CHART_Y_GRID_POINTS = 15;
 
     public static final Dimension GUI_LARGE_IMAGEICON_SIZE = new Dimension(160, 130);
+    public static final int GUI_PREVIEW_IMAGE_WIDTH = 200;
+    public static final int GUI_PREVIEW_IMAGE_HEIGHT = 200;
 
     public static final int GUI_LARGE_IMAGEICON_COMBOBOX_DISPLAYED = 3;
+
 
 
     private static final int commonNorthHeight = 30;
@@ -54,9 +57,9 @@ public final class ConstantsInitializers {
 
     private static int totalHeight = operationsPanelHeight + GUI_DIMENSION_splitPaneDividerSize + histogramPanelHeight;
 
-    private static final int managerPanelNorthHeight = commonNorthHeight;
-    private static final int managerPanelSouthHeight = 4 * commonSouthHeight;
-    private static final int managerPanelCentralHeight = totalHeight - operationsPanelNorthHeight - managerPanelSouthHeight;
+    private static final int managerPanelNorthHeight = 6* commonNorthHeight;
+    private static final int managerPanelSouthHeight = GUI_PREVIEW_IMAGE_HEIGHT;
+    private static final int managerPanelCentralHeight = totalHeight - managerPanelNorthHeight - managerPanelSouthHeight;
     private static final int managerPanelHeight = totalHeight;
 
     private static final int imagePanelNorthHeight = commonNorthHeight;
@@ -76,7 +79,7 @@ public final class ConstantsInitializers {
     private static final int histogramPanelCentralWidth = histogramPanelWidth;
     private static final int histogramPanelSouthWidth = histogramPanelWidth;
 
-    private static final int managerPanelWidth = 200;
+    private static final int managerPanelWidth = GUI_PREVIEW_IMAGE_WIDTH;
 
     private static final int managerPanelNorthWidth = managerPanelWidth;
     private static final int managerPanelCentralWidth = managerPanelWidth;

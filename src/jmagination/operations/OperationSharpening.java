@@ -162,7 +162,7 @@ public class OperationSharpening extends Operation {
         return maskFunction(inImage, parameters.serializedMask);
     }
 
-    public SimpleHSVBufferedImage maskFunction(SimpleHSVBufferedImage inImage, int[] serializedMask) {
+    public SimpleHSVBufferedImage maskFunction(SimpleHSVBufferedImage inImage, int[][] serializedMask) {
 
         SimpleHSVBufferedImage outImage = duplicateImageFunction(inImage);
 
@@ -203,18 +203,26 @@ public class OperationSharpening extends Operation {
 
     protected static class Parameters {
 
-        public static final int[] gradientXSerializedValues = {-1, -2, -1, 0, 0, 0, 1, 2, 1};
-        public static final int[] gradientYSerializedValues = {-1, 0, 1, -2, 0, 2, -1, 0, 1};
-        public static final int[] laplaceSerializedValues = {0, 1, 0, 1, -4, 1, 0, 1, 0};
+        public static final int[][] gradientXSerializedValues = { { -1, -2, -1},
+                                                                {  0,  0,  0},
+                                                                {  1,  2,  1} };
+
+        public static final int[][] gradientYSerializedValues = { { -1,  0,  1},
+                                                                { -2,  0,  2},
+                                                                { -1,  0,  1} };
+
+        public static final int[][] laplaceSerializedValues =   { {  0,  1,  0},
+                                                                {  1, -4,  1},
+                                                                {  0,  1,  0} };
 
         public static final String[] maskStrings = {"Gradient poziomy", "Gradient pionowy", "Laplasjan"};
-        public static final int[][] maskValues = {gradientXSerializedValues, gradientYSerializedValues, laplaceSerializedValues};
+        public static final int[][][] maskValues = {gradientXSerializedValues, gradientYSerializedValues, laplaceSerializedValues};
 
         public static final String[] edgeModeStrings = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
 
         public static final String[] normalizationModeStrings = SimpleHSVBufferedImage.normalizationModeStrings;
 
-        int[] serializedMask;
+        int[][] serializedMask;
         int edgeModeIndex;
         int normalizationModeIndex;
 

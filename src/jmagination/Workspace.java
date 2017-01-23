@@ -4,15 +4,13 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 
 import jmagination.gui.GUIStyler;
+import jmagination.gui.ImagePanel2;
 import jmagination.gui.ImagePanel3;
 import jmagination.gui.PresenterTabOperations;
 import jmagination.histogram.Histogram;
@@ -43,7 +41,7 @@ public class Workspace implements RunOperation {
     JPanel managerPanel;
     JPanel managerPanelNorth;
     JScrollPane managerPanelCentral;
-    JPanel managerPanelSouth;
+    ImagePanel2 managerPanelSouth;
     JPanel imagePanel;
     JPanel imagePanelNorth;
     JScrollPane imagePanelCentral;
@@ -176,7 +174,7 @@ public class Workspace implements RunOperation {
         * managerPanelNorth   * operationsPanelNorth   * imagePanelNorth        *
         *************************************************************************
         *                     *                        *                        *
-        *                     *                        *                        *
+        ***********************                        *                        *
         *                     *                        *                        *
         *                     * operationsPanelCentral *                        *
         *                     *                        *                        *
@@ -190,12 +188,12 @@ public class Workspace implements RunOperation {
         *                     *                        *                        *
         *                     *                        *                        *
         *                     * histogramPanelCentral  *                        *
+        ***********************                        *                        *
         *                     *                        *                        *
         *                     *                        *                        *
         *                     *                        *                        *
         *                     *                        *                        *
-        *                     *                        *                        *
-        *************************************************************************
+        *                     ***************************************************
         * managerPanelSouth   * histogramPanelSouth    * imagePanelSouth        *
         *************************************************************************
 
@@ -231,7 +229,8 @@ public class Workspace implements RunOperation {
     ImageManager imageManager;
 
     JButton jButtonOpenFile;
-    JCheckBox jCheckBoxOpenInGrayScale;
+    JButton jButtonOpenGrayFile;
+    JButton jButtonSaveFile;
 
     BufferedImage histogramImage;
     ImagePanel3 imagePanelCont = new ImagePanel3(null);
@@ -245,6 +244,8 @@ public class Workspace implements RunOperation {
 
 
         setupJButtonOpenFile();
+        setupJButtonOpenGrayFile();
+        setupJButtonSaveFile();
 
         JTree imageManagerTree = imageManager.getTree();
         buildWindow(imageManagerTree);
@@ -301,6 +302,32 @@ public class Workspace implements RunOperation {
                 }
             }
         });
+
+        imageManagerTree.addMouseMotionListener(new MouseMotionListener() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                JTree tree = (JTree)e.getSource();
+
+                int selRow = tree.getRowForLocation(e.getX(), e.getY());
+                TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+                if (selRow != -1 && selPath != null) {
+                    DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
+
+                    ImageServer imageServer = (ImageServer) selectedNode.getUserObject();
+
+                    managerPanelSouth.setImage(imageServer.imgPreview);
+                } else {
+                    managerPanelSouth.setImage(null);
+                }
+
+
+            }
+        });
     }
 
     public Workspace(ImageManager imageManager, ImageServer srcImageServer) {
@@ -314,11 +341,16 @@ public class Workspace implements RunOperation {
     public void setImageServer(ImageServer srcImageServer) {
         this.srcImageServer = srcImageServer;
 
+
         originalBufferedImage = OperationDuplicate.duplicateImageFunction(this.srcImageServer.getImg());
         imagePanelCont.setImage(originalBufferedImage);
 
+//        managerPanelSouth.setImage(srcImageServer.imgPreview);
+
         histogramImage = srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
         histogramPanelCont.setImage(histogramImage);
+
+        jButtonSaveFile.setEnabled(true);
 
         window.repaint();
         window.setVisible(true);
@@ -327,10 +359,7 @@ public class Workspace implements RunOperation {
 
     private void setupJButtonOpenFile() {
 
-        jCheckBoxOpenInGrayScale = new JCheckBox("W odcieniach szarości");
-        jCheckBoxOpenInGrayScale.setSelected(false);
-
-        jButtonOpenFile = new JButton("Otwórz plik");
+        jButtonOpenFile = new JButton("Otwórz z pliku");
 
         jButtonOpenFile.addActionListener(new ActionListener() {
             @Override
@@ -338,7 +367,30 @@ public class Workspace implements RunOperation {
                 String src = selectFile();
                 if(src != null) {
                     File file = new File(src);
-                    BufferedImage loaded = ImageServer.LoadImageFromFile(file.getAbsolutePath());
+                    BufferedImage loaded = ImageServer.LoadImageFromFile(file.getAbsolutePath(), window);
+                    if(loaded!=null) {
+
+                        ImageServer imageServer;
+                        imageServer = ImageServer.createLoadedImageServer(loaded, file.getAbsolutePath(), imageManager);
+                        setImageServer(imageServer);
+                    }
+                }
+            }
+        });
+
+    }
+
+    private void setupJButtonOpenGrayFile() {
+
+        jButtonOpenGrayFile = new JButton("Otwórz z pliku jako szary");
+
+        jButtonOpenGrayFile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String src = selectFile();
+                if(src != null) {
+                    File file = new File(src);
+                    BufferedImage loaded = ImageServer.LoadImageFromFile(file.getAbsolutePath(), window);
                     if(loaded!=null) {
 
                         ImageServer imageServer;
@@ -346,12 +398,28 @@ public class Workspace implements RunOperation {
                         setImageServer(imageServer);
 
                         OperationConvertToGray toGray = new OperationConvertToGray();
-                        if(jCheckBoxOpenInGrayScale.isSelected() == true) {
-                            runOperation(toGray);
-                            saveOperationsOutput(toGray);
-                        }
+                        runOperation(toGray);
+                        saveOperationsOutput(toGray);
 
                     }
+                }
+            }
+        });
+
+    }
+
+    private void setupJButtonSaveFile() {
+
+        jButtonSaveFile = new JButton("Zapisz do pliku");
+        jButtonSaveFile.setEnabled(false);
+
+        jButtonSaveFile.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                String src = selectOutputFile();
+                if(src != null) {
+                    File file = new File(src);
+                    ImageServer.SaveImageToFile(srcImageServer.getImg(), file.getAbsolutePath(), window);
                 }
             }
         });
@@ -365,6 +433,31 @@ public class Workspace implements RunOperation {
         String [] filterNames = new String [] {"All Files (*)"};
         String [] filterExtensions = new String [] {"*"};
         String filterPath = "C:\\Users\\\" + System.getProperty(\"user.name\") + \"\\Pictures";
+        tDialog.setFilterNames (filterNames);
+        tDialog.setFilterExtensions (filterExtensions);
+        tDialog.setFilterPath (filterPath);
+        String src = tDialog.open();
+        display.close();
+        return src;
+    }
+
+    private String selectOutputFile() {
+        Display display = new Display ();
+        Shell shell = new Shell (display);
+        org.eclipse.swt.widgets.FileDialog tDialog = new FileDialog(shell, SWT.SAVE);
+        String [] filterNames = new String [] {"Image Files", "All Files (*)"};
+        String [] filterExtensions = new String [] {"*.gif;*.png;*.jpg;*.jpeg", "*"};
+        String filterPath = "~";
+
+        String platform = SWT.getPlatform();
+        if (platform.equals("win32")) {
+            filterNames = new String [] {"Image Files", "All Files (*.*)"};
+            filterExtensions = new String [] {"*.gif;*.png;*.jpg;*.jpeg", "*.*"};
+            filterPath = "C:\\Users\\\" + System.getProperty(\"user.name\") + \"\\Pictures";
+        }
+
+        System.out.println("Pobrana nazwa: " + srcImageServer.getSaveFilePath());
+        tDialog.setFileName(srcImageServer.getSaveFilePath());
         tDialog.setFilterNames (filterNames);
         tDialog.setFilterExtensions (filterExtensions);
         tDialog.setFilterPath (filterPath);
@@ -396,6 +489,57 @@ public class Workspace implements RunOperation {
 
     }
 
+
+
+/*    private void buildFileButtonPanel(JPanel panel) {
+
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        JLabel managerPanelLabel = new JLabel("Menedżer obrazów");
+        managerPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        panel.add(managerPanelLabel, c);
+
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        panel.add(jButtonOpenFile, c);
+
+        c.gridx = 0;
+        c.gridy = 2;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        panel.add(jButtonOpenGrayFile, c);
+
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        panel.add(jButtonSaveFile, c);
+
+    }*/
+
+    private void buildFileButtonPanel(JPanel panel) {
+
+        panel.setLayout(new GridLayout(4,1));
+
+        JLabel managerPanelLabel = new JLabel("Menedżer obrazów");
+        managerPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        panel.add(managerPanelLabel);
+        panel.add(jButtonOpenFile);
+        panel.add(jButtonOpenGrayFile);
+        panel.add(jButtonSaveFile);
+
+    }
+
+
     private void buildWindow(JTree managerTree) {
 
         window = new JFrame("Jmagination - Biurko");
@@ -417,16 +561,11 @@ public class Workspace implements RunOperation {
         operationsPanel.setMinimumSize(operationsPanelDimension);
         histogramPanel.setMinimumSize(histogramPanelDimension);
 
-/*        managerPanel.setPreferredSize(managerPanelDimension);
-        imagePanel.setPreferredSize(imagePanelDimension);
-        operationsPanel.setPreferredSize(operationsPanelDimension);
-        histogramPanel.setPreferredSize(histogramPanelDimension);*/
-
-
         // content direct holders
         managerPanelNorth = new JPanel();
         managerPanelCentral = new JScrollPane();
-        managerPanelSouth = new JPanel(new GridLayout(2,1));
+//        managerPanelSouth = new JPanel();
+        managerPanelSouth = new ImagePanel2();
         imagePanelNorth = new JPanel();
         imagePanelCentral = new JScrollPane(imagePanelCont);
         imagePanelSouth = new JPanel();
@@ -434,27 +573,14 @@ public class Workspace implements RunOperation {
         histogramPanelCentral = new JScrollPane(histogramPanelCont);
         histogramPanelSouth = new JPanel();
         operationsPanelNorth = new JPanel();
-//        operationsPanelCentralPane = new PresenterTabOperations(Operations.registerOperations(), ConstantsInitializers.GUI_DIMENSION_operationsPanelCentral, this);
         operationsPanelCentralPane = new PresenterTabOperations(Operations.registerOperations(), this);
         operationsPanelCentral = new JScrollPane(operationsPanelCentralPane);
         operationsPanelSouth = new JPanel();
 
-/*        managerPanelNorth.setPreferredSize(managerPanelNorthDimension);
-        managerPanelCentral.setPreferredSize(managerPanelCentralDimension);
-        managerPanelSouth.setPreferredSize(managerPanelSouthDimension);
-        imagePanelNorth.setPreferredSize(imagePanelNorthDimension);
-        imagePanelCentral.setPreferredSize(imagePanelCentralDimension);
-        imagePanelSouth.setPreferredSize(imagePanelSouthDimension);
-        histogramPanelNorth.setPreferredSize(histogramPanelNorthDimension);
-        histogramPanelCentral.setPreferredSize(histogramPanelCentralDimension);
-        histogramPanelSouth.setPreferredSize(histogramPanelSouthDimension);
-        operationsPanelNorth.setPreferredSize(operationsPanelNorthDimension);
-        operationsPanelCentral.setPreferredSize(operationsPanelCentralDimension);
-        operationsPanelSouth.setPreferredSize(operationsPanelSouthDimension);*/
-
         managerPanelNorth.setMinimumSize(managerPanelNorthDimension);
         managerPanelCentral.setMinimumSize(managerPanelCentralDimension);
         managerPanelSouth.setMinimumSize(managerPanelSouthDimension);
+        managerPanelSouth.setPreferredSize(managerPanelSouthDimension);
         imagePanelNorth.setMinimumSize(imagePanelNorthDimension);
         imagePanelCentral.setMinimumSize(imagePanelCentralDimension);
         imagePanelSouth.setMinimumSize(imagePanelSouthDimension);
@@ -483,9 +609,7 @@ public class Workspace implements RunOperation {
         operationsPanel.add(operationsPanelSouth, BorderLayout.SOUTH);
 
         // content panel labels
-        JLabel managerPanelLabel = new JLabel("Menedżer obrazów");
-        managerPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        managerPanelNorth.add(managerPanelLabel);
+
 
         JLabel imagePanelLabel = new JLabel("Obraz");
         imagePanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -500,8 +624,8 @@ public class Workspace implements RunOperation {
         operationsPanelNorth.add(operationsPanelLabel);
 
         // static content
-        managerPanelSouth.add(jButtonOpenFile);
-        managerPanelSouth.add(jCheckBoxOpenInGrayScale);
+        buildFileButtonPanel(managerPanelNorth);
+
         managerPanelCentral.setViewportView(managerTree);
 
         level1Left = new JPanel(new BorderLayout());
