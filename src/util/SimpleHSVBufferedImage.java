@@ -18,9 +18,13 @@ public class SimpleHSVBufferedImage extends BufferedImage {
     public final static String[] normalizationModeStrings = { "Bez normalizacji", "Proporcjonalna", "Trzy-wartościowa", "Obcinająca", "Binarna"};
 
 
-    // dla obrazów o zakresie jasności RGB innym niż 0-255
+    // określenie zakresów jasności RGB
     int[] imageMinValues;
     int[] imageMaxValues;
+
+    // określenie zakresów jasności HSV
+    float[] hsvImageMinValues;
+    float[] hsvImageMaxValues;
 
     private float[][][] hsv;
     private DataBufferInt opDataBuffer;
@@ -43,6 +47,9 @@ public class SimpleHSVBufferedImage extends BufferedImage {
             imageMinValues[i] = 0;
             imageMaxValues[i] = 255;
         }
+
+        hsvImageMinValues = new float[]{0.0f, 0.0f, 0.0f };
+        hsvImageMaxValues = new float[]{1.0f, 1.0f, 1.0f };
     }
 
 
@@ -61,6 +68,12 @@ public class SimpleHSVBufferedImage extends BufferedImage {
     public SimpleHSVBufferedImage(int width, int height, int imageType, float[][][] hsvMatrix) {
         super(width, height, imageType);
         this.hsv = hsvMatrix;
+        fillRGB();
+    }
+
+    public SimpleHSVBufferedImage(int width, int height, int imageType, float[][][] hsvMatrix, int normalizationMode, boolean[] hsvChangeMatrix) {
+        super(width, height, imageType);
+        this.hsv = normalizeHSV(hsvMatrix, normalizationMode, hsvChangeMatrix);
         fillRGB();
     }
 
@@ -163,7 +176,7 @@ public class SimpleHSVBufferedImage extends BufferedImage {
 
                 switch(mode) {
                     case NORMALIZATION_MODE_PROPORTIONAL:
-                        newPixel = normalizePixelProportional(pixel);
+                        newPixel = normalizePixelProportional(pixel, opDataBufferMinValues, opDataBufferMaxValues);
                         break;
                     case NORMALIZATION_MODE_THREE_VALUED:
                         newPixel = normalizePixel3Valued(pixel);
@@ -200,12 +213,12 @@ public class SimpleHSVBufferedImage extends BufferedImage {
         return newPixel;
     }
 
-    private int[] normalizePixelProportional(int[] pixel) {
+    private int[] normalizePixelProportional(int[] pixel, int[] bufferMinValues, int[] bufferMaxValues) {
         int[] newPixel = new int[pixel.length];
 
         for(int i=0; i<pixel.length; i++) {
             newPixel[i] =  (int) Math.round(
-                    ( ( pixel[i] - opDataBufferMinValues[i] + 0.0 ) / ( opDataBufferMaxValues[i] - opDataBufferMinValues[i] )
+                    ( ( pixel[i] - bufferMinValues[i] + 0.0 ) / ( bufferMaxValues[i] - bufferMinValues[i] )
                     ) * (
                             imageMaxValues[i] - imageMinValues[i] - 1
                     )
@@ -258,6 +271,139 @@ public class SimpleHSVBufferedImage extends BufferedImage {
             }
 
         }
+    }
+
+    public float[][][] normalizeHSV(float[][][] raw, int mode, boolean[] changeMatrix) {
+
+        float[][][] cooked = new float[raw.length][raw[0].length][raw[0][0].length];
+
+        float[] minValues = new float[raw[0][0].length];
+        float[] maxValues = new float[raw[0][0].length];
+
+        for (int b = 0; b < raw[0][0].length; b++) {
+            maxValues[b] = Float.MIN_VALUE;
+            minValues[b] = Float.MAX_VALUE;
+        }
+
+        switch(mode) {
+            case NORMALIZATION_MODE_PROPORTIONAL:
+                for (int i = 0; i < raw.length; i++) {
+                    for (int j = 0; j < raw[0].length; j++) {
+                        for (int b = 0; b < raw[0][0].length; b++) {
+                            if (raw[i][j][b] < minValues[b]) {
+                                minValues[b] = raw[i][j][b];
+                            }
+                            if (raw[i][j][b] > maxValues[b]) {
+                                maxValues[b] = raw[i][j][b];
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+        }
+
+        for(int i=0;i<raw.length;i++) {
+            for(int j=0;j<raw[0].length;j++) {
+
+                float[] pixel = new float[raw[0][0].length];
+                for(int b=0;b<raw[0][0].length;b++) {
+                    pixel[b] = raw[i][j][b];
+
+                }
+
+                float newPixel[];
+
+                switch(mode) {
+                    case NORMALIZATION_MODE_PROPORTIONAL:
+                        newPixel = normalizePixelProportional(pixel, changeMatrix, minValues, maxValues);
+                        break;
+                    case NORMALIZATION_MODE_THREE_VALUED:
+                        newPixel = normalizePixel3Valued(pixel, changeMatrix);
+                        break;
+                    case NORMALIZATION_MODE_BINARY:
+                        newPixel = normalizePixelBinary(pixel, changeMatrix);
+                        break;
+                    case  NORMALIZATION_MODE_VOID:
+                    case  NORMALIZATION_MODE_CUTTING:
+                        newPixel = pixel;
+                        break;
+                    default:
+                        throw new java.lang.IllegalArgumentException("Nieprawidłowa wartość dla trybu normalizacji.");
+                }
+
+                cooked[i][j] = newPixel;
+            }
+        }
+        return cooked;
+    }
+
+    public void normalizeHSV(float[][][] raw, boolean[] changeMatrix) {
+        normalizeHSV(raw, defaultNormalizationMode, changeMatrix);
+    }
+
+    private float[] normalizePixelVoid(float[] pixel, boolean[] changeMatrix) {
+        float[] newPixel = new float[pixel.length];
+
+        for(int i=0; i<pixel.length; i++) {
+            newPixel[i] =  pixel[i];
+        }
+
+        return newPixel;
+    }
+
+    private float[] normalizePixelProportional(float[] pixel, boolean[] changeMatrix, float[] bufferMinValues, float[] bufferMaxValues) {
+        float[] newPixel = new float[pixel.length];
+
+        for(int i=0; i<pixel.length; i++) {
+            if (changeMatrix[i]) {
+                newPixel[i] = (float) (
+                        ((pixel[i] - bufferMinValues[i]) / (bufferMaxValues[i] - bufferMinValues[i]))
+                                * ( hsvImageMaxValues[i] - hsvImageMinValues[i])
+                                + hsvImageMinValues[i]);
+            } else {
+                newPixel[i] = pixel[i];
+            }
+        }
+
+        return newPixel;
+    }
+
+    private float[] normalizePixel3Valued(float[] pixel, boolean[] changeMatrix) {
+        float[] newPixel = new float[pixel.length];
+
+        for(int i=0; i<pixel.length; i++) {
+            if(changeMatrix[i]) {
+                if (pixel[i] < hsvImageMinValues[i]) {
+                    newPixel[i] = hsvImageMinValues[i];
+                } else {
+                    if (pixel[i] > hsvImageMinValues[i]) {
+                        newPixel[i] = hsvImageMaxValues[i];
+                    } else {
+                        newPixel[i] = (float) ((hsvImageMaxValues[i] - hsvImageMinValues[i]) / 2.0 + hsvImageMinValues[i]);
+                    }
+
+                }
+            } else {
+                newPixel[i] = pixel[i];
+            }
+        }
+
+        return newPixel;
+    }
+
+    private float[] normalizePixelBinary(float[] pixel, boolean[] changeMatrix) {
+        float[] newPixel = new float[pixel.length];
+
+        for(int i=0; i<pixel.length; i++) {
+            if(changeMatrix[i]) {
+                newPixel[i] = pixel[i] > 0 ? hsvImageMaxValues[i] : hsvImageMinValues[i];
+            } else {
+                newPixel[i] = pixel[i];
+            }
+        }
+
+        return newPixel;
     }
 
 }

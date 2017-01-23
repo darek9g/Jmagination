@@ -307,12 +307,6 @@ public class OperationSharpening extends Operation {
                     }
 
                     newPixel[b] = (float) (newValue / pixelHood.getDataSize());
-                    if(newPixel[b] > 1.0) {
-                        System.out.println("Ryfa");
-                    }
-                    if(newPixel[b] < 0.0) {
-                        System.out.println("Fyra");
-                    }
                 } else {
                     newPixel[b] = pixel[b];
                 }
@@ -323,7 +317,7 @@ public class OperationSharpening extends Operation {
 
         } while (imageCursor.forward());
 
-        return new SimpleHSVBufferedImage(width, height, inImage.getType(), hsvOutMatrix);
+        return new SimpleHSVBufferedImage(width, height, inImage.getType(), hsvOutMatrix, parameters.normalizationModeIndex, parameters.hsvChangeMatrix);
     }
 
     protected static class Parameters {
