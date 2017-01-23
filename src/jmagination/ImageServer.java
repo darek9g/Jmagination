@@ -15,6 +15,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static jmagination.ConstantsInitializers.BR;
+import static jmagination.gui.ImagesComboBox.resizeBufferedImageToFit;
 
 
 /**
@@ -39,6 +44,7 @@ public class ImageServer implements RunOperation {
 
 
     SimpleHSVBufferedImage img;
+    BufferedImage imgPreview;
     Histogram histogram;
 
 
@@ -70,8 +76,10 @@ public class ImageServer implements RunOperation {
         if(this.fromFile == true) {
             configure("Id: " + this.id + " z pliku: " + filePath);
         } else {
-            configure("Id: " + this.id + " - nowy obraz ");
+            configure("Id: " + this.id + " - nowy obraz");
         }
+
+        setPreview();
     }
 
     ImageServer(BufferedImage img, ImageManager imageManager, String filePath, boolean fromFile) {
@@ -110,11 +118,8 @@ public class ImageServer implements RunOperation {
         tpanel.addTab("Operacje", operationsTab);
 
         window.setTitle(description);
-
         window.pack();
-
         window.repaint();
-
     }
 
     public void setDrawingCapabilities() {
@@ -130,8 +135,27 @@ public class ImageServer implements RunOperation {
 
     }
 
+    private void setPreview() {
+        imgPreview = resizeBufferedImageToFit(img, ConstantsInitializers.GUI_PREVIEW_IMAGE_HEIGHT, ConstantsInitializers.GUI_PREVIEW_IMAGE_HEIGHT);
+    }
+
     public int getId() {
         return id;
+    }
+
+    public String getSaveFileName() {
+        String filename = Paths.get(this.srcFilePath).getFileName().toString();
+        if(fromFile == false) {
+            if(filename.matches(".*[^.]+\\.[^.]+$")) {
+                Matcher m = Pattern.compile("(.*)\\.([^.]*$)").matcher(filename);
+                if(m.matches()) {
+                    filename = m.group(1) + "-" + description.replace(' ', '_') + "." + m.group(2);
+                }
+            } else {
+                filename = filename + "-" + description.replace(' ', '_');
+            }
+        }
+        return filename;
     }
 
     public String toString() {
@@ -167,16 +191,70 @@ public class ImageServer implements RunOperation {
         return histogram;
     }
 
-    public static BufferedImage LoadImageFromFile(String filePath) {
+    public static BufferedImage LoadImageFromFile(String filePath, JFrame frame) {
         BufferedImage bufferedImage = null;
 
         try {
             bufferedImage = ImageIO.read(new File(filePath));
         } catch (IOException e) {
             System.out.println("Błąd otwarcia obrazu z pliku");
+            JOptionPane.showMessageDialog(frame,
+                    "Błąd otwarcia obrazu z pliku: " + e.getLocalizedMessage(),
+                    "Nie wczytano pliku",
+                    JOptionPane.PLAIN_MESSAGE);
+
         }
 
         return bufferedImage;
+    }
+
+    public static void SaveImageToFile(BufferedImage bufferedImage, String filePath, JFrame frame) {
+
+        File outputfile = new File(filePath);
+        String filename = outputfile.getName();
+
+        String extension = "";
+        String format = "png";
+
+        Matcher m = Pattern.compile(".*\\.([^.]*)").matcher(filename);
+        if(m.matches()) {
+            extension = m.group(1);
+        }
+
+        if(extension.matches("^$")) {
+            format = "png";
+            JOptionPane.showMessageDialog(frame,
+                    "W nazwie pliku nie ma rozszerzenia" + BR + "Użyty będzie format " + format,
+                    "Informacja o formacie pliku",
+                    JOptionPane.PLAIN_MESSAGE);
+        } else {
+            if(extension.matches("[pP][nN][gG]")) {
+                format = "png";
+            } else {
+                if(extension.matches("[jJ][pP][eE]{0,1}[gG]")) {
+                    format = "jpg";
+                } else {
+                    if(extension.matches("[gG][iI][fF]")) {
+                        format = "gif";
+                    } else {
+                        JOptionPane.showMessageDialog(frame,
+                                "Brak wsparcia dla zapisu w formacie: " + extension + BR + "Użyty będzie format " + format,
+                                "Informacja o formacie pliku",
+                                JOptionPane.PLAIN_MESSAGE);
+                    }
+                }
+            }
+        }
+
+        try {
+            ImageIO.write(bufferedImage, format, outputfile);
+        } catch (IOException e) {
+            System.out.println("Błąd zapisu obrazu do pliku");
+            JOptionPane.showMessageDialog(frame,
+                    "Błąd zapisu obrazu do pliku: " + e.getLocalizedMessage(),
+                    "Nie wykonano zapisu do pliku",
+                    JOptionPane.PLAIN_MESSAGE);
+        }
     }
 
 

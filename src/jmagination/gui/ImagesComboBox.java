@@ -94,7 +94,7 @@ public class ImagesComboBox extends JPanel{
         return imageServers[jComboBox.getSelectedIndex()];
     }
 
-    private BufferedImage resizeBufferedImageToFit(BufferedImage inputImage, int maxWidth, int maxHeight) {
+    public static BufferedImage resizeBufferedImageToFit(BufferedImage inputImage, int maxWidth, int maxHeight) {
         int inputWidth = inputImage.getWidth();
         int inputHeight = inputImage.getHeight();
 

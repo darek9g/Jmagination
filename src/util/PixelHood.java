@@ -37,7 +37,7 @@ public class PixelHood <E> {
         data.set(getIndex(x,y), e);
     }
 
-    public void setPixel(int index, E e) {
+    protected void setPixel(int index, E e) {
         if(index>dataSize) {
             throw new IndexOutOfBoundsException();
         }
