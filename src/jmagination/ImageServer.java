@@ -118,11 +118,8 @@ public class ImageServer implements RunOperation {
         tpanel.addTab("Operacje", operationsTab);
 
         window.setTitle(description);
-
         window.pack();
-
         window.repaint();
-
     }
 
     public void setDrawingCapabilities() {
@@ -146,11 +143,11 @@ public class ImageServer implements RunOperation {
         return id;
     }
 
-    public String getSaveFilePath() {
+    public String getSaveFileName() {
         String filename = Paths.get(this.srcFilePath).getFileName().toString();
         if(fromFile == false) {
-            if(filename.matches("[^.]+\\.[^.]+")) {
-                Matcher m = Pattern.compile("(.*)\\.([^.]*)").matcher(filename);
+            if(filename.matches(".*[^.]+\\.[^.]+$")) {
+                Matcher m = Pattern.compile("(.*)\\.([^.]*$)").matcher(filename);
                 if(m.matches()) {
                     filename = m.group(1) + "-" + description.replace(' ', '_') + "." + m.group(2);
                 }

@@ -237,6 +237,10 @@ public class Workspace implements RunOperation {
     ImagePanel3 histogramPanelCont = new ImagePanel3(null);
     SimpleHSVBufferedImage originalBufferedImage = null;
 
+
+    // statyczna nazwa pliku do zapisu
+    public static String outputFileName = "nowy_obraz";
+
     public Workspace(ImageManager imageManager) {
 
         this.imageManager = imageManager;
@@ -364,9 +368,9 @@ public class Workspace implements RunOperation {
         jButtonOpenFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                String src = selectFile();
-                if(src != null) {
-                    File file = new File(src);
+                String[] src = selectFiles();
+                for(int i=0;i<src.length; i++) {
+                    File file = new File(src[i]);
                     BufferedImage loaded = ImageServer.LoadImageFromFile(file.getAbsolutePath(), window);
                     if(loaded!=null) {
 
@@ -387,9 +391,10 @@ public class Workspace implements RunOperation {
         jButtonOpenGrayFile.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                String src = selectFile();
-                if(src != null) {
-                    File file = new File(src);
+                String[] src = selectFiles();
+                for(int i=0;i<src.length; i++) {
+                    System.out.println(src[i]);
+                    File file = new File(src[i]);
                     BufferedImage loaded = ImageServer.LoadImageFromFile(file.getAbsolutePath(), window);
                     if(loaded!=null) {
 
@@ -426,7 +431,7 @@ public class Workspace implements RunOperation {
 
     }
 
-    private String selectFile() {
+    private String[] selectFiles() {
         Display display = new Display ();
         Shell shell = new Shell (display);
         org.eclipse.swt.widgets.FileDialog tDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
@@ -436,7 +441,13 @@ public class Workspace implements RunOperation {
         tDialog.setFilterNames (filterNames);
         tDialog.setFilterExtensions (filterExtensions);
         tDialog.setFilterPath (filterPath);
-        String src = tDialog.open();
+        tDialog.open();
+        String[] src = tDialog.getFileNames();
+        String path = tDialog.getFilterPath();
+
+        for(int i=0; i<src.length; i++) {
+            src[i] = path + System.getProperty("file.separator")+ src[i];
+        }
         display.close();
         return src;
     }
@@ -444,7 +455,8 @@ public class Workspace implements RunOperation {
     private String selectOutputFile() {
         Display display = new Display ();
         Shell shell = new Shell (display);
-        org.eclipse.swt.widgets.FileDialog tDialog = new FileDialog(shell, SWT.SAVE);
+        org.eclipse.swt.widgets.FileDialog tDialog = new FileDialog(shell, SWT.SAVE | SWT.SINGLE);
+        tDialog.setOverwrite(true);
         String [] filterNames = new String [] {"Image Files", "All Files (*)"};
         String [] filterExtensions = new String [] {"*.gif;*.png;*.jpg;*.jpeg", "*"};
         String filterPath = "~";
@@ -456,15 +468,17 @@ public class Workspace implements RunOperation {
             filterPath = "C:\\Users\\\" + System.getProperty(\"user.name\") + \"\\Pictures";
         }
 
-        System.out.println("Pobrana nazwa: " + srcImageServer.getSaveFilePath());
-        tDialog.setFileName(srcImageServer.getSaveFilePath());
         tDialog.setFilterNames (filterNames);
         tDialog.setFilterExtensions (filterExtensions);
         tDialog.setFilterPath (filterPath);
+        tDialog.setFileName(srcImageServer.srcFilePath);
         String src = tDialog.open();
+
         display.close();
         return src;
     }
+
+
 
     private void updateComponentsDimensions() {
 
