@@ -293,24 +293,32 @@ public class OperationSharpening extends Operation {
             float[] pixel = pixelHood.getPixel(0,0);
             float[] newPixel = new float[3];
 
+//            System.out.printf("Pixel z %f %f %f\n", pixel[0], pixel[1], pixel[2]);
 
-            for(int b = 0; b<3; ++b) {
+            for(int b = 0; b<3; b++) {
 
                 if(parameters.hsvChangeMatrix[b] == true) {
 
-                    double newValue = 0;
+                    double newValue = 0.0d;
                     for (int i = -1; i < 2; i++) {
                         for (int j = -1; j < 2; j++) {
                             newValue += pixelMask.getPixel(j, i)[b] * pixelHood.getPixel(j, i)[b];
                         }
                     }
 
-                    newPixel[b] = (float) Math.round(newValue / pixelHood.getDataSize());
+                    newPixel[b] = (float) (newValue / pixelHood.getDataSize());
+                    if(newPixel[b] > 1.0) {
+                        System.out.println("Ryfa");
+                    }
+                    if(newPixel[b] < 0.0) {
+                        System.out.println("Fyra");
+                    }
                 } else {
                     newPixel[b] = pixel[b];
                 }
             }
 
+//            System.out.printf("NewPixel z %f %f %f\n", newPixel[0], newPixel[1], newPixel[2]);
             hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = newPixel;
 
         } while (imageCursor.forward());
@@ -342,7 +350,6 @@ public class OperationSharpening extends Operation {
             normalizationModeIndex = 0;
 
             colorMode = OP_MODE_RGB;
-//            hsvChangeMatrix = new boolean[]{true,true,true};
             hsvChangeMatrix = new boolean[]{true,false,false};
         }
 
