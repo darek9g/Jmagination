@@ -41,6 +41,8 @@ public class Operations {
         availableOperations.add(new OperationMorphOpenning());
         availableOperations.add(new OperationMorphClosing());
         availableOperations.add(new OperationSharpening());
+        availableOperations.add(new OperationGradientSpecialRoberts());
+        availableOperations.add(new OperationGradientSpecialSobel());
 
         return availableOperations;
     }

@@ -55,6 +55,22 @@ public class PixelHood <E> {
         return x + horizontalBorderSize + ( y + verticalBorderSize ) * (1 + 2 * horizontalBorderSize);
     }
 
+    // drugi układ współrzędnych 0,0 w lewym górnym, w dół oraz w prawo współrzędne rosną
+    public E getPixelFromTopLeft(int x, int y) {
+        return data.get(getIndexFromTopLeft(x,y));
+    }
+
+    protected int getIndexFromTopLeft(int x, int y) {
+        if( (x<0) || (x >  2 * horizontalBorderSize) || (y<0) || (y > 2*verticalBorderSize)) {
+            throw new IndexOutOfBoundsException();
+        }
+        if(y==0) {
+            return x;
+        } else {
+            return x + y * ( 2 * horizontalBorderSize + 1 );
+        }
+    }
+
     public int getDataSize(){
         return dataSize;
     }

@@ -23,6 +23,25 @@ public final class OperationConstants {
             {  1, -4,  1},
             {  0,  1,  0} };
 
+    public static final int[][] MASK_ROBERTS_GRADIENT_X_SAMPLE =
+            { {  1,  0},
+              {  0, -1} };
+
+    public static final int[][] MASK_ROBERTS_GRADIENT_Y_SAMPLE =
+            { {  0, -1},
+              {  1,  0} };
+
+    public static final int[][] MASK_SOBEL_GRADIENT_X_SAMPLE =
+            { { -1,  0,  1},
+              { -2,  0,  2},
+              { -1,  0,  1} };
+
+    public static final int[][] MASK_SOBEL_GRADIENT_Y_SAMPLE =
+            { {  1,  2,  1},
+              {  0,  0,  0},
+              { -1, -2, -1} };
+
+
     private OperationConstants() {
         throw new AssertionError();
     }

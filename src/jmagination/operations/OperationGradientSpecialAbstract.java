@@ -15,20 +15,19 @@ import static jmagination.operations.OperationDuplicate.duplicateImageFunction;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationSharpening extends Operation {
+public abstract class OperationGradientSpecialAbstract extends Operation {
 
     Parameters parameters;
 
 
-    JComboBox<String> maskSelect;
     JComboBox<String> edgeNeighborModeSelect;
     JComboBox<String> normalizationSelect;
 
 
 
     {
-        label = "Wyostrzanie";
-        header = "Wyostrzanie";
+        label = "Detekcja krawędzi Robertsa";
+        header = "Detekcja krawędzi Robertsa";
         description = "Foo" + BR + "bar.";
 
         hsvModeAllowed = true;
@@ -36,21 +35,17 @@ public class OperationSharpening extends Operation {
 
         parameters = new Parameters();
 
-        parameters.serializedMask = parameters.maskValues[0];
         parameters.edgeModeIndex = 0;
         parameters.normalizationModeIndex = 0;
     }
 
-    public OperationSharpening() {
+    public OperationGradientSpecialAbstract() {
         super();
 
         categories.add("LAB 4");
         categories.add("Sąsiedztwa");
         categories.add("Gradientowe");
         categories.add("Filtry górnoprzepustowe");
-
-        maskSelect = new JComboBox<>(parameters.maskStrings);
-        maskSelect.setSelectedIndex(0);
 
         edgeNeighborModeSelect = new JComboBox<>(parameters.edgeModeStrings);
         edgeNeighborModeSelect.setSelectedIndex(0);
@@ -81,7 +76,6 @@ public class OperationSharpening extends Operation {
     @Override
     public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
-        parameters.serializedMask = parameters.maskValues[maskSelect.getSelectedIndex()];
         parameters.edgeModeIndex = edgeNeighborModeSelect.getSelectedIndex();
         parameters.normalizationModeIndex = normalizationSelect.getSelectedIndex();
 
@@ -146,10 +140,10 @@ public class OperationSharpening extends Operation {
         JLabel jLabelMaskSelect = new JLabel("Maska operacji:");
         panel.add(jLabelMaskSelect, c);
 
-        c.gridx = 0;
+/*        c.gridx = 0;
         c.gridy = 3;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        panel.add(maskSelect, c);
+        panel.add(maskSelect, c);*/
 
         c.gridx = 0;
         c.gridy = 5;
@@ -219,16 +213,11 @@ public class OperationSharpening extends Operation {
         configureColorModeControls();
     }
 
-    @Override
-    public Operation Clone() {
-        return new OperationSharpening();
-    }
-
     public SimpleHSVBufferedImage maskFunctionInterface(SimpleHSVBufferedImage inImage, Histogram histogram) {
-        return maskFunction(inImage, parameters.serializedMask);
+        return maskFunction(inImage);
     }
 
-    public SimpleHSVBufferedImage maskFunction(SimpleHSVBufferedImage inImage, int[][] serializedMask) {
+    public SimpleHSVBufferedImage maskFunction(SimpleHSVBufferedImage inImage) {
         switch(parameters.colorMode) {
             case OP_MODE_RGB:
                 return maskFunctionRGB(inImage);
@@ -239,101 +228,19 @@ public class OperationSharpening extends Operation {
         }
     }
 
-    public SimpleHSVBufferedImage maskFunctionRGB(SimpleHSVBufferedImage inImage) {
+    public abstract SimpleHSVBufferedImage maskFunctionRGB(SimpleHSVBufferedImage inImage);
 
-        SimpleHSVBufferedImage outImage = duplicateImageFunction(inImage);
+    public abstract SimpleHSVBufferedImage maskFunctionHSV(SimpleHSVBufferedImage inImage);
 
-        int bands = outImage.getRaster().getNumBands();
-
-        PixelMask<int[]> pixelMask = new PixelMask<>(parameters.serializedMask, new int[bands]);
-
-            ImageCursor imageCursor = new ImageCursor(outImage);
-
-            PixelHood<int[]> pixelHood = new PixelHood<>(1, 1, new int[bands]);
-
-            do {
-                imageCursor.fillPixelHood(pixelHood, 0, parameters.edgeModeIndex);
-
-                int[] pixel = pixelHood.getPixel(0,0);
-
-
-                for(int b = 0; b< bands; ++b) {
-                        double newValue = 0;
-
-                        for(int i=-1; i<2; i++) {
-                            for(int j=-1; j<2; j++) {
-                                newValue += pixelMask.getPixel(j,i)[b] * pixelHood.getPixel(j,i)[b];
-                            }
-                        }
-
-                        pixel[b] = (int) Math.round(newValue / pixelHood.getDataSize());
-                }
-
-                outImage.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
-
-            } while (imageCursor.forward());
-
-
-        outImage.normalize(parameters.normalizationModeIndex);
-
-        return outImage;
-    }
-
-    public SimpleHSVBufferedImage maskFunctionHSV(SimpleHSVBufferedImage inImage) {
-
-        int width = inImage.getWidth();
-        int height = inImage.getHeight();
-
-        float hsvOutMatrix[][][] = new float[width][height][3];
-        PixelHood<float[]> pixelHood = new PixelHood<>(1, 1, new float[3]);
-        HSVImageCursor imageCursor = new HSVImageCursor(inImage.getHsv(), width, height);
-
-        PixelMask<int[]> pixelMask = new PixelMask<>(parameters.serializedMask, new int[3]);
-
-        do {
-            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
-            float[] pixel = pixelHood.getPixel(0,0);
-            float[] newPixel = new float[3];
-
-//            System.out.printf("Pixel z %f %f %f\n", pixel[0], pixel[1], pixel[2]);
-
-            for(int b = 0; b<3; b++) {
-
-                if(parameters.hsvChangeMatrix[b] == true) {
-
-                    double newValue = 0.0d;
-                    for (int i = -1; i < 2; i++) {
-                        for (int j = -1; j < 2; j++) {
-                            newValue += pixelMask.getPixel(j, i)[b] * pixelHood.getPixel(j, i)[b];
-                        }
-                    }
-
-                    newPixel[b] = (float) (newValue / pixelHood.getDataSize());
-                } else {
-                    newPixel[b] = pixel[b];
-                }
-            }
-
-//            System.out.printf("NewPixel z %f %f %f\n", newPixel[0], newPixel[1], newPixel[2]);
-            hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = newPixel;
-
-        } while (imageCursor.forward());
-
-        return new SimpleHSVBufferedImage(width, height, inImage.getType(), hsvOutMatrix, parameters.normalizationModeIndex, parameters.hsvChangeMatrix);
-    }
 
     protected static class Parameters {
-
-
-
-        public static final String[] maskStrings = {"Gradient poziomy", "Gradient pionowy", "Laplasjan"};
-        public static final int[][][] maskValues = {MASK_GRADIENT_X_SAMPLE, MASK_GRADIENT_Y_SAMPLE, MASK_LAPLACE_SAMPLE};
 
         public static final String[] edgeModeStrings = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
 
         public static final String[] normalizationModeStrings = SimpleHSVBufferedImage.normalizationModeStrings;
 
-        int[][] serializedMask;
+        int[][] serializedMask1;
+        int[][] serializedMask2;
         int edgeModeIndex;
         int normalizationModeIndex;
 
@@ -341,7 +248,8 @@ public class OperationSharpening extends Operation {
         boolean[] hsvChangeMatrix;
 
         public Parameters() {
-            serializedMask = maskValues[0];
+            serializedMask1 = MASK_ROBERTS_GRADIENT_X_SAMPLE;
+            serializedMask2 = MASK_ROBERTS_GRADIENT_Y_SAMPLE;
             edgeModeIndex = 0;
             normalizationModeIndex = 0;
 

@@ -26,6 +26,7 @@ public class OperationLlinearSmoothing extends OperationWithMask {
         this.label = "Wygładzanie";
         categories.add("LAB 3");
         categories.add("Sąsiedztwa");
+        categories.add("Filtry dolnoprzepustowe");
         fillMask(3, new int[][]{{1,2,3},{4,5,6},{7,8,9}});
 
     }
