@@ -11,7 +11,6 @@ import java.awt.*;
 
 import static jmagination.ConstantsInitializers.BR;
 import static jmagination.operations.OperationDuplicate.duplicateImageFunction;
-import static util.SimpleHSVBufferedImage.NORMALIZATION_MODE_VOID;
 
 /**
  * Created by darek on 30.11.2016.
@@ -196,7 +195,7 @@ public class OperationErosion extends Operation {
         }
 
 
-        outImage.normalize(NORMALIZATION_MODE_VOID);
+        outImage.normalize();
 
         return outImage;
     }

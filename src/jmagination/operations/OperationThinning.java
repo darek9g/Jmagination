@@ -17,8 +17,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import static jmagination.ConstantsInitializers.BR;
 import static jmagination.operations.OperationDuplicate.duplicateImageFunction;
 import static util.SimpleHSVBufferedImage.NORMALIZATION_MODE_BINARY;
-import static util.SimpleHSVBufferedImage.NORMALIZATION_MODE_PROPORTIONAL;
-import static util.SimpleHSVBufferedImage.NORMALIZATION_MODE_VOID;
 
 /**
  * Created by darek on 30.11.2016.

@@ -9,13 +9,12 @@ import java.util.Hashtable;
  */
 public class SimpleHSVBufferedImage extends BufferedImage {
 
-    public final static int NORMALIZATION_MODE_VOID = 0;
+    public final static int NORMALIZATION_MODE_CUTTING = 0;
     public final static int NORMALIZATION_MODE_PROPORTIONAL = 1;
     public final static int NORMALIZATION_MODE_THREE_VALUED = 2;
-    public final static int NORMALIZATION_MODE_CUTTING = 3;
-    public final static int NORMALIZATION_MODE_BINARY = 4;
+    public final static int NORMALIZATION_MODE_BINARY = 3;
 
-    public final static String[] normalizationModeStrings = { "Bez normalizacji", "Proporcjonalna", "Trzy-wartościowa", "Obcinająca", "Binarna"};
+    public final static String[] normalizationModeStrings = { "Obcinająca", "Proporcjonalna", "Trzy-wartościowa", "Binarna"};
 
 
     // określenie zakresów jasności RGB
@@ -34,7 +33,7 @@ public class SimpleHSVBufferedImage extends BufferedImage {
     int[] opDataBufferMinValues;
     int[] opDataBufferMaxValues;
 
-    int defaultNormalizationMode = NORMALIZATION_MODE_VOID;
+    int defaultNormalizationMode = NORMALIZATION_MODE_CUTTING;
 
     {
         opDataBufferDirty = false;
@@ -184,7 +183,6 @@ public class SimpleHSVBufferedImage extends BufferedImage {
                     case NORMALIZATION_MODE_BINARY:
                         newPixel = normalizePixelBinary(pixel);
                         break;
-                    case  NORMALIZATION_MODE_VOID:
                     case  NORMALIZATION_MODE_CUTTING:
                         newPixel = pixel;
                         break;
@@ -324,7 +322,6 @@ public class SimpleHSVBufferedImage extends BufferedImage {
                     case NORMALIZATION_MODE_BINARY:
                         newPixel = normalizePixelBinary(pixel, changeMatrix);
                         break;
-                    case  NORMALIZATION_MODE_VOID:
                     case  NORMALIZATION_MODE_CUTTING:
                         newPixel = pixel;
                         break;
