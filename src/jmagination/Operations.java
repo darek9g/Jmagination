@@ -43,6 +43,7 @@ public class Operations {
         availableOperations.add(new OperationSharpening());
         availableOperations.add(new OperationGradientSpecialRoberts());
         availableOperations.add(new OperationGradientSpecialSobel());
+        availableOperations.add(new OperationGradientEdgeConvolution());
 
         return availableOperations;
     }
