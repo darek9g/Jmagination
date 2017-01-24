@@ -6,7 +6,6 @@ import util.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 
@@ -15,7 +14,7 @@ import static jmagination.ConstantsInitializers.BR;
 /**
  * Created by Rideau on 2017-01-06.
  */
-public class OperationLlinearSmoothing extends Operation{
+public class OperationLlinearSmoothing extends OperationWithMask {
 
     String[] runModes = { "Uśrednienie", "Mediana", "Filtr krzyżyzowy", "Filtr piramidalny", "4-spójna"};
     JComboBox<String> methodSelect = new JComboBox<>(runModes);
@@ -27,6 +26,7 @@ public class OperationLlinearSmoothing extends Operation{
         this.label = "Wygładzanie";
         categories.add("LAB 3");
         categories.add("Sąsiedztwa");
+        fillMask(3, new int[][]{{1,2,3},{4,5,6},{7,8,9}});
 
     }
 
@@ -301,6 +301,11 @@ public class OperationLlinearSmoothing extends Operation{
         c.gridy = 4;
         c.gridwidth = 4;
         panel.add(jCheckBoxValue, c);
+
+        c.gridx = 0;
+        c.gridy = 5;
+        c.gridwidth = 16;
+        panel.add(jTableMask, c);
 
         this.jCheckBoxSaturation.setSelected(true);
         this.jCheckBoxValue.setSelected(true);

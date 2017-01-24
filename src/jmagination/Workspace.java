@@ -736,4 +736,9 @@ public class Workspace implements RunOperation {
         return imageServersList.toArray(new ImageServer[0]);
     }
 
+    @Override
+    public JFrame getMainWindow() {
+        return window;
+    }
+
 }

@@ -299,4 +299,9 @@ public class ImageServer implements RunOperation {
         }
         return imageServersList.toArray(new ImageServer[0]);
     }
+
+    @Override
+    public JFrame getMainWindow() {
+        return window;
+    }
 }
