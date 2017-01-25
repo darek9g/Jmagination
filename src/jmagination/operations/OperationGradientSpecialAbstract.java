@@ -22,6 +22,8 @@ public abstract class OperationGradientSpecialAbstract extends Operation {
 
     JComboBox<String> edgeNeighborModeSelect;
     JComboBox<String> normalizationSelect;
+    JTableFilterMask jTableFilterMaskLeft;
+    JTableFilterMask jTableFilterMaskRight;
 
 
 
@@ -71,6 +73,11 @@ public abstract class OperationGradientSpecialAbstract extends Operation {
             jCheckBoxValue.setSelected(false);
         }
 
+        jTableFilterMaskLeft = new JTableFilterMask(80);
+        jTableFilterMaskLeft.setEnabled(false);
+
+        jTableFilterMaskRight = new JTableFilterMask(80);
+        jTableFilterMaskRight.setEnabled(false);
     }
 
     @Override
@@ -137,13 +144,18 @@ public abstract class OperationGradientSpecialAbstract extends Operation {
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        JLabel jLabelMaskSelect = new JLabel("Maska operacji:");
+        JLabel jLabelMaskSelect = new JLabel("Maski operacji:");
         panel.add(jLabelMaskSelect, c);
 
-/*        c.gridx = 0;
+        c.gridx = 0;
         c.gridy = 3;
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        panel.add(maskSelect, c);*/
+        c.gridwidth = 4;
+        panel.add(jTableFilterMaskLeft, c);
+
+        c.gridx += c.gridwidth + 1;
+        c.gridy = 3;
+        c.gridwidth = 4;
+        panel.add(jTableFilterMaskRight, c);
 
         c.gridx = 0;
         c.gridy = 5;

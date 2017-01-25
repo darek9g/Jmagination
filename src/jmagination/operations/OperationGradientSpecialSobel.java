@@ -29,6 +29,11 @@ public class OperationGradientSpecialSobel extends OperationGradientSpecialAbstr
 
         parameters.serializedMask1 = MASK_SOBEL_GRADIENT_X_SAMPLE;
         parameters.serializedMask2 = MASK_SOBEL_GRADIENT_Y_SAMPLE;
+
+        jTableFilterMaskLeft.fillMask(parameters.serializedMask1.length,parameters.serializedMask1);
+        jTableFilterMaskLeft.repaint();
+        jTableFilterMaskRight.fillMask(parameters.serializedMask2.length,parameters.serializedMask2);
+        jTableFilterMaskRight.repaint();
     }
 
     @Override
