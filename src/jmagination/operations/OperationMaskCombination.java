@@ -18,7 +18,7 @@ import static jmagination.operations.OperationDuplicate.duplicateImageFunction;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationMaskComposition extends Operation {
+public class OperationMaskCombination extends Operation {
 
     Parameters parameters;
 
@@ -46,7 +46,7 @@ public class OperationMaskComposition extends Operation {
         parameters.normalizationModeIndex = 0;
     }
 
-    public OperationMaskComposition() {
+    public OperationMaskCombination() {
         super();
 
         categories.add("LAB 4");
@@ -433,7 +433,7 @@ public class OperationMaskComposition extends Operation {
 
     @Override
     public Operation Clone() {
-        return new OperationMaskComposition();
+        return new OperationMaskCombination();
     }
 
     public SimpleHSVBufferedImage maskFunctionInterface(SimpleHSVBufferedImage inImage, Histogram histogram) {

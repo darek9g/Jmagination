@@ -6,6 +6,8 @@ import util.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import static jmagination.ConstantsInitializers.BR;
 import static jmagination.operations.OperationConstants.*;
@@ -15,7 +17,7 @@ import static jmagination.operations.OperationDuplicate.duplicateImageFunction;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationSharpening extends Operation {
+public class OperationSharpening extends OperationWithMask {
 
     Parameters parameters;
 
@@ -23,6 +25,7 @@ public class OperationSharpening extends Operation {
     JComboBox<String> maskSelect;
     JComboBox<String> edgeNeighborModeSelect;
     JComboBox<String> normalizationSelect;
+    ItemListener itemListener =  null;
 
 
 
@@ -49,8 +52,19 @@ public class OperationSharpening extends Operation {
         categories.add("Gradientowe");
         categories.add("Filtry górnoprzepustowe");
 
+        itemListener = new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    updateMask();
+                }
+            }
+        };
+
+
         maskSelect = new JComboBox<>(parameters.maskStrings);
         maskSelect.setSelectedIndex(0);
+        maskSelect.addItemListener(itemListener);
 
         edgeNeighborModeSelect = new JComboBox<>(parameters.edgeModeStrings);
         edgeNeighborModeSelect.setSelectedIndex(0);
@@ -76,12 +90,22 @@ public class OperationSharpening extends Operation {
             jCheckBoxValue.setSelected(false);
         }
 
+
+        updateMask();
+
+    }
+
+    private void updateMask() {
+
+        fillMask(parameters.maskValues[maskSelect.getSelectedIndex()].length, parameters.maskValues[maskSelect.getSelectedIndex()]);
+        jTableMask.repaint();
     }
 
     @Override
     public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
-        parameters.serializedMask = parameters.maskValues[maskSelect.getSelectedIndex()];
+//        parameters.serializedMask = parameters.maskValues[maskSelect.getSelectedIndex()];
+        parameters.serializedMask = getMaskMatrix();
         parameters.edgeModeIndex = edgeNeighborModeSelect.getSelectedIndex();
         parameters.normalizationModeIndex = normalizationSelect.getSelectedIndex();
 
@@ -142,14 +166,19 @@ public class OperationSharpening extends Operation {
 
         c.gridx = 0;
         c.gridy = 2;
-        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridwidth = 5;
         JLabel jLabelMaskSelect = new JLabel("Maska operacji:");
         panel.add(jLabelMaskSelect, c);
 
-        c.gridx = 0;
-        c.gridy = 3;
+        c.gridx += c.gridwidth;
+        c.gridy = 2;
         c.gridwidth = GridBagConstraints.REMAINDER;
         panel.add(maskSelect, c);
+
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 16;
+        panel.add(jTableMask, c);
 
         c.gridx = 0;
         c.gridy = 5;
