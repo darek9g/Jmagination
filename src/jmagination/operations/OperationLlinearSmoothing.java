@@ -165,7 +165,7 @@ public class OperationLlinearSmoothing extends OperationWithMask {
                 for (int j = -vert; j <= vert; j++) {
                     tmp += ((float)pixelHood.getPixel(i,j)[band]) * mask[i+hor][j+vert] / dzielnik;
                 }
-            newPixel[band] = (int)tmp;
+            newPixel[band] = Math.round(tmp);
         }
         return newPixel;
     }
@@ -181,7 +181,7 @@ public class OperationLlinearSmoothing extends OperationWithMask {
                 for (int j = -vert; j <= vert; j++) {
                     tmp += ((float)pixelHood.getPixel(i,j)[band])/pixelHood.getDataSize();
                 }
-            newPixel[band] = (int)tmp;
+            newPixel[band] = Math.round(tmp);
         }
         return newPixel;
     }

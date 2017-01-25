@@ -74,6 +74,7 @@ public class OperationMaskComposition extends Operation {
                     throw new IllegalStateException("Nieobsłużona operacja wygładzania.");
                 }
                 smoothMask = MaskGenerator.getMask(parameters.maskSize, maskType);
+                parameters.maskTrueCoeffDivider = calculateCompCoeffDivider(smoothMask,sharpMask);
                 parameters.serializedMask = calculateCompMask(smoothMask,sharpMask);
             }
         });
@@ -85,11 +86,13 @@ public class OperationMaskComposition extends Operation {
             public void actionPerformed(ActionEvent e) {
                 JComboBox comboBox = (JComboBox) e.getSource();
                 sharpMask = parameters.sharpMaskValues[comboBox.getSelectedIndex()];
+                parameters.maskTrueCoeffDivider = calculateCompCoeffDivider(smoothMask,sharpMask);
                 parameters.serializedMask = calculateCompMask(smoothMask,sharpMask);
             }
         });
         sharpMask = parameters.sharpMaskValues[sharpMaskSelect.getSelectedIndex()];
 
+        parameters.maskTrueCoeffDivider = calculateCompCoeffDivider(smoothMask,sharpMask);
         parameters.serializedMask = calculateCompMask(smoothMask,sharpMask);
 
         edgeNeighborModeSelect = new JComboBox<>(parameters.edgeModeStrings);
@@ -118,8 +121,36 @@ public class OperationMaskComposition extends Operation {
 
     }
 
+    private static int getValueFrom3x3(int[][] mask, int index) {
+        int rows = mask.length;
+        int cols = mask[0].length;
+        if(index<0 || index>rows*cols-1 ) {
+            return 0;
+        } else {
+            return index<cols ? mask[0][index] : mask[(index+1)/cols][(index+1)%cols-1];
+        }
+    }
+
+    public static int calculateCompCoeffDivider(int[][] left, int[][] right) {
+
+        if(left.length % 2 == 0) {
+            throw new IllegalArgumentException("Warunek aby pierwszy argument był tablicą o nieparzystej liczbie wierszy nie spełniony.");
+        }
+        if(left[0].length % 2 == 0) {
+            throw new IllegalArgumentException("Warunek aby pierwszy argument był tablicą o nieparzystej liczbie kolumn nie spełniony.");
+        }
+        if(right.length % 2 == 0) {
+            throw new IllegalArgumentException("Warunek aby drugi argument był tablicą o nieparzystej liczbie wierszy nie spełniony.");
+        }
+        if(right[0].length % 2 == 0) {
+            throw new IllegalArgumentException("Warunek aby drugi argument był tablicą o nieparzystej liczbie kolumn nie spełniony.");
+        }
+
+        return left.length * left[0].length * right.length * right[0].length % 2;
+    }
+
     public static int[][] calculateCompMask(int[][] left, int[][] right) {
-        System.out.println("");
+/*        System.out.println("");
         System.out.println("");
         for(int i=0;i<left.length;i++) {
             System.out.printf("|");
@@ -137,7 +168,8 @@ public class OperationMaskComposition extends Operation {
             }
             System.out.println();
         }
-        System.out.println("Koniec prawej");
+        System.out.println("Koniec prawej");*/
+
 
         if(left.length % 2 == 0) {
             throw new IllegalArgumentException("Warunek aby pierwszy argument był tablicą o nieparzystej liczbie wierszy nie spełniony.");
@@ -154,7 +186,6 @@ public class OperationMaskComposition extends Operation {
 
         PixelMask<int[]> leftPixelMask = new PixelMask<>(left, new int[1]);
         PixelMask<int[]> rightPixelMask = new PixelMask<>(right, new int[1]);
-
 
         // przygotowanie obszaru roboczego, wypełnienie 0
         SimpleHSVBufferedImage workImg= new SimpleHSVBufferedImage( 2 * ( leftPixelMask.getHorizontalBorderSize() + rightPixelMask.getHorizontalBorderSize() ) + 1,
@@ -173,33 +204,8 @@ public class OperationMaskComposition extends Operation {
         } while (imageCursor.forward());
         workImg.normalize(SimpleHSVBufferedImage.NORMALIZATION_MODE_CUTTING);
 
-        // zaaplikowanie maski lewej (dane synchronizowane z buforem 0)
-        {
-            imageCursor.reset();
-            PixelHood<int[]> pixelHood = new PixelHood<>(leftPixelMask.getHorizontalBorderSize(), leftPixelMask.getVerticalBorderSize(), new int[bands]);
-            do {
-                imageCursor.fillPixelHood(pixelHood, 0, ImageCursor.COMPLETE_MIN);
-
-                int[] newPixel = new int[bands];
-                for (int b = 0; b < bands; b++) {
-                    double newValue = 0;
-                    for (int j = -pixelHood.getVerticalBorderSize(); j <= pixelHood.getVerticalBorderSize(); j++) {
-                        for (int i = -pixelHood.getHorizontalBorderSize(); i <= pixelHood.getHorizontalBorderSize(); i++) {
-                            newValue += pixelHood.getPixel(i, j)[b] * leftPixelMask.getPixel(i, j)[b];
-                        }
-                    }
-
-                    newPixel[b] = (int) Math.round(newValue / pixelHood.getDataSize());
-//                    newPixel[b] = (int) Math.round(newValue);
-                }
-                workImg.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), newPixel);
-
-            } while (imageCursor.forward());
-            workImg.normalize(SimpleHSVBufferedImage.NORMALIZATION_MODE_CUTTING);
-        }
-
         //wstawenie lewej maski w środek obrazu
-/*        {
+        {
             imageCursor.reset();
             PixelHood<int[]> pixelHood = new PixelHood<>(leftPixelMask.getHorizontalBorderSize(), leftPixelMask.getVerticalBorderSize(), new int[bands]);
             try {
@@ -219,7 +225,7 @@ public class OperationMaskComposition extends Operation {
 
 
             workImg.normalize(SimpleHSVBufferedImage.NORMALIZATION_MODE_CUTTING);
-        }*/
+        }
 
         // zaaplikowanie maski prawej (dane zostają w buforze 1)
         {
@@ -237,8 +243,8 @@ public class OperationMaskComposition extends Operation {
                         }
                     }
 
-                    newPixel[b] = (int) Math.round(newValue / pixelHood.getDataSize());
-//                    newPixel[b] = (int) Math.round(newValue);
+//                    newPixel[b] = pixelHood.getPixel(0, 0)[b];
+                    newPixel[b] = (int) Math.round(newValue);
                 }
                 workImg.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), newPixel);
 
@@ -260,11 +266,11 @@ public class OperationMaskComposition extends Operation {
 
             for (int j = -pixelHood.getVerticalBorderSize(); j <= pixelHood.getVerticalBorderSize(); j++) {
                 for (int i = -pixelHood.getHorizontalBorderSize(); i <= pixelHood.getHorizontalBorderSize(); i++) {
-                    retArr[j+pixelHood.getVerticalBorderSize()][i+pixelHood.getHorizontalBorderSize()]=pixelHood.getPixel(i, j)[0];
+                    retArr[j+pixelHood.getVerticalBorderSize()][i+pixelHood.getHorizontalBorderSize()]=pixelHood.getPixel(i, -j)[0];
                 }
             }
         }
-
+/*
         for(int i=0;i<retArr.length;i++) {
             System.out.printf("|");
             for(int j=0;j<retArr[i].length;j++) {
@@ -272,7 +278,7 @@ public class OperationMaskComposition extends Operation {
             }
             System.out.println();
         }
-        System.out.println("Koniec wynikowej");
+        System.out.println("Koniec wynikowej");*/
 
         return retArr;
     }
@@ -481,7 +487,7 @@ public class OperationMaskComposition extends Operation {
                             }
                         }
 
-                        pixel[b] = (int) Math.round(newValue / pixelHood.getDataSize());
+                        pixel[b] = (int) Math.round(newValue / parameters.maskTrueCoeffDivider);
                 }
 
                 outImage.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
@@ -510,8 +516,6 @@ public class OperationMaskComposition extends Operation {
             float[] pixel = pixelHood.getPixel(0,0);
             float[] newPixel = new float[3];
 
-//            System.out.printf("Pixel z %f %f %f\n", pixel[0], pixel[1], pixel[2]);
-
             for(int b = 0; b<3; b++) {
 
                 if(parameters.hsvChangeMatrix[b] == true) {
@@ -523,13 +527,12 @@ public class OperationMaskComposition extends Operation {
                         }
                     }
 
-                    newPixel[b] = (float) (newValue / pixelHood.getDataSize());
+                    newPixel[b] = (float) (newValue / parameters.maskTrueCoeffDivider);
                 } else {
                     newPixel[b] = pixel[b];
                 }
             }
 
-//            System.out.printf("NewPixel z %f %f %f\n", newPixel[0], newPixel[1], newPixel[2]);
             hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = newPixel;
 
         } while (imageCursor.forward());
@@ -550,6 +553,8 @@ public class OperationMaskComposition extends Operation {
         public static final String[] normalizationModeStrings = SimpleHSVBufferedImage.normalizationModeStrings;
 
         int[][] serializedMask;
+        int maskTrueCoeffDivider;
+
         int edgeModeIndex;
         int normalizationModeIndex;
 
@@ -558,6 +563,7 @@ public class OperationMaskComposition extends Operation {
 
         public Parameters() {
             serializedMask = null;
+            maskTrueCoeffDivider = 1;
             edgeModeIndex = 0;
             normalizationModeIndex = 0;
 
