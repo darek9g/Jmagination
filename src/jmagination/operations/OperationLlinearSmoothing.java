@@ -6,7 +6,10 @@ import util.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.image.WritableRaster;
+import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
 
 import static jmagination.ConstantsInitializers.BR;
@@ -20,15 +23,32 @@ public class OperationLlinearSmoothing extends OperationWithMask {
     JComboBox<String> methodSelect = new JComboBox<>(runModes);
     String[] neighborhoodSizesStrings = { "3x3", "5x5", "7x7", "9x9", "11x11", "13x13"};
     JComboBox<String> neighborhoodSizeSelect = new JComboBox<>(neighborhoodSizesStrings);
+    ItemListener itemListener =  null;
 
     public OperationLlinearSmoothing() {
         super();
+        maxValue = 255;
+        minValue = 0;
         this.label = "Wygładzanie";
         categories.add("LAB 3");
         categories.add("Sąsiedztwa");
         categories.add("Filtry dolnoprzepustowe");
-        fillMask(3, new int[][]{{1,2,3},{4,5,6},{7,8,9}});
-
+        itemListener = new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    if (methodSelect.getSelectedIndex() == 1) {
+                        jTableMask.setVisible(false);
+                        jLabelMaskaFiltru.setVisible(false);
+                    } else {
+                        jTableMask.setVisible(true);
+                        jLabelMaskaFiltru.setVisible(true);
+                        updateMask();
+                    }
+                }
+            }
+        };
+        updateMask();
     }
 
     @Override
@@ -53,28 +73,10 @@ public class OperationLlinearSmoothing extends OperationWithMask {
         do {
             imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
             float[] pixel;
-            switch (methodSelect.getSelectedIndex()) {
-                case 0:
-                    pixel = smoothHSVPixel(pixelHood, MaskGenerator.getMask(hoodSize*2+1,
-                            MaskGenerator.MaskType.AVERAGING), hsvChangeMatrix);
-                    break;
-                case 1:
-                    pixel = medianSmoothHSV(pixelHood);
-                    break;
-                case 2:
-                    pixel = smoothHSVPixel(pixelHood, MaskGenerator.getMask(hoodSize*2+1,
-                            MaskGenerator.MaskType.CROSS), hsvChangeMatrix);
-                    break;
-                case 3:
-                    pixel = smoothHSVPixel(pixelHood, MaskGenerator.getMask(hoodSize*2+1,
-                            MaskGenerator.MaskType.PIRAMIDE), hsvChangeMatrix);
-                    break;
-                case 4:
-                    pixel = smoothHSVPixel(pixelHood, MaskGenerator.getMask(hoodSize*2+1,
-                            MaskGenerator.MaskType.COHERENT4), hsvChangeMatrix);
-                    break;
-                default:
-                    throw new IllegalStateException("Nieobsłużona operacja wygładzania.");
+            if (methodSelect.getSelectedIndex() == 1) {
+                pixel = medianSmoothHSV(pixelHood);
+            } else {
+                pixel = smoothHSVPixel(pixelHood, getMaskMatrix(), hsvChangeMatrix);
             }
             hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
 
@@ -96,28 +98,10 @@ public class OperationLlinearSmoothing extends OperationWithMask {
         do {
             imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
             int[] pixel;
-            switch (methodSelect.getSelectedIndex()) {
-                case 0:
-                    pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood,
-                            MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.AVERAGING));
-                    break;
-                case 1:
-                    pixel = medianSmooth(outRaster.getNumBands(), pixelHood);
-                    break;
-                case 2:
-                    pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood,
-                            MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.CROSS));
-                    break;
-                case 3:
-                    pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood,
-                            MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.PIRAMIDE));
-                    break;
-                case 4:
-                    pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood,
-                            MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.COHERENT4));
-                    break;
-                default:
-                    throw new IllegalStateException("Nieobsłużona operacja wygładzania.");
+            if (methodSelect.getSelectedIndex() == 1) {
+                pixel = medianSmooth(outRaster.getNumBands(), pixelHood);
+            } else {
+                pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood, getMaskMatrix());
             }
             outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
 
@@ -170,22 +154,6 @@ public class OperationLlinearSmoothing extends OperationWithMask {
         return newPixel;
     }
 
-    @Deprecated
-    private int[] smoothRGBPixel(int numBands, PixelHood<int[]> pixelHood) {
-        int hor = pixelHood.getHorizontalBorderSize();
-        int vert = pixelHood.getVerticalBorderSize();
-        int[] newPixel = new int[numBands];
-        for (int band = 0; band < numBands; band++) {
-            float tmp = 0;
-            for (int i = -hor; i <= hor; i++)
-                for (int j = -vert; j <= vert; j++) {
-                    tmp += ((float)pixelHood.getPixel(i,j)[band])/pixelHood.getDataSize();
-                }
-            newPixel[band] = (int)tmp;
-        }
-        return newPixel;
-    }
-
     private int[] medianSmooth(int numBands, PixelHood<int[]> pixelHood) {
         int[] newPixel = new int[numBands];
         for (int band = 0; band < numBands; band++) {
@@ -210,6 +178,33 @@ public class OperationLlinearSmoothing extends OperationWithMask {
             newPixel[band] = values[(pixelHood.getDataSize()-1)/2];
         }
         return newPixel;
+    }
+
+    private void updateMask() {
+        int hoodSize = neighborhoodSizeSelect.getSelectedIndex()+1;
+        int[][] maskMatrix = null;
+        switch (methodSelect.getSelectedIndex()) {
+            case 0:
+                maskMatrix = MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.AVERAGING);
+                break;
+            case 1:
+                // Mediana - nie potrzebuje maski
+                break;
+            case 2:
+                maskMatrix = MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.CROSS);
+                break;
+            case 3:
+                maskMatrix = MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.PIRAMIDE);
+                break;
+            case 4:
+                maskMatrix = MaskGenerator.getMask(hoodSize*2+1, MaskGenerator.MaskType.COHERENT4);
+                break;
+            default:
+                throw new IllegalStateException("Nieobsłużona operacja wygładzania.");
+        }
+
+        fillMask(hoodSize*2+1, maskMatrix);
+        jTableMask.repaint();
     }
 
     @Override
@@ -249,6 +244,7 @@ public class OperationLlinearSmoothing extends OperationWithMask {
         c.gridy = 2;
         c.gridwidth = 4;
         panel.add(methodSelect, c);
+        methodSelect.addItemListener(itemListener);
 
         c.gridx = 8;
         c.gridy = 2;
@@ -260,6 +256,7 @@ public class OperationLlinearSmoothing extends OperationWithMask {
         c.gridy = 2;
         c.gridwidth = 4;
         panel.add(neighborhoodSizeSelect, c);
+        neighborhoodSizeSelect.addItemListener(itemListener);
 
         // wiersz sterowania wykonaniem
         c.gridx = 0;
@@ -303,8 +300,14 @@ public class OperationLlinearSmoothing extends OperationWithMask {
         c.gridwidth = 4;
         panel.add(jCheckBoxValue, c);
 
+
         c.gridx = 0;
         c.gridy = 5;
+        c.gridwidth = 8;
+        panel.add(jLabelMaskaFiltru, c);
+
+        c.gridx = 0;
+        c.gridy = 6;
         c.gridwidth = 16;
         panel.add(jTableMask, c);
 
@@ -319,4 +322,6 @@ public class OperationLlinearSmoothing extends OperationWithMask {
     public Operation Clone() {
         return null;
     }
+
+
 }
