@@ -19,6 +19,7 @@ public abstract class OperationWithMask extends Operation {
     protected void fillMask (int size, int[][] data) {
         if (jTableMask == null) {
             jTableMask = new JTable();
+            jTableMask.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         }
         jTableMask.setSize(size, size);
         jTableMask.setModel(new DefaultTableModel(size, size));
@@ -27,7 +28,6 @@ public abstract class OperationWithMask extends Operation {
                 jTableMask.setValueAt(new Integer(data[i][j]), i, j);
             }
         }
-        jTableMask.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jTableMask.getModel().addTableModelListener(tableModelListener);
         resizeTable(380);
     }
