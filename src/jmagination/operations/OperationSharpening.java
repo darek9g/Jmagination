@@ -17,7 +17,7 @@ import static jmagination.operations.OperationDuplicate.duplicateImageFunction;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationSharpening extends OperationWithMask {
+public class OperationSharpening extends Operation {
 
     Parameters parameters;
 
@@ -25,6 +25,7 @@ public class OperationSharpening extends OperationWithMask {
     JComboBox<String> maskSelect;
     JComboBox<String> edgeNeighborModeSelect;
     JComboBox<String> normalizationSelect;
+    JTableFilterMask jTableMask;
     ItemListener itemListener =  null;
 
 
@@ -90,6 +91,7 @@ public class OperationSharpening extends OperationWithMask {
             jCheckBoxValue.setSelected(false);
         }
 
+        jTableMask = new JTableFilterMask(380);
 
         updateMask();
 
@@ -97,14 +99,14 @@ public class OperationSharpening extends OperationWithMask {
 
     private void updateMask() {
 
-        fillMask(parameters.maskValues[maskSelect.getSelectedIndex()].length, parameters.maskValues[maskSelect.getSelectedIndex()]);
+        jTableMask.fillMask(parameters.maskValues[maskSelect.getSelectedIndex()].length, parameters.maskValues[maskSelect.getSelectedIndex()]);
         jTableMask.repaint();
     }
 
     @Override
     public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
-        parameters.serializedMask = getMaskMatrix();
+        parameters.serializedMask = jTableMask.getMaskMatrix();
         parameters.edgeModeIndex = edgeNeighborModeSelect.getSelectedIndex();
         parameters.normalizationModeIndex = normalizationSelect.getSelectedIndex();
 

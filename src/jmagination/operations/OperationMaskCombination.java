@@ -5,9 +5,15 @@ import jmagination.histogram.Histogram;
 import util.*;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.event.CellEditorListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 
 import static jmagination.ConstantsInitializers.BR;
@@ -29,6 +35,11 @@ public class OperationMaskCombination extends Operation {
     JComboBox<String> edgeNeighborModeSelect;
     JComboBox<String> normalizationSelect;
 
+    JTableFilterMask jTableSmoothMask;
+    JTableFilterMask jTableSharpMask;
+    JTableFilterMask jTableFinalMask;
+
+
     private int[][] smoothMask;
     private int[][] sharpMask;
 
@@ -44,6 +55,11 @@ public class OperationMaskCombination extends Operation {
 
         parameters.edgeModeIndex = 0;
         parameters.normalizationModeIndex = 0;
+
+        jTableSmoothMask = new JTableFilterMask(190);
+        jTableSharpMask = new JTableFilterMask(190);
+        jTableFinalMask = new JTableFilterMask(380);
+
     }
 
     public OperationMaskCombination() {
@@ -55,41 +71,15 @@ public class OperationMaskCombination extends Operation {
         categories.add("Filtry górnoprzepustowe");
         categories.add("Filtry dolnoprzepustowe");
 
+
+
         smoothMaskSelect = new JComboBox<>(parameters.smooothMaskStrings);
         smoothMaskSelect.setSelectedIndex(MaskGenerator.MaskType.AVERAGING.type-1);
         smoothMask = MaskGenerator.getMask(parameters.maskSize, MaskGenerator.MaskType.AVERAGING);
 
-        smoothMaskSelect.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource();
-
-                MaskGenerator.MaskType maskType = null;
-                for(MaskGenerator.MaskType m: MaskGenerator.MaskType.values()) {
-                    if(m.type - 1 == comboBox.getSelectedIndex()) {
-                        maskType = m;
-                    }
-                }
-                if(maskType==null) {
-                    throw new IllegalStateException("Nieobsłużona operacja wygładzania.");
-                }
-                smoothMask = MaskGenerator.getMask(parameters.maskSize, maskType);
-                parameters.maskTrueCoeffDivider = calculateCompCoeffDivider(smoothMask,sharpMask);
-                parameters.serializedMask = calculateCompMask(smoothMask,sharpMask);
-            }
-        });
 
         sharpMaskSelect = new JComboBox<>(parameters.sharpMaskStrings);
         sharpMaskSelect.setSelectedIndex(0);
-        sharpMaskSelect.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JComboBox comboBox = (JComboBox) e.getSource();
-                sharpMask = parameters.sharpMaskValues[comboBox.getSelectedIndex()];
-                parameters.maskTrueCoeffDivider = calculateCompCoeffDivider(smoothMask,sharpMask);
-                parameters.serializedMask = calculateCompMask(smoothMask,sharpMask);
-            }
-        });
         sharpMask = parameters.sharpMaskValues[sharpMaskSelect.getSelectedIndex()];
 
         parameters.maskTrueCoeffDivider = calculateCompCoeffDivider(smoothMask,sharpMask);
@@ -119,7 +109,72 @@ public class OperationMaskCombination extends Operation {
             jCheckBoxValue.setSelected(false);
         }
 
+        jTableSmoothMask.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateFinalMask();
+            }
+        });
+
+        smoothMaskSelect.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JComboBox comboBox = (JComboBox) e.getSource();
+
+                MaskGenerator.MaskType maskType = null;
+                for(MaskGenerator.MaskType m: MaskGenerator.MaskType.values()) {
+                    if(m.type - 1 == comboBox.getSelectedIndex()) {
+                        maskType = m;
+                    }
+                }
+                if(maskType==null) {
+                    throw new IllegalStateException("Nieobsłużona operacja wygładzania.");
+                }
+                smoothMask = MaskGenerator.getMask(parameters.maskSize, maskType);
+                jTableSmoothMask.fillMask(smoothMask.length, smoothMask);
+                jTableSmoothMask.repaint();
+                parameters.maskTrueCoeffDivider = calculateCompCoeffDivider(smoothMask,sharpMask);
+
+                updateFinalMask();
+            }
+        });
+
+        sharpMaskSelect.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JComboBox comboBox = (JComboBox) e.getSource();
+                sharpMask = parameters.sharpMaskValues[comboBox.getSelectedIndex()];
+                jTableSharpMask.fillMask(sharpMask.length, sharpMask);
+                jTableSharpMask.repaint();
+                parameters.maskTrueCoeffDivider = calculateCompCoeffDivider(smoothMask,sharpMask);
+                parameters.serializedMask = calculateCompMask(smoothMask,sharpMask);
+
+                updateFinalMask();
+            }
+        });
+
+        jTableSharpMask.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                updateFinalMask();
+            }
+        });
+
+        jTableSmoothMask.fillMask(smoothMask.length, smoothMask);
+        jTableSmoothMask.repaint();
+        jTableSharpMask.fillMask(sharpMask.length, sharpMask);
+        jTableSharpMask.repaint();
+        updateFinalMask();
     }
+
+    private void updateFinalMask() {
+        int[][] finalMask = calculateCompMask(jTableSmoothMask.getMaskMatrix(),jTableSharpMask.getMaskMatrix());
+        jTableFinalMask.fillMask(finalMask.length, finalMask);
+        jTableFinalMask.repaint();
+    }
+
+
+
 
     public static int calculateCompCoeffDivider(int[][] left, int[][] right) {
 
@@ -277,6 +332,7 @@ public class OperationMaskCombination extends Operation {
     @Override
     public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
+        parameters.serializedMask = jTableFinalMask.getMaskMatrix();
         parameters.edgeModeIndex = edgeNeighborModeSelect.getSelectedIndex();
         parameters.normalizationModeIndex = normalizationSelect.getSelectedIndex();
 
@@ -359,71 +415,86 @@ public class OperationMaskCombination extends Operation {
 
         c.gridx = 0;
         c.gridy = 4;
+        c.gridwidth = 8;
+        panel.add(jTableSmoothMask, c);
+
+        c.gridx += c.gridwidth;
+        c.gridy = 4;
+        c.gridwidth = 8;
+        panel.add(jTableSharpMask, c);
+
+        c.gridx = 0;
+        c.gridy = 5;
         c.gridwidth = 6;
         JLabel jLabelCompMask = new JLabel("Maska wynikowa:");
         panel.add(jLabelCompMask, c);
 
         c.gridx = 0;
-        c.gridy = 5;
+        c.gridy = 6;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        panel.add(jTableFinalMask, c);
+
+        c.gridx = 0;
+        c.gridy = 7;
         c.gridwidth = GridBagConstraints.REMAINDER;
         JLabel jLabelEdgeNeighborModeSelect = new JLabel("Sąsiedztwo pikseli brzegowch:");
         panel.add(jLabelEdgeNeighborModeSelect, c);
 
         c.gridx = 0;
-        c.gridy = 6;
+        c.gridy = 8;
         c.gridwidth = GridBagConstraints.REMAINDER;
         panel.add(edgeNeighborModeSelect, c);
 
         c.gridx = 0;
-        c.gridy = 7;
+        c.gridy = 9;
         c.gridwidth = GridBagConstraints.REMAINDER;
         JLabel jLabelNormalizationSelect = new JLabel("Metoda normalizacji:");
         panel.add(jLabelNormalizationSelect, c);
 
         c.gridx = 0;
-        c.gridy = 8;
+        c.gridy = 10;
         c.gridwidth = GridBagConstraints.REMAINDER;
         panel.add(normalizationSelect, c);
 
         // wiersz sterowania wykonaniem
         c.gridx = 0;
-        c.gridy = 10;
+        c.gridy = 11;
         c.gridwidth = 4;
         panel.add(jLabelColorMode, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 10;
+        c.gridy = 11;
         c.gridwidth = 4;
         panel.add(jRadioButtonColorModeRGB, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 10;
+        c.gridy = 11;
         c.gridwidth = 4;
         panel.add(jRadioButtonColorModeHSV, c);
 
         c.gridx+= c.gridwidth;
-        c.gridy = 10;
+        c.gridy = 11;
         c.gridwidth = 4;
         panel.add(jButtonApply, c);
 
         // ruchomy wiersz sterowania wykonaniem HSV
         c.gridx = 0;
-        c.gridy = 11;
+        c.gridy = 12;
         c.gridwidth = 4;
         panel.add(jLabelHSVComponentsSelet, c);
 
         c.gridx += c.gridwidth;
-        c.gridy = 11;
+        c.gridy = 12;
         c.gridwidth = 4;
         panel.add(jCheckBoxHue, c);
 
         c.gridx += c.gridwidth;
-        c.gridy = 11;
+        c.gridy = 12;
         c.gridwidth = 4;
         panel.add(jCheckBoxSaturation, c);
 
         c.gridx += c.gridwidth;
-        c.gridy = 11;
+        c.gridy = 12;
         c.gridwidth = 4;
         panel.add(jCheckBoxValue, c);
 

@@ -17,7 +17,7 @@ import static jmagination.operations.OperationDuplicate.duplicateImageFunction;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationGradientEdgeConvolution extends OperationWithMask {
+public class OperationGradientEdgeConvolution extends Operation {
 
     Parameters parameters;
 
@@ -26,6 +26,7 @@ public class OperationGradientEdgeConvolution extends OperationWithMask {
     JComboBox<String> directionSelect;
     JComboBox<String> edgeNeighborModeSelect;
     JComboBox<String> normalizationSelect;
+    JTableFilterMask jTableMask;
     ItemListener itemListener =  null;
 
 
@@ -90,6 +91,7 @@ public class OperationGradientEdgeConvolution extends OperationWithMask {
             jCheckBoxValue.setSelected(false);
         }
 
+        jTableMask = new JTableFilterMask(380);
         updateMask();
     }
 
@@ -98,7 +100,7 @@ public class OperationGradientEdgeConvolution extends OperationWithMask {
         parameters.maskClassIndex = maskSelect.getSelectedIndex();
         parameters.maskSubClassIndex = directionSelect.getSelectedIndex();
 
-        fillMask(parameters.maskValues[parameters.maskClassIndex][parameters.maskSubClassIndex].length,
+        jTableMask.fillMask(parameters.maskValues[parameters.maskClassIndex][parameters.maskSubClassIndex].length,
                 parameters.maskValues[parameters.maskClassIndex][parameters.maskSubClassIndex]);
         jTableMask.repaint();
     }
@@ -107,7 +109,7 @@ public class OperationGradientEdgeConvolution extends OperationWithMask {
     @Override
     public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
-        parameters.serializedMask = getMaskMatrix();
+        parameters.serializedMask = jTableMask.getMaskMatrix();
 
         parameters.edgeModeIndex = edgeNeighborModeSelect.getSelectedIndex();
         parameters.normalizationModeIndex = normalizationSelect.getSelectedIndex();
@@ -192,6 +194,7 @@ public class OperationGradientEdgeConvolution extends OperationWithMask {
         c.gridx = 0;
         c.gridy = 4;
         c.gridwidth = 2;
+        JLabel jLabelMaskaFiltru = new JLabel("Maska filtru:");
         panel.add(jLabelMaskaFiltru, c);
 
         c.gridx += c.gridwidth;

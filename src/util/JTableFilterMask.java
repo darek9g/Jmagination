@@ -6,6 +6,9 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 /**
@@ -16,6 +19,10 @@ public class JTableFilterMask extends JTable {
     int width;
     int maxValue = Integer.MAX_VALUE;
     int minValue = Integer.MIN_VALUE;
+
+    ArrayList<ActionListener> actionListeners = new ArrayList<>();
+    private int actionEventId = 0;
+
     Component parent;
     TableModelListener tableModelListener = new TableModelListener() {
 
@@ -27,6 +34,7 @@ public class JTableFilterMask extends JTable {
             Integer selected = pharseValue(object);
             selected = checkValue(selected);
             setValueAt(selected, e.getFirstRow(), e.getColumn());
+            fireActionEvent();
         }
     };
 
@@ -120,5 +128,19 @@ public class JTableFilterMask extends JTable {
 
     public void setMinValue(int minValue) {
         this.minValue = minValue;
+    }
+
+    public void addActionListener(ActionListener actionListener) {
+        actionListeners.add(actionListener);
+    }
+
+    public void removeActionListener(ActionListener actionListener) {
+        actionListeners.remove(actionListener);
+    }
+
+    public void fireActionEvent() {
+        for(ActionListener actionListener: actionListeners) {
+            actionListener.actionPerformed(new ActionEvent((Object) this, actionEventId++, "Cell edited" ));
+        }
     }
 }
