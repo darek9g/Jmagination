@@ -245,33 +245,33 @@ public class OperationSharpening extends Operation {
 
         int bands = outImage.getRaster().getNumBands();
 
+
+        ImageCursor imageCursor = new ImageCursor(outImage);
+
         PixelMask<int[]> pixelMask = new PixelMask<>(parameters.serializedMask, new int[bands]);
+        PixelHood<int[]> pixelHood = new PixelHood<>(pixelMask.getHorizontalBorderSize(), pixelMask.getVerticalBorderSize(), new int[bands]);
 
-            ImageCursor imageCursor = new ImageCursor(outImage);
+        do {
+            imageCursor.fillPixelHood(pixelHood, 0, parameters.edgeModeIndex);
 
-            PixelHood<int[]> pixelHood = new PixelHood<>(1, 1, new int[bands]);
-
-            do {
-                imageCursor.fillPixelHood(pixelHood, 0, parameters.edgeModeIndex);
-
-                int[] pixel = pixelHood.getPixel(0,0);
+            int[] pixel = pixelHood.getPixel(0,0);
 
 
-                for(int b = 0; b< bands; ++b) {
-                        double newValue = 0;
+            for(int b = 0; b< bands; ++b) {
+                    double newValue = 0;
 
-                        for(int i=-1; i<2; i++) {
-                            for(int j=-1; j<2; j++) {
-                                newValue += pixelMask.getPixel(j,i)[b] * pixelHood.getPixel(j,i)[b];
-                            }
+                for (int i = -pixelHood.getVerticalBorderSize(); i <= pixelHood.getVerticalBorderSize(); i++) {
+                    for (int j = -pixelHood.getHorizontalBorderSize(); j <= pixelHood.getHorizontalBorderSize(); j++) {
+                            newValue += pixelMask.getPixel(j,i)[b] * pixelHood.getPixel(j,i)[b];
                         }
+                    }
 
-                        pixel[b] = (int) Math.round(newValue / pixelHood.getDataSize());
-                }
+                    pixel[b] = (int) Math.round(newValue / pixelHood.getDataSize());
+            }
 
-                outImage.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
+            outImage.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
 
-            } while (imageCursor.forward());
+        } while (imageCursor.forward());
 
 
         outImage.normalize(parameters.normalizationModeIndex);
@@ -285,25 +285,23 @@ public class OperationSharpening extends Operation {
         int height = inImage.getHeight();
 
         float hsvOutMatrix[][][] = new float[width][height][3];
-        PixelHood<float[]> pixelHood = new PixelHood<>(1, 1, new float[3]);
         HSVImageCursor imageCursor = new HSVImageCursor(inImage.getHsv(), width, height);
 
         PixelMask<int[]> pixelMask = new PixelMask<>(parameters.serializedMask, new int[3]);
+        PixelHood<float[]> pixelHood = new PixelHood<>(pixelMask.getHorizontalBorderSize(), pixelMask.getVerticalBorderSize(), new float[3]);
 
         do {
             imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
             float[] pixel = pixelHood.getPixel(0,0);
             float[] newPixel = new float[3];
 
-//            System.out.printf("Pixel z %f %f %f\n", pixel[0], pixel[1], pixel[2]);
-
             for(int b = 0; b<3; b++) {
 
                 if(parameters.hsvChangeMatrix[b] == true) {
 
                     double newValue = 0.0d;
-                    for (int i = -1; i < 2; i++) {
-                        for (int j = -1; j < 2; j++) {
+                    for (int i = -pixelHood.getVerticalBorderSize(); i <= pixelHood.getVerticalBorderSize(); i++) {
+                        for (int j = -pixelHood.getHorizontalBorderSize(); j <= pixelHood.getHorizontalBorderSize(); j++) {
                             newValue += pixelMask.getPixel(j, i)[b] * pixelHood.getPixel(j, i)[b];
                         }
                     }
@@ -314,7 +312,6 @@ public class OperationSharpening extends Operation {
                 }
             }
 
-//            System.out.printf("NewPixel z %f %f %f\n", newPixel[0], newPixel[1], newPixel[2]);
             hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = newPixel;
 
         } while (imageCursor.forward());
