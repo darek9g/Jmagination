@@ -2,6 +2,9 @@ package jmagination.operations;
 
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import java.util.Enumeration;
 
 /**
  * Created by Rideau on 2017-01-23.
@@ -9,24 +12,38 @@ import javax.swing.event.*;
 public abstract class OperationWithMask extends Operation {
 
     JTable jTableMask = null;
-    int maxValue = 100;
-    int minValue = 0;
+    JLabel jLabelMaskaFiltru = new JLabel("Maska filtru:");
+    int maxValue = Integer.MAX_VALUE;
+    int minValue = Integer.MIN_VALUE;
 
     protected void fillMask (int size, int[][] data) {
-        jTableMask = new JTable(3,3);
+        if (jTableMask == null) {
+            jTableMask = new JTable();
+            jTableMask.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        }
+        jTableMask.setSize(size, size);
+        jTableMask.setModel(new DefaultTableModel(size, size));
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 jTableMask.setValueAt(new Integer(data[i][j]), i, j);
             }
         }
-        jTableMask.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         jTableMask.getModel().addTableModelListener(tableModelListener);
+        resizeTable(380);
+    }
+
+    protected void resizeTable(int maxValue) {
+        int newWidth =  maxValue/jTableMask.getColumnCount();
+        Enumeration<TableColumn> enumeration = jTableMask.getColumnModel().getColumns();
+        while (enumeration.hasMoreElements()) {
+            enumeration.nextElement().setMaxWidth(newWidth);
+        }
     }
 
     protected int[][] getMaskMatrix() {
-        int[][] matrix = new int[jTableMask.getWidth()][jTableMask.getHeight()];
-        for (int i = 0; i < jTableMask.getWidth(); i++) {
-            for (int j = 0; j < jTableMask.getHeight(); j++) {
+        int[][] matrix = new int[jTableMask.getColumnCount()][jTableMask.getRowCount()];
+        for (int i = 0; i < jTableMask.getColumnCount(); i++) {
+            for (int j = 0; j < jTableMask.getRowCount(); j++) {
                 matrix[i][j] = (Integer) jTableMask.getValueAt(i, j);
             }
         }
