@@ -9,6 +9,7 @@ import java.util.Enumeration;
 /**
  * Created by Rideau on 2017-01-23.
  */
+@Deprecated
 public abstract class OperationWithMask extends Operation {
 
     JTable jTableMask = null;

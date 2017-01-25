@@ -17,18 +17,18 @@ import static jmagination.ConstantsInitializers.BR;
 /**
  * Created by Rideau on 2017-01-06.
  */
-public class OperationLlinearSmoothing extends OperationWithMask {
+public class OperationLlinearSmoothing extends Operation {
 
     String[] runModes = { "Uśrednienie", "Mediana", "Filtr krzyżyzowy", "Filtr piramidalny", "4-spójna"};
     JComboBox<String> methodSelect = new JComboBox<>(runModes);
     String[] neighborhoodSizesStrings = { "3x3", "5x5", "7x7", "9x9", "11x11", "13x13"};
     JComboBox<String> neighborhoodSizeSelect = new JComboBox<>(neighborhoodSizesStrings);
     ItemListener itemListener =  null;
+    JTableFilterMask jTableMask;
+    JLabel jLabelMaskaFiltru = new JLabel("Maska filtru:");
 
     public OperationLlinearSmoothing() {
         super();
-        maxValue = 255;
-        minValue = 0;
         this.label = "Wygładzanie";
         categories.add("LAB 3");
         categories.add("Sąsiedztwa");
@@ -48,6 +48,9 @@ public class OperationLlinearSmoothing extends OperationWithMask {
                 }
             }
         };
+        jTableMask = new JTableFilterMask(380);
+        jTableMask.setMaxValue(255);
+        jTableMask.setMinValue(0);
         updateMask();
     }
 
@@ -76,7 +79,7 @@ public class OperationLlinearSmoothing extends OperationWithMask {
             if (methodSelect.getSelectedIndex() == 1) {
                 pixel = medianSmoothHSV(pixelHood);
             } else {
-                pixel = smoothHSVPixel(pixelHood, getMaskMatrix(), hsvChangeMatrix);
+                pixel = smoothHSVPixel(pixelHood, jTableMask.getMaskMatrix(), hsvChangeMatrix);
             }
             hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
 
@@ -101,7 +104,7 @@ public class OperationLlinearSmoothing extends OperationWithMask {
             if (methodSelect.getSelectedIndex() == 1) {
                 pixel = medianSmooth(outRaster.getNumBands(), pixelHood);
             } else {
-                pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood, getMaskMatrix());
+                pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood, jTableMask.getMaskMatrix());
             }
             outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
 
@@ -203,7 +206,7 @@ public class OperationLlinearSmoothing extends OperationWithMask {
                 throw new IllegalStateException("Nieobsłużona operacja wygładzania.");
         }
 
-        fillMask(hoodSize*2+1, maskMatrix);
+        jTableMask.fillMask(hoodSize*2+1, maskMatrix);
         jTableMask.repaint();
     }
 
