@@ -44,7 +44,7 @@ public class OperationSharpening extends Operation {
     public OperationSharpening() {
         super();
 
-        categories.add("LAB 4");
+        categories.add("LAB 3");
         categories.add("Sąsiedztwa");
         categories.add("Gradientowe");
         categories.add("Filtry górnoprzepustowe");
@@ -326,8 +326,8 @@ public class OperationSharpening extends Operation {
 
 
 
-        public static final String[] maskStrings = {"Gradient poziomy", "Gradient pionowy", "Laplasjan"};
-        public static final int[][][] maskValues = {MASK_GRADIENT_X_SAMPLE, MASK_GRADIENT_Y_SAMPLE, MASK_LAPLACE_SAMPLE};
+        public static final String[] maskStrings = MASKS_NAMES_SHARPENING;
+        public static final int[][][] maskValues = MASKS_SHARPENING;
 
         public static final String[] edgeModeStrings = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
 

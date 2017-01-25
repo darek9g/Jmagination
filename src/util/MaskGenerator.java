@@ -10,7 +10,7 @@ public class MaskGenerator {
         PIRAMIDE(3),
         COHERENT4(4)
         ;
-        int type;
+        public int type;
         MaskType(int i) {
             type = i;
         }

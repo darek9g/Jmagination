@@ -44,6 +44,7 @@ public class Operations {
         availableOperations.add(new OperationGradientSpecialRoberts());
         availableOperations.add(new OperationGradientSpecialSobel());
         availableOperations.add(new OperationGradientEdgeConvolution());
+        availableOperations.add(new OperationMaskComposition());
 
         return availableOperations;
     }

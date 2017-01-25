@@ -143,6 +143,12 @@ public final class OperationConstants {
 
     public static final int[][][]  MASKS_KIRCH = { MASK_KIRCH_N_SAMPLE, MASK_KIRCH_NE_SAMPLE, MASK_KIRCH_E_SAMPLE, MASK_KIRCH_SE_SAMPLE, MASK_KIRCH_S_SAMPLE, MASK_KIRCH_SW_SAMPLE, MASK_KIRCH_W_SAMPLE, MASK_KIRCH_NW_SAMPLE };
 
+    // według OperationLinearSmoothing
+    public static final String[] MASKS_NAMES_SMOOTHING = { "Uśrednienie", "Mediana", "Filtr krzyżyzowy", "Filtr piramidalny", "4-spójna"};
+
+    public static final String[] MASKS_NAMES_SHARPENING = { "Gradient poziomy", "Gradient pionowy", "Laplasjan" };
+    public static final int[][][] MASKS_SHARPENING = { MASK_GRADIENT_X_SAMPLE, MASK_GRADIENT_Y_SAMPLE, MASK_LAPLACE_SAMPLE };
+
     private OperationConstants() {
         throw new AssertionError();
     }

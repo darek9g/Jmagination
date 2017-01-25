@@ -41,7 +41,7 @@ public class OperationGradientEdgeConvolution extends Operation {
     public OperationGradientEdgeConvolution() {
         super();
 
-        categories.add("LAB 4");
+        categories.add("LAB 3");
         categories.add("Sąsiedztwa");
         categories.add("Gradientowe");
         categories.add("Detekcja krawedzi");

@@ -42,7 +42,7 @@ public abstract class OperationGradientSpecialAbstract extends Operation {
     public OperationGradientSpecialAbstract() {
         super();
 
-        categories.add("LAB 4");
+        categories.add("LAB 3");
         categories.add("Sąsiedztwa");
         categories.add("Gradientowe");
         categories.add("Filtry górnoprzepustowe");
