@@ -309,7 +309,7 @@ public class OperationGradientEdgeConvolution extends Operation {
 
 
                 for(int b = 0; b< bands; ++b) {
-                        double newValue = 0;
+                        int newValue = 0;
 
                         for(int i=-1; i<2; i++) {
                             for(int j=-1; j<2; j++) {
@@ -317,7 +317,7 @@ public class OperationGradientEdgeConvolution extends Operation {
                             }
                         }
 
-                        pixel[b] = (int) Math.round(newValue / pixelHood.getDataSize());
+                        pixel[b] = newValue;
                 }
 
                 outImage.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
@@ -359,7 +359,7 @@ public class OperationGradientEdgeConvolution extends Operation {
                         }
                     }
 
-                    newPixel[b] = (float) (newValue / pixelHood.getDataSize());
+                    newPixel[b] = (float) (newValue);
                 } else {
                     newPixel[b] = pixel[b];
                 }

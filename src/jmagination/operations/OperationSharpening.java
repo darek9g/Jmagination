@@ -288,7 +288,7 @@ public class OperationSharpening extends Operation {
 
 
             for(int b = 0; b< bands; ++b) {
-                    double newValue = 0;
+                    int newValue = 0;
 
                 for (int i = -pixelHood.getVerticalBorderSize(); i <= pixelHood.getVerticalBorderSize(); i++) {
                     for (int j = -pixelHood.getHorizontalBorderSize(); j <= pixelHood.getHorizontalBorderSize(); j++) {
@@ -296,7 +296,7 @@ public class OperationSharpening extends Operation {
                         }
                     }
 
-                    pixel[b] = (int) Math.round(newValue / pixelHood.getDataSize());
+                    pixel[b] = newValue;
             }
 
             outImage.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
@@ -336,7 +336,7 @@ public class OperationSharpening extends Operation {
                         }
                     }
 
-                    newPixel[b] = (float) (newValue / pixelHood.getDataSize());
+                    newPixel[b] = (float) newValue;
                 } else {
                     newPixel[b] = pixel[b];
                 }

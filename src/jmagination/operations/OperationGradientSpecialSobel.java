@@ -104,8 +104,6 @@ public class OperationGradientSpecialSobel extends OperationGradientSpecialAbstr
             float[] pixel = pixelHood.getPixel(0,0);
             float[] newPixel = new float[3];
 
-//            System.out.printf("Pixel z %f %f %f\n", pixel[0], pixel[1], pixel[2]);
-
             for(int b = 0; b<3; b++) {
 
                 if(parameters.hsvChangeMatrix[b] == true) {
@@ -126,7 +124,6 @@ public class OperationGradientSpecialSobel extends OperationGradientSpecialAbstr
                 }
             }
 
-//            System.out.printf("NewPixel z %f %f %f\n", newPixel[0], newPixel[1], newPixel[2]);
             hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = newPixel;
 
         } while (imageCursor.forward());
