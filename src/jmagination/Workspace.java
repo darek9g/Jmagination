@@ -9,10 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 
-import jmagination.gui.GUIStyler;
-import jmagination.gui.ImagePanel2;
-import jmagination.gui.ImagePanel3;
-import jmagination.gui.PresenterTabOperations;
+import jmagination.gui.*;
 import jmagination.histogram.Histogram;
 import jmagination.operations.Operation;
 import jmagination.operations.OperationConvertToGray;
@@ -233,7 +230,7 @@ public class Workspace implements RunOperation {
     JButton jButtonSaveFile;
 
     BufferedImage histogramImage;
-    ImagePanel3 imagePanelCont = new ImagePanel3(null);
+    ImagePanel3 imagePanelCont = new ImagePanel4(null);
     ImagePanel3 histogramPanelCont = new ImagePanel3(null);
     SimpleHSVBufferedImage originalBufferedImage = null;
 

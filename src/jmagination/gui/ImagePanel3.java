@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 /**
  * Created by darek on 29.12.2016.
  */
-public class ImagePanel3 extends JPanel implements Scrollable, MouseMotionListener {
+public class ImagePanel3 extends JPanel implements Scrollable {
 
     BufferedImage img = null;
 
@@ -31,7 +31,6 @@ public class ImagePanel3 extends JPanel implements Scrollable, MouseMotionListen
 
         //Let the user scroll by dragging to outside the window.
         setAutoscrolls(true); //enable synthetic drag events
-        addMouseMotionListener(this); //handle mouse drags
     }
 
     public void setImage(BufferedImage bufferedImage) {
@@ -49,14 +48,6 @@ public class ImagePanel3 extends JPanel implements Scrollable, MouseMotionListen
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(img, 0, 0, null);
-    }
-
-    //Methods required by the MouseMotionListener interface:
-    public void mouseMoved(MouseEvent e) { }
-    public void mouseDragged(MouseEvent e) {
-        //The user is dragging us, so scroll!
-        Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
-        scrollRectToVisible(r);
     }
 
     public Dimension getPreferredSize() {
