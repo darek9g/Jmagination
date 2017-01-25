@@ -6,6 +6,8 @@ import util.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 import static jmagination.ConstantsInitializers.BR;
 import static jmagination.operations.OperationConstants.*;
@@ -15,7 +17,7 @@ import static jmagination.operations.OperationDuplicate.duplicateImageFunction;
  * Created by darek on 30.11.2016.
  */
 
-public class OperationGradientEdgeConvolution extends Operation {
+public class OperationGradientEdgeConvolution extends OperationWithMask {
 
     Parameters parameters;
 
@@ -24,7 +26,7 @@ public class OperationGradientEdgeConvolution extends Operation {
     JComboBox<String> directionSelect;
     JComboBox<String> edgeNeighborModeSelect;
     JComboBox<String> normalizationSelect;
-
+    ItemListener itemListener =  null;
 
 
     {
@@ -47,11 +49,22 @@ public class OperationGradientEdgeConvolution extends Operation {
         categories.add("Detekcja krawedzi");
         categories.add("Filtry górnoprzepustowe");
 
+        itemListener = new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    updateMask();
+                }
+            }
+        };
+
         maskSelect = new JComboBox<>(parameters.maskClassStrings);
         maskSelect.setSelectedIndex(parameters.maskClassIndex);
+        maskSelect.addItemListener(itemListener);
 
         directionSelect = new JComboBox<>(parameters.maskSubClassStrings);
         directionSelect.setSelectedIndex(parameters.maskSubClassIndex);
+        directionSelect.addItemListener(itemListener);
 
         edgeNeighborModeSelect = new JComboBox<>(parameters.edgeModeStrings);
         edgeNeighborModeSelect.setSelectedIndex(parameters.edgeModeIndex);
@@ -77,15 +90,24 @@ public class OperationGradientEdgeConvolution extends Operation {
             jCheckBoxValue.setSelected(false);
         }
 
+        updateMask();
     }
+
+    private void updateMask() {
+
+        parameters.maskClassIndex = maskSelect.getSelectedIndex();
+        parameters.maskSubClassIndex = directionSelect.getSelectedIndex();
+
+        fillMask(parameters.maskValues[parameters.maskClassIndex][parameters.maskSubClassIndex].length,
+                parameters.maskValues[parameters.maskClassIndex][parameters.maskSubClassIndex]);
+        jTableMask.repaint();
+    }
+
 
     @Override
     public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
-        parameters.maskClassIndex = maskSelect.getSelectedIndex();
-        parameters.maskSubClassIndex = directionSelect.getSelectedIndex();
-        parameters.setMask();
-
+        parameters.serializedMask = getMaskMatrix();
 
         parameters.edgeModeIndex = edgeNeighborModeSelect.getSelectedIndex();
         parameters.normalizationModeIndex = normalizationSelect.getSelectedIndex();
@@ -157,35 +179,45 @@ public class OperationGradientEdgeConvolution extends Operation {
         panel.add(maskSelect, c);
 
         c.gridx = 0;
-        c.gridy = 4;
+        c.gridy = 3;
         c.gridwidth = 2;
         JLabel jLabelDirectionSelect = new JLabel("Kierunek maski:");
         panel.add(jLabelDirectionSelect, c);
 
         c.gridx += c.gridwidth;
-        c.gridy = 4;
+        c.gridy = 3;
         c.gridwidth = 2;
         panel.add(directionSelect, c);
 
         c.gridx = 0;
-        c.gridy = 5;
-        c.gridwidth = 6;
+        c.gridy = 4;
+        c.gridwidth = 2;
+        panel.add(jLabelMaskaFiltru, c);
+
+        c.gridx += c.gridwidth;
+        c.gridy = 4;
+        c.gridwidth = 14;
+        panel.add(jTableMask, c);
+
+        c.gridx = 0;
+        c.gridy = 6;
+        c.gridwidth = 8;
         JLabel jLabelEdgeNeighborModeSelect = new JLabel("Sąsiedztwo pikseli brzegowch:");
         panel.add(jLabelEdgeNeighborModeSelect, c);
 
-        c.gridx += c.gridwidth;
-        c.gridy = 5;
+        c.gridx = 0;
+        c.gridy = 7;
         c.gridwidth = GridBagConstraints.REMAINDER;
         panel.add(edgeNeighborModeSelect, c);
 
         c.gridx = 0;
-        c.gridy = 7;
-        c.gridwidth = 6;
+        c.gridy = 8;
+        c.gridwidth = GridBagConstraints.REMAINDER;
         JLabel jLabelNormalizationSelect = new JLabel("Metoda normalizacji:");
         panel.add(jLabelNormalizationSelect, c);
 
-        c.gridx += c.gridwidth;
-        c.gridy = 7;
+        c.gridx = 0;
+        c.gridy = 9;
         c.gridwidth = GridBagConstraints.REMAINDER;
         panel.add(normalizationSelect, c);
 

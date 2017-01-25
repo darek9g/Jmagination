@@ -104,7 +104,6 @@ public class OperationSharpening extends OperationWithMask {
     @Override
     public SimpleHSVBufferedImage RunOperationFunction(SimpleHSVBufferedImage bufferedImage, Histogram histogram) {
 
-//        parameters.serializedMask = parameters.maskValues[maskSelect.getSelectedIndex()];
         parameters.serializedMask = getMaskMatrix();
         parameters.edgeModeIndex = edgeNeighborModeSelect.getSelectedIndex();
         parameters.normalizationModeIndex = normalizationSelect.getSelectedIndex();
