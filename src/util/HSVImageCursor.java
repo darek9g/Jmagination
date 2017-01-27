@@ -31,4 +31,9 @@ public class HSVImageCursor extends AbstractImageCursor<float[]> {
     protected float[] getPixelMaxPossibleValue() {
         return new float[]{1F, 1F, 1F};
     }
+
+    @Override
+    protected float[] getSkipValue() {
+        return new float[]{-1F, -1F, -1F};
+    }
 }

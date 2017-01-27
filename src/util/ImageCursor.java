@@ -49,4 +49,13 @@ public class ImageCursor extends AbstractImageCursor<int[]>{
         return ret;
     }
 
+    @Override
+    protected int[] getSkipValue() {
+        int[] ret = new int[raster.getNumBands()];
+        for(int i=0;i<raster.getNumBands();++i) {
+            ret[i] = -1;
+        }
+        return ret;
+    }
+
 }

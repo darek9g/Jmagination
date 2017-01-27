@@ -6,6 +6,7 @@ public abstract class AbstractImageCursor<E> {
     public static final int COMPLETE_MAX = 1;
     public static final int COMPLETE_COPY = 2;
     public static final int COMPLETE_SKIP = 4;
+    public static final int COMPLETE_MINUS = 5;
 
     public static final String[] edgeModeStrings = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
 
@@ -135,6 +136,8 @@ public abstract class AbstractImageCursor<E> {
                                 }
 
                                 switch(completeModeTest) {
+                                    case COMPLETE_MINUS:
+                                        pixelHood.setPixel(sx, sy, getSkipValue());
                                     case COMPLETE_SKIP:
                                         break;
                                     case COMPLETE_MIN:
@@ -187,5 +190,20 @@ public abstract class AbstractImageCursor<E> {
     protected abstract E getPixelMinPossibleValue();
 
     protected abstract E getPixelMaxPossibleValue();
+
+    protected abstract E getSkipValue();
+
+
+
+    public boolean itIsEdge(int hoodSize) {
+        return itIsEdge(posX, posY, width, height, hoodSize);
+    }
+
+    public static boolean itIsEdge(int posX, int posY, int width, int height, int hoodSize) {
+        if (posX < hoodSize || posY < hoodSize || posX >= width - hoodSize || posY >= height - hoodSize) {
+            return true;
+        }
+        return false;
+    }
 
 }
