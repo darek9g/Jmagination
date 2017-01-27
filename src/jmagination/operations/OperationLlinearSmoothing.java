@@ -10,6 +10,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.WritableRaster;
 import java.beans.PropertyChangeEvent;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 import static jmagination.ConstantsInitializers.BR;
@@ -23,9 +24,10 @@ public class OperationLlinearSmoothing extends Operation {
     JComboBox<String> methodSelect = new JComboBox<>(runModes);
     String[] neighborhoodSizesStrings = { "3x3", "5x5", "7x7", "9x9", "11x11", "13x13"};
     JComboBox<String> neighborhoodSizeSelect = new JComboBox<>(neighborhoodSizesStrings);
-    ItemListener itemListener =  null;
     JTableFilterMask jTableMask;
     JLabel jLabelMaskaFiltru = new JLabel("Maska filtru:");
+    String[] edgeModeStrings = {"Wartości brzegowe bez zmian", "Powielenie wartości brzegowych", "Operacja na istniejącym sąsiedzstwie"};
+    JComboBox<String> edgeNeighborModeSelect = new JComboBox<>(edgeModeStrings);
 
     public OperationLlinearSmoothing() {
         super();
@@ -33,7 +35,7 @@ public class OperationLlinearSmoothing extends Operation {
         categories.add("LAB 3");
         categories.add("Sąsiedztwa");
         categories.add("Filtry dolnoprzepustowe");
-        itemListener = new ItemListener() {
+        ItemListener itemListener = new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -48,6 +50,8 @@ public class OperationLlinearSmoothing extends Operation {
                 }
             }
         };
+        methodSelect.addItemListener(itemListener);
+        neighborhoodSizeSelect.addItemListener(itemListener);
         jTableMask = new JTableFilterMask(380);
         jTableMask.setMaxValue(255);
         jTableMask.setMinValue(0);
@@ -210,114 +214,57 @@ public class OperationLlinearSmoothing extends Operation {
         jTableMask.repaint();
     }
 
+    public void drawConfigurationPanelRow(JPanel jPanel, GridBagConstraints gridBagConstraints, Component... comps) {
+        gridBagConstraints.gridx =0;
+        int gridwidth = 16/comps.length;
+        gridBagConstraints.gridy++;
+        for (Component component : comps) {
+            gridBagConstraints.gridwidth = gridwidth;
+            jPanel.add(component, gridBagConstraints);
+            gridBagConstraints.gridx+=gridwidth;
+        }
+    }
+
     @Override
     public void drawConfigurationPanel(JPanel panel) {
         panel.setLayout(new GridBagLayout());
         panel.setBackground(ConstantsInitializers.GUI_DRAWING_BG_COLOR);
 
         GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(2,2, 2, 2);
+        c.insets = new Insets(2, 2, 2, 2);
         c.fill = GridBagConstraints.HORIZONTAL;
         c.weightx = 1.0f;
         c.weighty = 1.0f;
 
-        //tytuł
-        c.gridx =0;
-        c.gridy =0;
-        c.gridwidth = 16;
-        JLabel title = new JLabel("Wygładzenie");
-        panel.add(title, c);
-
-        // opis
-        c.gridx = 0;
-        c.gridy = 1;
-        c.gridwidth = 16;
-        JTextArea description = new JTextArea("Nadaje pikselom nowe wartości," + BR +"bliższe wartościom z najbliższego otoczenia");
-        description.setEditable(false);
-        panel.add(description, c);
-
-        // parametryzacja
-        c.gridx = 0;
-        c.gridy = 2;
-        c.gridwidth = 4;
-        JLabel jLabelMethodSelect = new JLabel("Metoda:");
-        panel.add(jLabelMethodSelect, c);
-
-        c.gridx = 4;
-        c.gridy = 2;
-        c.gridwidth = 4;
-        panel.add(methodSelect, c);
-        methodSelect.addItemListener(itemListener);
-
-        c.gridx = 8;
-        c.gridy = 2;
-        c.gridwidth = 4;
-        JLabel jLabelNeighborHoodSelect = new JLabel("Sąsiedztwo:");
-        panel.add(jLabelNeighborHoodSelect, c);
-
-        c.gridx = 12;
-        c.gridy = 2;
-        c.gridwidth = 4;
-        panel.add(neighborhoodSizeSelect, c);
-        neighborhoodSizeSelect.addItemListener(itemListener);
-
-        // wiersz sterowania wykonaniem
-        c.gridx = 0;
-        c.gridy = 4;
-        c.gridwidth = 4;
-        panel.add(jLabelHSVComponentsSelet, c);
-
-        c.gridx+= c.gridwidth;
-        c.gridy = 3;
-        c.gridwidth = 4;
-        panel.add(jRadioButtonColorModeRGB, c);
-
-        c.gridx+= c.gridwidth;
-        c.gridy = 3;
-        c.gridwidth = 4;
-        panel.add(jRadioButtonColorModeHSV, c);
-
-        c.gridx+= c.gridwidth;
-        c.gridy = 3;
-        c.gridwidth = 4;
-        panel.add(jButtonApply, c);
-
-        // wiersz wyboru HSV
-        c.gridx = 0;
-        c.gridy = 4;
-        c.gridwidth = 4;
-        panel.add(jCheckBoxHue, c);
-
-        c.gridx += c.gridwidth;
-        c.gridy = 4;
-        c.gridwidth = 4;
-        panel.add(jCheckBoxHue, c);
-
-        c.gridx += c.gridwidth;
-        c.gridy = 4;
-        c.gridwidth = 4;
-        panel.add(jCheckBoxSaturation, c);
-
-        c.gridx += c.gridwidth;
-        c.gridy = 4;
-        c.gridwidth = 4;
-        panel.add(jCheckBoxValue, c);
-
-        c.gridx = 0;
-        c.gridy = 5;
-        c.gridwidth = 8;
-        panel.add(jLabelMaskaFiltru, c);
-
-        c.gridx = 0;
-        c.gridy = 6;
-        c.gridwidth = 16;
-        panel.add(jTableMask, c);
+        drawConfigurationPanelRow(panel, c, new JLabel("Wygładzenie"));
+        drawConfigurationPanelRow(panel, c,
+                new JTextArea("Nadaje pikselom nowe wartości," + BR + "bliższe wartościom z najbliższego otoczenia"));
+        drawConfigurationPanelRow(panel, c,
+                new JLabel("Metoda:"),
+                methodSelect,
+                new JLabel("Sąsiedztwo:"),
+                neighborhoodSizeSelect);
+        drawConfigurationPanelRow(panel, c,
+                new JLabel("Tryb:"),
+                jRadioButtonColorModeHSV,
+                jRadioButtonColorModeRGB,
+                jButtonApply);
+        drawConfigurationPanelRow(panel, c,
+                jLabelHSVComponentsSelet,
+                jCheckBoxHue,
+                jCheckBoxSaturation,
+                jCheckBoxValue);
+//        drawConfigurationPanelRow(panel, c, new JLabel("Metoda operacji na pikselach brzegowych:"));
+//        drawConfigurationPanelRow(panel, c, edgeNeighborModeSelect);
+        drawConfigurationPanelRow(panel, c, new JLabel("Edytowalna maska wygładzania:"));
+        drawConfigurationPanelRow(panel, c, jTableMask);
 
         this.jCheckBoxSaturation.setSelected(true);
         this.jCheckBoxValue.setSelected(true);
         this.hsvSpecificModeAllowed = true;
         this.hsvModeAllowed = true;
         configureColorModeControls();
+
     }
 
     @Override
