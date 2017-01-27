@@ -20,6 +20,25 @@ public class JTableFilterMask extends JTable {
     int maxValue = Integer.MAX_VALUE;
     int minValue = Integer.MIN_VALUE;
 
+    public enum EdgeMode {
+        NO_CHANGE("Wartości brzegowe bez zmian", 0),
+        REPLICATE("Powielenie wartości brzegowych", 1),
+        EXISTS_NEIGHBORHOOD("Operacja na istniejącym sąsiedzstwie", 2);
+
+        String name;
+        int index;
+
+        EdgeMode(String name, int index) {
+            this.name = name;
+            this.index = index;
+        }
+
+        @Override
+        public String toString(){
+            return name;
+        }
+    }
+
     ArrayList<ActionListener> actionListeners = new ArrayList<>();
     private int actionEventId = 0;
 
@@ -65,6 +84,39 @@ public class JTableFilterMask extends JTable {
             }
         }
         return matrix;
+    }
+
+    public int[][] getMaskMatrixEdgeMode(int posX, int posY, int width, int height, EdgeMode edgeMode ) {
+        if(EdgeMode.REPLICATE.equals(edgeMode) || !itIsEdge(posX, posY, width, height)){
+            return getMaskMatrix();
+        }
+        int pixelHood = (getColumnCount()-1)/2;
+        int[][] matrix = new int[getColumnCount()][getRowCount()];
+        for (int i = 0; i < getColumnCount(); i++) {
+            for (int j = 0; j < getRowCount(); j++) {
+                switch (edgeMode) {
+                    case EXISTS_NEIGHBORHOOD:
+                        if (i + posX < pixelHood || j + posY < pixelHood || i + posX >= width + pixelHood || j + posY >= height + pixelHood) {
+                            matrix[i][j] = 0;
+                        } else {
+                            matrix[i][j] = (Integer) getValueAt(i, j);
+                        }
+                        break;
+                    case NO_CHANGE:
+                        if(i == pixelHood && j == pixelHood){
+                            matrix[i][j] = 1;
+                        } else {
+                            matrix[i][j] = 0;
+                        }
+                }
+
+            }
+        }
+        return matrix;
+    }
+
+    private boolean itIsEdge(int posX, int posY, int width, int height) {
+        return ImageCursor.itIsEdge(posX, posY, width, height, getColumnCount() - 1 / 2);
     }
 
     protected void resizeTable(int maxValue) {

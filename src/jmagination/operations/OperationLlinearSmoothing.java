@@ -9,8 +9,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.WritableRaster;
-import java.beans.PropertyChangeEvent;
-import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static jmagination.ConstantsInitializers.BR;
@@ -26,8 +25,7 @@ public class OperationLlinearSmoothing extends Operation {
     JComboBox<String> neighborhoodSizeSelect = new JComboBox<>(neighborhoodSizesStrings);
     JTableFilterMask jTableMask;
     JLabel jLabelMaskaFiltru = new JLabel("Maska filtru:");
-    String[] edgeModeStrings = {"Wartości brzegowe bez zmian", "Powielenie wartości brzegowych", "Operacja na istniejącym sąsiedzstwie"};
-    JComboBox<String> edgeNeighborModeSelect = new JComboBox<>(edgeModeStrings);
+    JComboBox<JTableFilterMask.EdgeMode> edgeNeighborModeSelect = new JComboBox<>(JTableFilterMask.EdgeMode.values());
 
     public OperationLlinearSmoothing() {
         super();
@@ -78,12 +76,35 @@ public class OperationLlinearSmoothing extends Operation {
         HSVImageCursor imageCursor = new HSVImageCursor(bufferedImage.getHsv(), width, height);
 
         do {
-            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
-            float[] pixel;
+            float[] pixel = null;
             if (methodSelect.getSelectedIndex() == 1) {
-                pixel = medianSmoothHSV(pixelHood);
+                imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+                switch (edgeNeighborModeSelect.getItemAt(edgeNeighborModeSelect.getSelectedIndex())) {
+                    case EXISTS_NEIGHBORHOOD:
+                        imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_MINUS);
+                        pixel = medianSmoothHSV(pixelHood, hsvChangeMatrix);
+                        break;
+                    case NO_CHANGE:
+                        if(imageCursor.itIsEdge(hoodSize)) {
+                            pixel = bufferedImage.getHsv()[imageCursor.getPosX()][ imageCursor.getPosY()];
+                            break;
+                        } // jeśli piksel ma pełne sądziedzstwo, to robimy to samo co przy REPLICATE
+                    case REPLICATE:
+                        imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+                        pixel = medianSmoothHSV(pixelHood, hsvChangeMatrix);
+                        break;
+                }
             } else {
-                pixel = smoothHSVPixel(pixelHood, jTableMask.getMaskMatrix(), hsvChangeMatrix);
+                imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+                pixel = smoothHSVPixel(
+                        pixelHood,
+                        jTableMask.getMaskMatrixEdgeMode(
+                                imageCursor.getPosX(),
+                                imageCursor.getPosY(),
+                                width,
+                                height,
+                                edgeNeighborModeSelect.getItemAt(edgeNeighborModeSelect.getSelectedIndex())),
+                        hsvChangeMatrix);
             }
             hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
 
@@ -103,12 +124,35 @@ public class OperationLlinearSmoothing extends Operation {
         ImageCursor imageCursor = new ImageCursor(bufferedImage);
 
         do {
-            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
-            int[] pixel;
+            int[] pixel = null;
             if (methodSelect.getSelectedIndex() == 1) {
-                pixel = medianSmooth(outRaster.getNumBands(), pixelHood);
+                switch (edgeNeighborModeSelect.getItemAt(edgeNeighborModeSelect.getSelectedIndex())) {
+                    case EXISTS_NEIGHBORHOOD:
+                        imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_MINUS);
+                        pixel = medianSmooth(outRaster.getNumBands(), pixelHood);
+                        break;
+                    case NO_CHANGE:
+                        if(imageCursor.itIsEdge(hoodSize)) {
+                            pixel = raster.getPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
+                            break;
+                        } // jeśli piksel ma pełne sądziedzstwo, to robimy to samo co przy REPLICATE
+                    case REPLICATE:
+                        imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+                        pixel = medianSmooth(outRaster.getNumBands(), pixelHood);
+                        break;
+                }
+
             } else {
-                pixel = smoothRGBPixel(outRaster.getNumBands(), pixelHood, jTableMask.getMaskMatrix());
+                imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+                pixel = smoothRGBPixel(
+                        outRaster.getNumBands(),
+                        pixelHood,
+                        jTableMask.getMaskMatrixEdgeMode(
+                                imageCursor.getPosX(),
+                                imageCursor.getPosY(),
+                                width,
+                                height,
+                                edgeNeighborModeSelect.getItemAt(edgeNeighborModeSelect.getSelectedIndex())));
             }
             outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
 
@@ -164,25 +208,57 @@ public class OperationLlinearSmoothing extends Operation {
     private int[] medianSmooth(int numBands, PixelHood<int[]> pixelHood) {
         int[] newPixel = new int[numBands];
         for (int band = 0; band < numBands; band++) {
-            int[] values = new int[pixelHood.getDataSize()];
-            for (int i = 0; i < pixelHood.getDataSize(); i++) {
-                values[i] = pixelHood.getPixel(i)[band];
-            }
+            int[] values = getBandValuesWithOutZeroValue(pixelHood, band);
             Arrays.sort(values);
-            newPixel[band] = values[(pixelHood.getDataSize()-1)/2];
+            newPixel[band] = values[(values.length-1)/2];
         }
         return newPixel;
     }
 
-    private float[] medianSmoothHSV(PixelHood<float[]> pixelHood) {
+    private int[] getBandValuesWithOutZeroValue(PixelHood<int[]> pixelHood, int band) {
+        java.util.List<Integer> values = new ArrayList<>();
+        for (int i = 0; i < pixelHood.getDataSize(); i++) {
+            if(pixelHood.getPixel(i)[band] != -1) {
+                values.add(pixelHood.getPixel(i)[band]);
+            }
+        }
+        return toIntArray(values);
+    }
+
+    int[] toIntArray(java.util.List<Integer> list)  {
+        int[] ret = new int[list.size()];
+        int i = 0;
+        for (Integer e : list)
+            ret[i++] = e.intValue();
+        return ret;
+    }
+
+
+
+    float[] toFloatArray(java.util.List<Float> list)  {
+        float[] ret = new float[list.size()];
+        int i = 0;
+        for (Float e : list)
+            ret[i++] = e.floatValue();
+        return ret;
+    }
+
+    private float[] medianSmoothHSV(PixelHood<float[]> pixelHood, boolean[] hsvChooseMatrix) {
         float[] newPixel = new float[3];
         for (int band = 0; band < 3; band++) {
-            float[] values = new float[pixelHood.getDataSize()];
-            for (int i = 0; i < pixelHood.getDataSize(); i++) {
-                values[i] = pixelHood.getPixel(i)[band];
+            if(hsvChooseMatrix[band]) {
+                java.util.List<Float> valueList = new ArrayList<>();
+                for (int i = 0; i < pixelHood.getDataSize(); i++) {
+                    if (! new Float(-1F).equals(pixelHood.getPixel(i)[band])) {
+                        valueList.add(pixelHood.getPixel(i)[band]);
+                    }
+                }
+                float[] values = toFloatArray(valueList);
+                Arrays.sort(values);
+                newPixel[band] = values[(valueList.size() - 1) / 2];
+            } else {
+                newPixel[band] = pixelHood.getPixel(0,0)[band];
             }
-            Arrays.sort(values);
-            newPixel[band] = values[(pixelHood.getDataSize()-1)/2];
         }
         return newPixel;
     }
@@ -254,8 +330,8 @@ public class OperationLlinearSmoothing extends Operation {
                 jCheckBoxHue,
                 jCheckBoxSaturation,
                 jCheckBoxValue);
-//        drawConfigurationPanelRow(panel, c, new JLabel("Metoda operacji na pikselach brzegowych:"));
-//        drawConfigurationPanelRow(panel, c, edgeNeighborModeSelect);
+        drawConfigurationPanelRow(panel, c, new JLabel("Metoda operacji na pikselach brzegowych:"));
+        drawConfigurationPanelRow(panel, c, edgeNeighborModeSelect);
         drawConfigurationPanelRow(panel, c, new JLabel("Edytowalna maska wygładzania:"));
         drawConfigurationPanelRow(panel, c, jTableMask);
 
