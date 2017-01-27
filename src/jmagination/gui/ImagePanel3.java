@@ -1,23 +1,22 @@
 package jmagination.gui;
 
 import jmagination.ConstantsInitializers;
+import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
+
 
 /**
  * Created by darek on 29.12.2016.
  */
 public class ImagePanel3 extends JPanel implements Scrollable {
 
-    BufferedImage img = null;
+    SimpleHSVBufferedImage img = null;
 
     private int maxUnitIncrement = 1;
 
-    public ImagePanel3(BufferedImage img) {
+    public ImagePanel3(SimpleHSVBufferedImage img) {
         super();
         this.img = img;
 
@@ -33,7 +32,7 @@ public class ImagePanel3 extends JPanel implements Scrollable {
         setAutoscrolls(true); //enable synthetic drag events
     }
 
-    public void setImage(BufferedImage bufferedImage) {
+    public void setImage(SimpleHSVBufferedImage bufferedImage) {
         img = bufferedImage;
         Dimension dim = new Dimension(img.getWidth(), img.getHeight());
         setPreferredSize(dim);
@@ -41,7 +40,7 @@ public class ImagePanel3 extends JPanel implements Scrollable {
         repaint();
     }
 
-    public BufferedImage getImage() {
+    public SimpleHSVBufferedImage getImage() {
         return img;
     }
 

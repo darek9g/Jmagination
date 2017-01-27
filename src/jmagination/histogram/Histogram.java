@@ -83,7 +83,7 @@ public class Histogram {
         } while (imageCursor.forward());
     }
 
-    public BufferedImage createImg(String model, Dimension dimension) {
+    public SimpleHSVBufferedImage createImg(String model, Dimension dimension) {
 
         int mariginLeft = ConstantsInitializers.GUI_CHART_MARIGIN_LEFT_SIZE_PX;
         int mariginRight = ConstantsInitializers.GUI_CHART_MARIGIN_RIGHT_SIZE_PX;
@@ -103,10 +103,10 @@ public class Histogram {
         }
     }
 
-    public BufferedImage drawImg(int histImageWidth, int histImageHeight, int mariginLeft, int mariginRight,int mariginTop, int mariginBottom) {
+    public SimpleHSVBufferedImage drawImg(int histImageWidth, int histImageHeight, int mariginLeft, int mariginRight,int mariginTop, int mariginBottom) {
 
 
-        BufferedImage hist = new BufferedImage(histImageWidth,histImageHeight,BufferedImage.TYPE_INT_ARGB);
+        SimpleHSVBufferedImage hist = new SimpleHSVBufferedImage(histImageWidth,histImageHeight,BufferedImage.TYPE_INT_ARGB);
         Graphics hgr = hist.createGraphics();
 
         int chartAreaWidth = histImageWidth - ( mariginLeft + mariginRight );
@@ -233,12 +233,12 @@ public class Histogram {
     }
 
 
-    public BufferedImage drawImg2(int histImageWidth, int histImageHeight, int mariginLeft, int mariginRight,int mariginTop, int mariginBottom) {
+    public SimpleHSVBufferedImage drawImg2(int histImageWidth, int histImageHeight, int mariginLeft, int mariginRight,int mariginTop, int mariginBottom) {
 
         int chartAreaWidth = histImageWidth - ( mariginLeft + mariginRight );
         int chartAreaHeight = histImageHeight - ( mariginTop + mariginBottom);
 
-        BufferedImage hist = new BufferedImage(histImageWidth,histImageHeight,BufferedImage.TYPE_INT_ARGB);
+        SimpleHSVBufferedImage hist = new SimpleHSVBufferedImage(histImageWidth,histImageHeight,BufferedImage.TYPE_INT_ARGB);
         Graphics hgr = hist.createGraphics();
 
         // draw background and frame

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import jmagination.gui.*;
 import jmagination.histogram.Histogram;
+import jmagination.histogram.LineProfile;
 import jmagination.operations.Operation;
 import jmagination.operations.OperationConvertToGray;
 import jmagination.operations.OperationDuplicate;
@@ -45,7 +46,7 @@ public class Workspace implements RunOperation {
     JPanel imagePanelSouth;
     JPanel histogramPanel;
     JPanel histogramPanelNorth;
-    JScrollPane histogramPanelCentral;
+    JTabbedPane histogramPanelCentral;
     JPanel histogramPanelSouth;
     JPanel operationsPanel;
     JPanel operationsPanelNorth;
@@ -229,10 +230,15 @@ public class Workspace implements RunOperation {
     JButton jButtonOpenGrayFile;
     JButton jButtonSaveFile;
 
-    BufferedImage histogramImage;
-    ImagePanel3 imagePanelCont = new ImagePanel4(null);
+    SimpleHSVBufferedImage histogramImage;
+
+    ImagePanel4 imagePanelCont = new ImagePanel4(null);
     ImagePanel3 histogramPanelCont = new ImagePanel3(null);
+    ImagePanel3 lineProfileRBGPanelCont = new ImagePanel3(null);
+    ImagePanel3 lineProfileHSVPanelCont = new ImagePanel3(null);
     SimpleHSVBufferedImage originalBufferedImage = null;
+
+    LineProfile lineProfile = new LineProfile(imagePanelCont);
 
 
     // statyczna nazwa pliku do zapisu
@@ -249,9 +255,15 @@ public class Workspace implements RunOperation {
         setupJButtonSaveFile();
 
         JTree imageManagerTree = imageManager.getTree();
+
+        lineProfile.addDataDrawer(lineProfileRBGPanelCont, new int[]{0,1,2}, LineProfile.RGB_MODE);
+        lineProfile.addDataDrawer(lineProfileHSVPanelCont, new int[]{3,4,5}, LineProfile.HSV_MODE);
         buildWindow(imageManagerTree);
 
-
+        Color color = imagePanelCont.getBackground();
+        imagePanelCont.setFakeImage(crateAltImage(imagePanelCont.getSize(), "Nie otwarto jeszcze żadnego pliku", color));
+        color = histogramPanelCont.getBackground();
+        histogramPanelCont.setImage(crateAltImage(imagePanelCont.getSize(), "Dane nie dostępne", color));
 
 
         Workspace workspace = this;
@@ -346,10 +358,11 @@ public class Workspace implements RunOperation {
         originalBufferedImage = OperationDuplicate.duplicateImageFunction(this.srcImageServer.getImg());
         imagePanelCont.setImage(originalBufferedImage);
 
-//        managerPanelSouth.setImage(srcImageServer.imgPreview);
-
         histogramImage = srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
         histogramPanelCont.setImage(histogramImage);
+
+        lineProfile.update(histogramPanelCentral);
+
 
         jButtonSaveFile.setEnabled(true);
 
@@ -579,8 +592,12 @@ public class Workspace implements RunOperation {
         imagePanelNorth = new JPanel();
         imagePanelCentral = new JScrollPane(imagePanelCont);
         imagePanelSouth = new JPanel();
-        histogramPanelNorth = new JPanel();
-        histogramPanelCentral = new JScrollPane(histogramPanelCont);
+//        histogramPanelNorth = new JPanel();
+        histogramPanelCentral = new JTabbedPane();
+
+        histogramPanelCentral.addTab("Histogram", new JScrollPane(histogramPanelCont));
+        histogramPanelCentral.addTab("Linia profilu RGB", new JScrollPane(lineProfileRBGPanelCont));
+        histogramPanelCentral.addTab("Linia profilu HSV", new JScrollPane(lineProfileHSVPanelCont));
         histogramPanelSouth = new JPanel();
         operationsPanelNorth = new JPanel();
         operationsPanelCentralPane = new PresenterTabOperations(Operations.registerOperations(), this);
@@ -594,7 +611,7 @@ public class Workspace implements RunOperation {
         imagePanelNorth.setMinimumSize(imagePanelNorthDimension);
         imagePanelCentral.setMinimumSize(imagePanelCentralDimension);
         imagePanelSouth.setMinimumSize(imagePanelSouthDimension);
-        histogramPanelNorth.setMinimumSize(histogramPanelNorthDimension);
+//        histogramPanelNorth.setMinimumSize(histogramPanelNorthDimension);
         histogramPanelCentral.setMinimumSize(histogramPanelCentralDimension);
         histogramPanelSouth.setMinimumSize(histogramPanelSouthDimension);
         operationsPanelNorth.setMinimumSize(operationsPanelNorthDimension);
@@ -610,7 +627,7 @@ public class Workspace implements RunOperation {
         imagePanel.add(imagePanelCentral, BorderLayout.CENTER);
         imagePanel.add(imagePanelSouth, BorderLayout.SOUTH);
 
-        histogramPanel.add(histogramPanelNorth, BorderLayout.NORTH);
+//        histogramPanel.add(histogramPanelNorth, BorderLayout.NORTH);
         histogramPanel.add(histogramPanelCentral, BorderLayout.CENTER);
         histogramPanel.add(histogramPanelSouth, BorderLayout.SOUTH);
 
@@ -625,9 +642,9 @@ public class Workspace implements RunOperation {
         imagePanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         imagePanelNorth.add(imagePanelLabel);
 
-        JLabel histogramPanelLabel = new JLabel("Histogram");
+/*        JLabel histogramPanelLabel = new JLabel("Histogram");
         histogramPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        histogramPanelNorth.add(histogramPanelLabel);
+        histogramPanelNorth.add(histogramPanelLabel);*/
 
         JLabel operationsPanelLabel = new JLabel("Operacje");
         operationsPanelLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -685,9 +702,20 @@ public class Workspace implements RunOperation {
         //window.setPreferredSize(new Dimension(windowWidth, windowHeight));
         window.pack();
         window.setVisible(true);
+
+        histogramPanelCentral.addChangeListener(lineProfile);
     }
 
-
+    public static SimpleHSVBufferedImage crateAltImage(Dimension dimension, String message, Color color) {
+        SimpleHSVBufferedImage img = new SimpleHSVBufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_BYTE_GRAY);
+        Graphics graphics = img.getGraphics();
+        graphics.setColor(color);
+        graphics.fillRect(0, 0, dimension.width, dimension.height);
+        graphics.setColor(Color.BLACK);
+        graphics.drawString(message, 0, graphics.getFont().getSize());
+        graphics.dispose();
+        return img;
+    }
 
     @Override
     public void runOperation(Operation operation) {
