@@ -295,7 +295,7 @@ public class ImagePanel4 extends ImagePanel3 implements MouseListener, MouseMoti
             try {
                 img.getRaster().getPixel(imgX, imgY, pixel);
             } catch (Exception e) {
-                System.out.println("Pixele spoza obrazu x: " + imgX + " y':" + imgY );
+                System.out.println("Pixele spoza obrazu x: " + imgX + " y:" + imgY );
                 throw new ArrayIndexOutOfBoundsException();
             }
             for (int b = 0; b < pixel.length; b++) {
@@ -469,7 +469,10 @@ public class ImagePanel4 extends ImagePanel3 implements MouseListener, MouseMoti
     }
 
     public void fireActionEvent() {
-        readhandles = new ArrayList<>(handles);
+        readhandles = new ArrayList<>();
+        for(Point p: handles) {
+            readhandles.add(new Point(xToPict(p.x), yToPict(p.y)));
+        }
 
         for(ActionListener actionListener: actionListeners) {
             actionListener.actionPerformed(new ActionEvent((Object) this, actionEventId++, "User interacted" ));

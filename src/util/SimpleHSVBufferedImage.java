@@ -195,6 +195,7 @@ public class SimpleHSVBufferedImage extends BufferedImage {
         }
 
         opDataBufferDirty = false;
+        fillHsv();
     }
 
     public void normalize() {

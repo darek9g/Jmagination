@@ -4,6 +4,7 @@ import jmagination.ConstantsInitializers;
 import jmagination.gui.ImagePanel2;
 import jmagination.gui.ImagePanel3;
 import jmagination.gui.ImagePanel4;
+import util.MaskGenerator;
 import util.SimpleHSVBufferedImage;
 
 import javax.swing.*;
@@ -12,6 +13,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,7 +65,8 @@ public class LineProfile implements ChangeListener, ActionListener{
     public SimpleHSVBufferedImage drawImg(ImagePanel3 dataDrawer, LineProfileData data, int[] selectedChannels, int mode) {
         ArrayList<Integer> verifiedChannels = new ArrayList<>();
 
-        int minImageWidth = dataDrawer.getWidth();
+//        int minImageWidth = dataDrawer.getWidth();
+        int minImageWidth = 50;
 
         int yScale = 1;
         int minYValue = 0;
@@ -79,7 +82,7 @@ public class LineProfile implements ChangeListener, ActionListener{
                 yScale = 1;
                 maxYValue = 255;
                 minLevel = 0.0f;
-                maxLevel = 1.0f;
+                maxLevel = 255;
                 break;
             case HSV_MODE:
                 yScale = 100;
@@ -147,21 +150,23 @@ public class LineProfile implements ChangeListener, ActionListener{
             int levelTickY = mariginTop + chartAreaHeight;
             int levelTickSize = hgr.getFont().getSize() / 2;
 
-            int divPoints = ConstantsInitializers.GUI_CHART_X_GRID_POINTS;
+            int divPoints = 2;
             int valueDelta = (maxXValue - minXValue) / (divPoints + 1);
             int drawingDelta = (maxDrawingLevel - minDrawingLevel) / (divPoints + 1);
 
             hgr.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
 
             for (int step = 0; step <= divPoints; ++step) {
-                hgr.drawString(String.valueOf(minLevel/yScale + step * valueDelta/yScale), levelLabelX + 1, levelLabelY);
+                String s = String.valueOf(minXValue + step * valueDelta);
+
+                hgr.drawString(s,levelLabelX + 1, levelLabelY);
                 hgr.drawRect(levelLabelX, levelTickY, 1, levelTickSize);
 
                 levelLabelX += drawingDelta;
             }
 
             //last label
-            hgr.drawString(String.valueOf(maxLevel), maxDrawingLevel + 1, levelLabelY);
+            hgr.drawString(String.valueOf(maxXValue), maxDrawingLevel + 1, levelLabelY);
             hgr.drawRect(maxDrawingLevel, levelTickY, 1, levelTickSize);
         }
 
@@ -176,21 +181,43 @@ public class LineProfile implements ChangeListener, ActionListener{
             int levelTickX = mariginLeft + chartAreaWidth;
             int levelTickSize = hgr.getFont().getSize() / 2;
 
-            int divPoints = ConstantsInitializers.GUI_CHART_Y_GRID_POINTS;
+            int divPoints = 2;
             int valueDelta = (maxYValue - minYValue) / (divPoints + 1);
             int drawingDelta = (maxDrawingLevel - minDrawingLevel) / (divPoints + 1);
 
             hgr.setColor(ConstantsInitializers.GUI_CHARTS_CONSTR_COLOR);
 
             for (int step = 0; step <= divPoints; ++step) {
-                hgr.drawString(String.valueOf(minLevel/yScale + step * valueDelta/yScale), levelLabelX, levelLabelY + 1);
+                String s;
+                switch (mode) {
+                    case RGB_MODE:
+                        s = String.valueOf((int) (minLevel/yScale + step * valueDelta/yScale));
+                        break;
+                    case HSV_MODE:
+                        s = String.valueOf( (float)((minLevel + 0.0)/yScale + (step * valueDelta + 0.0)/yScale));
+                        break;
+                    default:
+                        s = String.valueOf(minLevel/yScale + step * valueDelta/yScale);
+                }
+                hgr.drawString(s, levelLabelX, levelLabelY + 1);
                 hgr.drawRect(levelTickX, levelLabelY, levelTickSize, 1);
 
                 levelLabelY += drawingDelta;
             }
 
             //last label
-            hgr.drawString(String.valueOf(maxLevel), levelLabelX, maxDrawingLevel + 1);
+            String s;
+            switch (mode) {
+                case RGB_MODE:
+                    s = String.valueOf((int) (maxLevel));
+                    break;
+                case HSV_MODE:
+                    s = String.valueOf( (float)(maxLevel));
+                    break;
+                default:
+                    s = String.valueOf(maxLevel);
+            }
+            hgr.drawString(s, levelLabelX, maxDrawingLevel + 1);
             hgr.drawRect(levelTickX, maxDrawingLevel, levelTickSize, 1);
         }
 
@@ -201,7 +228,9 @@ public class LineProfile implements ChangeListener, ActionListener{
 
             ArrayList<ColorStrip> bar = new ArrayList<>();
 
+            int channelsDrawed = 0;
             for (int ch : verifiedChannels) {
+                channelsDrawed++;
                 switch (ch) {
                     case 0:
                         if (data.channels > 1) {
@@ -228,6 +257,19 @@ public class LineProfile implements ChangeListener, ActionListener{
                     default:
                 }
                 hgr.setColor(channelColor);
+                if(level==0) {
+                    String s = data.channelNames[ch];
+                    Rectangle2D stringBounds = hgr.getFontMetrics().getStringBounds(s, hgr);
+                    int fontDescent = hgr.getFontMetrics().getDescent();
+                    int xLegend = imageWidth - (int)stringBounds.getWidth() - 10;
+                    int yLegend =  (channelsDrawed) * (int)stringBounds.getHeight();
+                    hgr.fillRect(xLegend, yLegend - (int)stringBounds.getHeight()  + fontDescent, (int)stringBounds.getWidth(), (int)stringBounds.getHeight());
+                    hgr.setColor(new Color(238, 238, 238));
+                    hgr.drawString(s, xLegend, yLegend);
+
+                }
+                hgr.setColor(channelColor);
+//                System.out.printf("%d %f %d\n", level, data.data.get(level).channelData[ch], Math.round(data.data.get(level).channelData[ch]*yScale));
                 bar.add(new ColorStrip(Math.round(data.data.get(level).channelData[ch]*yScale), channelColor));
             }
 
@@ -237,7 +279,8 @@ public class LineProfile implements ChangeListener, ActionListener{
             int barWidth = 1;
 
             for (ColorStrip cs : bar) {
-                int barHeight = (int) (cs.size * yScale);
+//                int barHeight = (int) (cs.size * yScale);
+                int barHeight = (int) (cs.size);
                 int barX = mariginLeft + level;
                 int barY = mariginTop + chartAreaHeight - barHeight;
 

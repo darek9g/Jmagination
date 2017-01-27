@@ -6,6 +6,7 @@ import util.PixelHood;
 import util.SimpleHSVBufferedImage;
 
 import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
@@ -329,19 +330,37 @@ public class Histogram {
 
             ArrayList<ColorStrip> bar = new ArrayList<>();
 
+            int channelsDrawed = 0;
             for(int ch=0; ch<data.size(); ++ch) {
+                String channelName = "Gray";
+                channelsDrawed++;
                 switch (ch) {
                     case 0:
                         if(data.size()>1) {
                             channelColor = new Color(200, 0, 0, 255);
+                            channelName = "Red";
                         }
                         break;
                     case 1:
                         channelColor = new Color(0, 200, 0, 255);
+                        channelName = "Green";
                         break;
                     case 2:
                         channelColor = new Color(0, 0, 200, 255);
+                        channelName = "Blue";
                         break;
+                }
+                hgr.setColor(channelColor);
+                if(level==0) {
+                    String s = channelName;
+                    Rectangle2D stringBounds = hgr.getFontMetrics().getStringBounds(s, hgr);
+                    int fontDescent = hgr.getFontMetrics().getDescent();
+                    int xLegend = histImageWidth - (int)stringBounds.getWidth() - 10;
+                    int yLegend =  (channelsDrawed) * (int)stringBounds.getHeight();
+                    hgr.fillRect(xLegend, yLegend - (int)stringBounds.getHeight()  + fontDescent, (int)stringBounds.getWidth(), (int)stringBounds.getHeight());
+                    hgr.setColor(new Color(238, 238, 238));
+                    hgr.drawString(s, xLegend, yLegend);
+
                 }
                 hgr.setColor(channelColor);
                 bar.add(new ColorStrip(data.get(ch)[level], channelColor));
