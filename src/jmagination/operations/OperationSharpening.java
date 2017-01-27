@@ -282,6 +282,15 @@ public class OperationSharpening extends Operation {
         PixelHood<int[]> pixelHood = new PixelHood<>(pixelMask.getHorizontalBorderSize(), pixelMask.getVerticalBorderSize(), new int[bands]);
 
         do {
+            if(parameters.edgeModeIndex == ImageCursor.COMPLETE_SKIP) {
+                int x = imageCursor.getPosX();
+                int y = imageCursor.getPosY();
+
+                if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                    copyRGBPixel(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY());
+                    continue;
+                }
+            }
             imageCursor.fillPixelHood(pixelHood, 0, parameters.edgeModeIndex);
 
             int[] pixel = pixelHood.getPixel(0,0);
@@ -321,9 +330,19 @@ public class OperationSharpening extends Operation {
         PixelHood<float[]> pixelHood = new PixelHood<>(pixelMask.getHorizontalBorderSize(), pixelMask.getVerticalBorderSize(), new float[3]);
 
         do {
-            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+
+            imageCursor.fillPixelHood(pixelHood, parameters.edgeModeIndex);
             float[] pixel = pixelHood.getPixel(0,0);
             float[] newPixel = new float[3];
+            if(parameters.edgeModeIndex == ImageCursor.COMPLETE_SKIP) {
+                int x = imageCursor.getPosX();
+                int y = imageCursor.getPosY();
+
+                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight()) {
+                    hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
+                    continue;
+                }
+            }
 
             for(int b = 0; b<3; b++) {
 
@@ -356,7 +375,7 @@ public class OperationSharpening extends Operation {
         public static final String[] maskStrings = MASKS_NAMES_SHARPENING;
         public static final int[][][] maskValues = MASKS_SHARPENING;
 
-        public static final String[] edgeModeStrings = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
+        public static final String[] edgeModeStrings = ImageCursor.edgeModeStrings;
 
         public static final String[] normalizationModeStrings = SimpleHSVBufferedImage.normalizationModeStrings;
 

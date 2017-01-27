@@ -247,7 +247,7 @@ public abstract class OperationGradientSpecialAbstract extends Operation {
 
     protected static class Parameters {
 
-        public static final String[] edgeModeStrings = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
+        public static final String[] edgeModeStrings = ImageCursor.edgeModeStrings;
 
         public static final String[] normalizationModeStrings = SimpleHSVBufferedImage.normalizationModeStrings;
 

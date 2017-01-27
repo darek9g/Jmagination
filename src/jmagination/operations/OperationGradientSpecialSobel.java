@@ -56,6 +56,15 @@ public class OperationGradientSpecialSobel extends OperationGradientSpecialAbstr
             PixelHood<int[]> pixelHood = new PixelHood<>(1, 1, new int[bands]);
 
             do {
+                if(parameters.edgeModeIndex == ImageCursor.COMPLETE_SKIP) {
+                    int x = imageCursor.getPosX();
+                    int y = imageCursor.getPosY();
+
+                    if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                        copyRGBPixel(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY());
+                        continue;
+                    }
+                }
                 imageCursor.fillPixelHood(pixelHood, 0, parameters.edgeModeIndex);
 
                 int[] pixel = pixelHood.getPixel(0,0);
@@ -100,9 +109,19 @@ public class OperationGradientSpecialSobel extends OperationGradientSpecialAbstr
         PixelMask<int[]> pixelMask2 = new PixelMask<>(parameters.serializedMask2, new int[3]);
 
         do {
-            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+            imageCursor.fillPixelHood(pixelHood, parameters.edgeModeIndex);
             float[] pixel = pixelHood.getPixel(0,0);
             float[] newPixel = new float[3];
+
+            if(parameters.edgeModeIndex == ImageCursor.COMPLETE_SKIP) {
+                int x = imageCursor.getPosX();
+                int y = imageCursor.getPosY();
+
+                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight()) {
+                    hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
+                    continue;
+                }
+            }
 
             for(int b = 0; b<3; b++) {
 

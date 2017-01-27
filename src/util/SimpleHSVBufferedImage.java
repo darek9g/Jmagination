@@ -59,10 +59,12 @@ public class SimpleHSVBufferedImage extends BufferedImage {
 
     public SimpleHSVBufferedImage(int width, int height, int imageType) {
         super(width, height, imageType);
+        this.hsv = new float[this.getWidth()][this.getHeight()][3];
     }
 
     public SimpleHSVBufferedImage(int width, int height, int imageType, IndexColorModel cm) {
         super(width, height, imageType, cm);
+        this.hsv = new float[this.getWidth()][this.getHeight()][3];
     }
     public SimpleHSVBufferedImage(int width, int height, int imageType, float[][][] hsvMatrix) {
         super(width, height, imageType);
@@ -159,7 +161,7 @@ public class SimpleHSVBufferedImage extends BufferedImage {
 
         maintainOpDataBuffer();
 
-        if(opDataBufferDirty == false) return;
+        if(opDataBufferDirty == false) { fillHsv(); return; }
 
         WritableRaster raster = this.getRaster();
 

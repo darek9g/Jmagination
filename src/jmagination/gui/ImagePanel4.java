@@ -60,7 +60,6 @@ public class ImagePanel4 extends ImagePanel3 implements MouseListener, MouseMoti
         super.setImage(bufferedImage);
 
         trueImage = true;
-        handles.clear();
         setWorkspace();
         setInitialHandles();
 
@@ -173,6 +172,16 @@ public class ImagePanel4 extends ImagePanel3 implements MouseListener, MouseMoti
 
     private void setInitialHandles() {
 
+        boolean recreate = false;
+        for(Point p: handles) {
+            if(p.x<0 || p.x> maxXSetup - minXSetup || p.y<0 || p.y> maxYSetup - minYSetup) {
+                recreate = true;
+            }
+        }
+        if(recreate==true) {
+            handles.clear();
+        }
+
         if(handles.size()<1) {
             handles.add(new Point( (maxXSetup - minXSetup) / 4,3 * (maxYSetup - minYSetup) / 4));
         }
@@ -208,6 +217,9 @@ public class ImagePanel4 extends ImagePanel3 implements MouseListener, MouseMoti
         }
 
         lineProfileData = new LineProfileData(channels, channelNames);
+        if(points.size()<2) {
+            return lineProfileData;
+        }
 
 /*
         for(int i=1; i<points.size(); i++) {

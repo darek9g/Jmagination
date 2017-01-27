@@ -169,6 +169,16 @@ public class OperationErosion extends Operation {
             PixelHood<int[]> pixelHood = new PixelHood<>(1, 1, new int[outImage.getRaster().getNumBands()]);
 
             do {
+                if(parameters.edgeNeighborMode == ImageCursor.COMPLETE_SKIP) {
+                    int x = imageCursor.getPosX();
+                    int y = imageCursor.getPosY();
+
+                    if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                        copyRGBPixelBand(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY(),b);
+                        continue;
+                    }
+                }
+
                 imageCursor.fillPixelHood(pixelHood, 0, parameters.edgeNeighborMode);
 
                 int[] pixel = pixelHood.getPixel(0,0);
@@ -202,12 +212,8 @@ public class OperationErosion extends Operation {
 
     protected class Parameters {
 
-        public static final int COMPLETE_MIN = 0;
-        public static final int COMPLETE_MAX = 1;
-        public static final int COMPLETE_COPY = 2;
-        public static final int COMPLETE_SKIP = 3;
 
-        public String[] edgeModes = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
+        public String[] edgeModes = ImageCursor.edgeModeStrings;
         int edgeNeighborMode = 0;
 
         public boolean pixelNeighborHoodDefinition4 = true;

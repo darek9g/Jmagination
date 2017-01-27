@@ -303,6 +303,15 @@ public class OperationGradientEdgeConvolution extends Operation {
             PixelHood<int[]> pixelHood = new PixelHood<>(1, 1, new int[bands]);
 
             do {
+                if(parameters.edgeModeIndex == ImageCursor.COMPLETE_SKIP) {
+                    int x = imageCursor.getPosX();
+                    int y = imageCursor.getPosY();
+
+                    if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                        copyRGBPixel(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY());
+                        continue;
+                    }
+                }
                 imageCursor.fillPixelHood(pixelHood, 0, parameters.edgeModeIndex);
 
                 int[] pixel = pixelHood.getPixel(0,0);
@@ -342,9 +351,18 @@ public class OperationGradientEdgeConvolution extends Operation {
         PixelMask<int[]> pixelMask = new PixelMask<>(parameters.serializedMask, new int[3]);
 
         do {
-            imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+            imageCursor.fillPixelHood(pixelHood, parameters.edgeModeIndex);
             float[] pixel = pixelHood.getPixel(0,0);
             float[] newPixel = new float[3];
+            if(parameters.edgeModeIndex == ImageCursor.COMPLETE_SKIP) {
+                int x = imageCursor.getPosX();
+                int y = imageCursor.getPosY();
+
+                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight()) {
+                    hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
+                    continue;
+                }
+            }
 
 //            System.out.printf("Pixel z %f %f %f\n", pixel[0], pixel[1], pixel[2]);
 
@@ -382,6 +400,11 @@ public class OperationGradientEdgeConvolution extends Operation {
 
 
         public static final int[][][][] maskValues = {MASKS_PREWITT, MASKS_KIRCH};
+
+        public static final int COMPLETE_MIN = 0;
+        public static final int COMPLETE_MAX = 1;
+        public static final int COMPLETE_COPY = 2;
+        public static final int COMPLETE_SKIP = 3;
 
         public static final String[] edgeModeStrings = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
 

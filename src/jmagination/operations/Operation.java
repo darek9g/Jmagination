@@ -130,4 +130,47 @@ public abstract class Operation {
 
     }
 
+    protected void copyRGBPixel(SimpleHSVBufferedImage img, int inBuffer, int outBuffer, int x, int y) {
+        int[] pixel = new int[img.getRaster().getNumBands()];
+        if(inBuffer == 0) {
+            pixel = img.getRaster().getPixel(x, y, pixel);
+        } else {
+            pixel = img.getPixel(x, y);
+        }
+
+        if(outBuffer == 0) {
+            img.getRaster().setPixel(x, y, pixel);
+        } else {
+            img.setPixel(x, y, pixel);
+        }
+    }
+
+    protected void copyRGBPixelBand(SimpleHSVBufferedImage img, int inBuffer, int outBuffer, int x, int y, int band) {
+        int[] targetPixel = new int[img.getRaster().getNumBands()];
+        int[] sourcePixel = new int[img.getRaster().getNumBands()];
+
+        //odbiór całego pixela z docelowego
+        if(inBuffer == 1) {
+            targetPixel = img.getRaster().getPixel(x, y, targetPixel);
+        } else {
+            targetPixel = img.getPixel(x, y);
+        }
+
+        //odbiór pixela ze źródłowego aby wyłuskać jeden band
+        if(inBuffer == 0) {
+            sourcePixel = img.getRaster().getPixel(x, y, sourcePixel);
+        } else {
+            sourcePixel = img.getPixel(x, y);
+        }
+
+        //update
+        targetPixel[band] = sourcePixel[band];
+
+        if(outBuffer == 0) {
+            img.getRaster().setPixel(x, y, targetPixel);
+        } else {
+            img.setPixel(x, y, targetPixel);
+        }
+    }
+
 }

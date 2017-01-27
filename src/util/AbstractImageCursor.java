@@ -7,6 +7,8 @@ public abstract class AbstractImageCursor<E> {
     public static final int COMPLETE_COPY = 2;
     public static final int COMPLETE_SKIP = 4;
 
+    public static final String[] edgeModeStrings = {"Wartości minimalne", "Wartości maksymalne", "Powtórzenie piksela z obrazu", "Pominięcie brzegu"};
+
     protected int posX;
     protected int posY;
 

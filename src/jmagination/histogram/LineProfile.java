@@ -93,6 +93,17 @@ public class LineProfile implements ChangeListener, ActionListener{
             default:
         }
 
+        if(data.length<2) {
+            SimpleHSVBufferedImage chart = new SimpleHSVBufferedImage(dataDrawer.getWidth(), dataDrawer.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics hgr = chart.createGraphics();
+            hgr.setColor(dataDrawer.getBackground());
+            hgr.fillRect(0, 0, dataDrawer.getWidth(), dataDrawer.getHeight());
+            hgr.setColor(Color.BLACK);
+            hgr.drawString("Dane nie dostępne", 0, hgr.getFont().getSize());
+            hgr.dispose();
+            return chart;
+        }
+
         minXValue = data.data.get(0).distance;
         maxXValue = data.data.get(data.data.size()-1).distance;
 
@@ -299,10 +310,10 @@ public class LineProfile implements ChangeListener, ActionListener{
             if (dataDrawer.drawer.isShowing()) {
                 dataSource.enableFeatures();
 //                dataDrawer.drawer.setImage(drawImg(dataDrawer.drawer,dataSource.getLineProfileData(), dataDrawer.selectedChannels,dataDrawer.mode));
-                if(dataSource.isDrawingFeatures() == false) {
+/*                if(dataSource.isDrawingFeatures() == false) {
                     Color color = dataDrawer.drawer.getBackground();
                     dataDrawer.drawer.setImage(crateAltImage(dataDrawer.drawer.getSize(), "Dane dla obrazu niedostępne", color));
-                }
+                }*/
                 enabled = true;
             }
         }
@@ -312,19 +323,21 @@ public class LineProfile implements ChangeListener, ActionListener{
                 Color color = dataDrawer.drawer.getBackground();
                 dataDrawer.drawer.setImage(crateAltImage(dataDrawer.drawer.getSize(), "Dane nie dostępne", color));
             }
+        } else {
+            dataSource.fireActionEvent();
         }
     }
 
-    public void update(JTabbedPane jTabbedPane) {
+    public void update() {
         boolean enabled = false;
         for(DataDrawer dataDrawer: dataDrawers) {
             if (dataDrawer.drawer.isShowing()) {
                 dataSource.enableFeatures();
 //                dataDrawer.drawer.setImage(drawImg(dataDrawer.drawer,dataSource.getLineProfileData(), dataDrawer.selectedChannels,dataDrawer.mode));
-                if(dataSource.isDrawingFeatures() == false) {
+/*                if(dataSource.isDrawingFeatures() == false) {
                     Color color = dataDrawer.drawer.getBackground();
                     dataDrawer.drawer.setImage(crateAltImage(dataDrawer.drawer.getSize(), "Dane dla obrazu niedostępne", color));
-                }
+                }*/
                 enabled = true;
             }
         }
@@ -334,6 +347,8 @@ public class LineProfile implements ChangeListener, ActionListener{
                 Color color = dataDrawer.drawer.getBackground();
                 dataDrawer.drawer.setImage(crateAltImage(dataDrawer.drawer.getSize(), "Dane dla obrazu niedostępne", color));
             }
+        } else {
+            dataSource.fireActionEvent();
         }
     }
 

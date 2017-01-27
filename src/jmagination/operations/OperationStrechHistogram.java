@@ -139,6 +139,8 @@ public class OperationStrechHistogram extends Operation {
 
         } while (imageCursor.forward());
 
+        outImage.normalize();
+
         return outImage;
     }
 

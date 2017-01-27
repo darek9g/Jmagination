@@ -361,8 +361,10 @@ public class Workspace implements RunOperation {
         histogramImage = srcImageServer.getHistogram().createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral);
         histogramPanelCont.setImage(histogramImage);
 
-        lineProfile.update(histogramPanelCentral);
+        lineProfile.update();
 
+//        operation.jButtonApply.setEnabled(true);
+//        operationsPanelCentralPane.updateControls(false);
 
         jButtonSaveFile.setEnabled(true);
 
@@ -731,6 +733,7 @@ public class Workspace implements RunOperation {
 
         Histogram histogram = new Histogram(newBufferedImage);
         histogramPanelCont.setImage(histogram.createImg("INTERLACED", ConstantsInitializers.GUI_DIMENSION_histogramPanelCentral));
+        lineProfile.update();
 
         operationsPanelCentralPane.updateControls(true);
     }
