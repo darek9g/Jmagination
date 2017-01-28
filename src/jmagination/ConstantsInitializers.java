@@ -58,7 +58,8 @@ public final class ConstantsInitializers {
     private static int totalHeight = operationsPanelHeight + GUI_DIMENSION_splitPaneDividerSize + histogramPanelHeight;
 
     private static final int managerPanelNorthHeight = 6* commonNorthHeight;
-    private static final int managerPanelSouthHeight = GUI_PREVIEW_IMAGE_HEIGHT;
+    private static final int managerPanelSouthHeight = GUI_PREVIEW_IMAGE_HEIGHT + 50;
+
     private static final int managerPanelCentralHeight = totalHeight - managerPanelNorthHeight - managerPanelSouthHeight;
     private static final int managerPanelHeight = totalHeight;
 

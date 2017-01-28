@@ -20,6 +20,10 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.FileDialog;
 import util.SimpleHSVBufferedImage;
 
+import static jmagination.ConstantsInitializers.BR;
+import static jmagination.ConstantsInitializers.GUI_PREVIEW_IMAGE_HEIGHT;
+import static jmagination.ConstantsInitializers.GUI_PREVIEW_IMAGE_WIDTH;
+
 /**
  * Created by darek on 19.11.2016.
  */
@@ -39,7 +43,9 @@ public class Workspace implements RunOperation {
     JPanel managerPanel;
     JPanel managerPanelNorth;
     JScrollPane managerPanelCentral;
-    ImagePanel2 managerPanelSouth;
+    JPanel managerPanelSouth;
+    ImagePanel2 managerPanelSouthCont;
+    AboutPanel managerPanelSouthAbout;
     JPanel imagePanel;
     JPanel imagePanelNorth;
     JScrollPane imagePanelCentral;
@@ -229,6 +235,7 @@ public class Workspace implements RunOperation {
     JButton jButtonOpenFile;
     JButton jButtonOpenGrayFile;
     JButton jButtonSaveFile;
+    JToggleButton jButtonAbout;
 
     SimpleHSVBufferedImage histogramImage;
 
@@ -253,6 +260,7 @@ public class Workspace implements RunOperation {
         setupJButtonOpenFile();
         setupJButtonOpenGrayFile();
         setupJButtonSaveFile();
+        setupJButtonAbout();
 
         JTree imageManagerTree = imageManager.getTree();
 
@@ -309,6 +317,15 @@ public class Workspace implements RunOperation {
                         });
                         jPopupMenu.add(jMenuItemShowImage);
 
+/*                        JMenuItem jMenuItemRemoveImage = new JMenuItem("Zamknij");
+                        jMenuItemRemoveImage.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                imageServer.getMainWindow().dispose();
+                            }
+                        });
+                        jPopupMenu.add(jMenuItemRemoveImage);*/
+
                         jPopupMenu.show(tree, e.getX(), e.getY());
 
                     }
@@ -333,9 +350,9 @@ public class Workspace implements RunOperation {
 
                     ImageServer imageServer = (ImageServer) selectedNode.getUserObject();
 
-                    managerPanelSouth.setImage(imageServer.imgPreview);
+                    managerPanelSouthCont.setImage(imageServer.imgPreview);
                 } else {
-                    managerPanelSouth.setImage(null);
+                    managerPanelSouthCont.setImage(null);
                 }
 
 
@@ -441,6 +458,40 @@ public class Workspace implements RunOperation {
         });
 
     }
+
+    private void setupJButtonAbout() {
+
+        jButtonAbout = new JToggleButton("O programie");
+
+        jButtonAbout.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+                GridBagLayout layout = (GridBagLayout) managerPanelSouth.getLayout();
+                GridBagConstraints c = layout.getConstraints(managerPanelSouth);
+
+                c.gridx = 0;
+                c.gridy = 0;
+                c.gridwidth = GridBagConstraints.REMAINDER;
+                c.gridheight = 1;
+
+                if(jButtonAbout.isSelected()) {
+
+                    managerPanelSouth.remove(managerPanelSouthCont);
+                    managerPanelSouth.add(managerPanelSouthAbout, c);
+                } else {
+                    managerPanelSouth.remove(managerPanelSouthAbout);
+                    managerPanelSouth.add(managerPanelSouthCont, c);
+                }
+
+                managerPanelSouth.revalidate();
+                managerPanelSouth.repaint();
+
+            }
+        });
+
+    }
+
 
     private String[] selectFiles() {
         Display display = new Display ();
@@ -589,13 +640,37 @@ public class Workspace implements RunOperation {
         // content direct holders
         managerPanelNorth = new JPanel();
         managerPanelCentral = new JScrollPane();
-//        managerPanelSouth = new JPanel();
-        managerPanelSouth = new ImagePanel2();
+        managerPanelSouth = new JPanel(new GridBagLayout());
+        managerPanelSouthCont = new ImagePanel2();
+        managerPanelSouthAbout = new AboutPanel();
         imagePanelNorth = new JPanel();
         imagePanelCentral = new JScrollPane(imagePanelCont);
         imagePanelSouth = new JPanel();
 //        histogramPanelNorth = new JPanel();
         histogramPanelCentral = new JTabbedPane();
+
+
+        Dimension previewImage = new Dimension(GUI_PREVIEW_IMAGE_WIDTH,GUI_PREVIEW_IMAGE_HEIGHT);
+        managerPanelSouthCont.setMinimumSize(previewImage);
+        managerPanelSouthCont.setPreferredSize(previewImage);
+        managerPanelSouthAbout.setMinimumSize(previewImage);
+        managerPanelSouthAbout.setPreferredSize(previewImage);
+
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        managerPanelSouth.add(managerPanelSouthCont, c);
+//        managerPanelSouth.add(managerPanelSouthAbout, c);
+
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        c.gridheight = 1;
+        managerPanelSouth.add(jButtonAbout, c);
+
+
 
         histogramPanelCentral.addTab("Histogram", new JScrollPane(histogramPanelCont));
         histogramPanelCentral.addTab("Linia profilu RGB", new JScrollPane(lineProfileRBGPanelCont));
