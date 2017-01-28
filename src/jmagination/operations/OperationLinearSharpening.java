@@ -18,7 +18,7 @@ public class OperationLinearSharpening extends OperationSharpening {
     {
         label = "Wyostrzanie liniowe";
         header = "Wyostrzanie liniowe";
-        description = "Foo" + BR + "bar.";
+        description = "Wartość piksela jest zmieniana według maski" + BR + "pochodzącej od operatora Laplace'a" + BR + "wzmacniającej wartość piksela względem sąsiedztwa";
 
         parameters = new Parameters();
 
@@ -73,7 +73,8 @@ public class OperationLinearSharpening extends OperationSharpening {
         }
 
         jTableMask = new JTableFilterMask(380);
-        jTableMask.setEnabled(false);
+        jTableMask.allowNonZeroSum = false;
+//        jTableMask.setEnabled(false);
 
         updateMask();
 
@@ -97,7 +98,7 @@ public class OperationLinearSharpening extends OperationSharpening {
                 int x = imageCursor.getPosX();
                 int y = imageCursor.getPosY();
 
-                if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight() - 1) {
                     copyRGBPixel(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY());
                     continue;
                 }
@@ -118,6 +119,7 @@ public class OperationLinearSharpening extends OperationSharpening {
                     }
                 }
 
+                System.out.println("Divider: " + divider);
                 pixel[b] = Math.round(newValue/divider);
             }
 
@@ -152,7 +154,7 @@ public class OperationLinearSharpening extends OperationSharpening {
                 int x = imageCursor.getPosX();
                 int y = imageCursor.getPosY();
 
-                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight()) {
+                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight() - 1) {
                     hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
                     continue;
                 }

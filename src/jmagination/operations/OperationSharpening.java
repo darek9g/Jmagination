@@ -33,7 +33,7 @@ public class OperationSharpening extends Operation {
     {
         label = "Wyostrzanie";
         header = "Wyostrzanie";
-        description = "Foo" + BR + "bar.";
+        description = "Wartość piksela jest zmieniana według" + BR + "maski gradientowej wzmacniającej" + BR + "zmiany poziomów wartości w sąsiedztwie";
 
         hsvModeAllowed = true;
         hsvSpecificModeAllowed = true;
@@ -92,6 +92,7 @@ public class OperationSharpening extends Operation {
         }
 
         jTableMask = new JTableFilterMask(380);
+        jTableMask.allowNonZeroSum = true;
 
 
         updateMask();
@@ -287,7 +288,7 @@ public class OperationSharpening extends Operation {
                 int x = imageCursor.getPosX();
                 int y = imageCursor.getPosY();
 
-                if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight() - 1) {
                     copyRGBPixel(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY());
                     continue;
                 }
@@ -339,7 +340,7 @@ public class OperationSharpening extends Operation {
                 int x = imageCursor.getPosX();
                 int y = imageCursor.getPosY();
 
-                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight()) {
+                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight() - 1) {
                     hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
                     continue;
                 }

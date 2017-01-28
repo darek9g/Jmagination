@@ -30,7 +30,7 @@ public abstract class OperationGradientSpecialAbstract extends Operation {
     {
         label = "Detekcja krawędzi Robertsa";
         header = "Detekcja krawędzi Robertsa";
-        description = "Foo" + BR + "bar.";
+        description = "Wartość piksela jest zmieniana według" + BR + "pary gradientowych masek specjalnych" + BR + "wzmacniających różnice poziomów wartości w sąsiedztwie";
 
         hsvModeAllowed = true;
         hsvSpecificModeAllowed = true;
@@ -48,6 +48,7 @@ public abstract class OperationGradientSpecialAbstract extends Operation {
         categories.add("Sąsiedztwa");
         categories.add("Gradientowe");
         categories.add("Filtry górnoprzepustowe");
+        categories.add("Detekcja krawędzi");
 
         edgeNeighborModeSelect = new JComboBox<>(parameters.edgeModeStrings);
         edgeNeighborModeSelect.setSelectedIndex(0);
@@ -74,9 +75,11 @@ public abstract class OperationGradientSpecialAbstract extends Operation {
         }
 
         jTableFilterMaskLeft = new JTableFilterMask(80);
+        jTableFilterMaskLeft.allowNonZeroSum = true;
         jTableFilterMaskLeft.setEnabled(false);
 
         jTableFilterMaskRight = new JTableFilterMask(80);
+        jTableFilterMaskRight.allowNonZeroSum = true;
         jTableFilterMaskRight.setEnabled(false);
     }
 

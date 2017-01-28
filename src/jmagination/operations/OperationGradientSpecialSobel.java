@@ -17,7 +17,6 @@ public class OperationGradientSpecialSobel extends OperationGradientSpecialAbstr
     {
         label = "Detekcja krawędzi Sobela";
         header = "Detekcja krawędzi Sobela";
-        description = "Foo" + BR + "bar.";
 
         hsvModeAllowed = true;
         hsvSpecificModeAllowed = true;
@@ -60,7 +59,7 @@ public class OperationGradientSpecialSobel extends OperationGradientSpecialAbstr
                     int x = imageCursor.getPosX();
                     int y = imageCursor.getPosY();
 
-                    if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                    if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight() - 1) {
                         copyRGBPixel(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY());
                         continue;
                     }
@@ -117,7 +116,7 @@ public class OperationGradientSpecialSobel extends OperationGradientSpecialAbstr
                 int x = imageCursor.getPosX();
                 int y = imageCursor.getPosY();
 
-                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight()) {
+                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight() - 1) {
                     hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
                     continue;
                 }

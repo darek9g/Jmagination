@@ -246,7 +246,7 @@ public class OperationThinning extends Operation {
                             int x = imageCursor.getPosX();
                             int y = imageCursor.getPosY();
 
-                            if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                            if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight() - 1) {
 //                                copyRGBPixel(outImage, 1, 1, imageCursor.getPosX(), imageCursor.getPosY());
                                 continue;
                             }

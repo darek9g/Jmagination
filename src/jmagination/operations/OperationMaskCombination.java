@@ -57,8 +57,11 @@ public class OperationMaskCombination extends Operation {
         parameters.normalizationModeIndex = 0;
 
         jTableSmoothMask = new JTableFilterMask(190);
+        jTableSmoothMask.allowNonZeroSum = false;
         jTableSharpMask = new JTableFilterMask(190);
+        jTableSmoothMask.allowNonZeroSum = false;
         jTableFinalMask = new JTableFilterMask(380);
+        jTableSmoothMask.allowNonZeroSum = false;
 
     }
 
@@ -539,7 +542,7 @@ public class OperationMaskCombination extends Operation {
                 int x = imageCursor.getPosX();
                 int y = imageCursor.getPosY();
 
-                if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight() - 1) {
                     copyRGBPixel(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY());
                     continue;
                 }
@@ -591,7 +594,7 @@ public class OperationMaskCombination extends Operation {
                 int x = imageCursor.getPosX();
                 int y = imageCursor.getPosY();
 
-                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight()) {
+                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight() - 1) {
                     hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
                     continue;
                 }

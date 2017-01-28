@@ -33,7 +33,7 @@ public class OperationGradientEdgeConvolution extends Operation {
     {
         label = "Dopasowanie maski krawędzi";
         header = "Konwolucyjne dopasowanie maski krawędzi";
-        description = "Foo" + BR + "bar.";
+        description = "Wartość piksela jest zmieniana według" + BR + "dopasowania sąsiedztwa piksela do maski specjalnej" + BR + "odwzorowującej krawędź o wybranej orientacji";
 
         hsvModeAllowed = true;
         hsvSpecificModeAllowed = true;
@@ -47,7 +47,7 @@ public class OperationGradientEdgeConvolution extends Operation {
         categories.add("LAB 3");
         categories.add("Sąsiedztwa");
         categories.add("Gradientowe");
-        categories.add("Detekcja krawedzi");
+        categories.add("Detekcja krawędzi");
         categories.add("Filtry górnoprzepustowe");
 
         itemListener = new ItemListener() {
@@ -91,7 +91,8 @@ public class OperationGradientEdgeConvolution extends Operation {
             jCheckBoxValue.setSelected(false);
         }
 
-        jTableMask = new JTableFilterMask(380);
+        jTableMask = new JTableFilterMask(80);
+        jTableMask.allowNonZeroSum = true;
         updateMask();
     }
 
@@ -307,7 +308,7 @@ public class OperationGradientEdgeConvolution extends Operation {
                     int x = imageCursor.getPosX();
                     int y = imageCursor.getPosY();
 
-                    if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight()) {
+                    if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight() - 1) {
                         copyRGBPixel(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY());
                         continue;
                     }
@@ -358,7 +359,7 @@ public class OperationGradientEdgeConvolution extends Operation {
                 int x = imageCursor.getPosX();
                 int y = imageCursor.getPosY();
 
-                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight()) {
+                if(x==0 || x == inImage.getWidth() -1 || y == 0 || y == inImage.getHeight() -1) {
                     hsvOutMatrix[imageCursor.getPosX()][imageCursor.getPosY()] = pixel;
                     continue;
                 }

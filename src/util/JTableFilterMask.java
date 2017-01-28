@@ -19,6 +19,7 @@ public class JTableFilterMask extends JTable {
     int width;
     int maxValue = Integer.MAX_VALUE;
     int minValue = Integer.MIN_VALUE;
+    public boolean allowNonZeroSum = false;
 
     public enum EdgeMode {
         NO_CHANGE("Wartości brzegowe bez zmian", 0),
@@ -51,7 +52,7 @@ public class JTableFilterMask extends JTable {
             if (object.getClass().equals(Integer.class))
                 return;
             Integer selected = pharseValue(object);
-            selected = checkValue(selected);
+            selected = checkSumValue(checkValue(selected), e.getFirstRow(), e.getColumn());
             setValueAt(selected, e.getFirstRow(), e.getColumn());
             fireActionEvent();
         }
@@ -155,6 +156,28 @@ public class JTableFilterMask extends JTable {
                     JOptionPane.ERROR_MESSAGE);
             return 0;
         }
+    }
+
+    protected Integer checkSumValue(Integer object, int excludeI, int excludeJ) {
+
+        if(allowNonZeroSum==true) { return object; }
+
+        int sum = 0;
+        for (int i = 0; i < getColumnCount(); i++) {
+            for (int j = 0; j < getRowCount(); j++) {
+                if(i==excludeI && j==excludeJ) continue;
+                sum += (Integer) getValueAt(i, j);
+            }
+        }
+
+            if(sum == -object) {
+                JOptionPane.showMessageDialog(this,
+                        "Suma wartości maski wyniosłaby 0. Ustawiam " + (object +1) + " zamiast " +object + ".",
+                        "Błąd danych wejściowych!",
+                        JOptionPane.ERROR_MESSAGE);
+                        object++;
+            }
+        return object;
     }
 
     @Override
