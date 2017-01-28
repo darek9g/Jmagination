@@ -27,6 +27,11 @@ public class OperationLlinearSmoothing extends Operation {
     JLabel jLabelMaskaFiltru = new JLabel("Maska filtru:");
     JComboBox<JTableFilterMask.EdgeMode> edgeNeighborModeSelect = new JComboBox<>(JTableFilterMask.EdgeMode.values());
 
+    {
+        label = "Wygładzenie";
+        description = "Nadaje pikselom nowe wartości," + BR + "bliższe wartościom z najbliższego otoczenia";
+    }
+
     public OperationLlinearSmoothing() {
         super();
         this.label = "Wygładzanie";
@@ -110,7 +115,7 @@ public class OperationLlinearSmoothing extends Operation {
 
         } while (imageCursor.forward());
 
-        return new SimpleHSVBufferedImage(width, height, bufferedImage.getType(), hsvOutMatrix);
+        return new SimpleHSVBufferedImage(width, height, bufferedImage.getType(), hsvOutMatrix, SimpleHSVBufferedImage.NORMALIZATION_MODE_CUTTING, new boolean[]{true, true, true});
     }
 
     private SimpleHSVBufferedImage runSmoothFunctionRGB(SimpleHSVBufferedImage bufferedImage) {
@@ -157,6 +162,8 @@ public class OperationLlinearSmoothing extends Operation {
             outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
 
         } while (imageCursor.forward());
+
+        outImage.normalize(SimpleHSVBufferedImage.NORMALIZATION_MODE_CUTTING);
 
         return outImage;
     }
@@ -312,9 +319,9 @@ public class OperationLlinearSmoothing extends Operation {
         c.weightx = 1.0f;
         c.weighty = 1.0f;
 
-        drawConfigurationPanelRow(panel, c, new JLabel("Wygładzenie"));
+        drawConfigurationPanelRow(panel, c, new JLabel(label));
         drawConfigurationPanelRow(panel, c,
-                new JTextArea("Nadaje pikselom nowe wartości," + BR + "bliższe wartościom z najbliższego otoczenia"));
+                new JTextArea(description));
         drawConfigurationPanelRow(panel, c,
                 new JLabel("Metoda:"),
                 methodSelect,
