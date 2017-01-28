@@ -23,6 +23,42 @@ public final class OperationConstants {
             {  1, -4,  1},
             {  0,  1,  0} };
 
+    public static final int[][] MASK_LAPLACE_NEG_SAMPLE =
+            { {  0, -1,  0},
+              { -1,  4, -1},
+              {  0, -1,  0} };
+
+    public static final int[][] MASK_LAPLACEBASED_LINEAR_SAMPLE =
+            { {  0,  1,  0},
+              {  1, -5,  1},
+              {  0,  1,  0} };
+
+    public static final int[][] MASK_LAPLACEBASED_LINEAR_NEG_SAMPLE =
+            { {  0, -1,  0},
+              { -1,  5, -1},
+              {  0, -1,  0} };
+
+    public static final int[][] MASK_LAPLACE8_SAMPLE =
+            { {  1,  1,  1},
+              {  1, -8,  1},
+              {  1,  1,  1} };
+
+    public static final int[][] MASK_LAPLACE8_NEG_SAMPLE =
+            { { -1, -1, -1},
+              { -1,  8, -1},
+              { -1, -1, -1} };
+
+    public static final int[][] MASK_LAPLACE8BASED_LINEAR_SAMPLE =
+            { {  1,  1,  1},
+              {  1, -9,  1},
+              {  1,  1,  1} };
+
+    public static final int[][] MASK_LAPLACE8BASED_LINEAR_NEG_SAMPLE =
+            { { -1, -1, -1},
+              { -1,  9, -1},
+              { -1, -1, -1} };
+
+
     public static final int[][] MASK_ROBERTS_GRADIENT_X_SAMPLE =
             { {  1,  0},
               {  0, -1} };
@@ -137,6 +173,9 @@ public final class OperationConstants {
             {  3, -5, -5},
     };
 
+    public static final String[] MASKS_NAMES_SHARPENING_LINEAR = { "Laplasjan", "Laplasjan odwrócony", "Laplasjan 8-spójny", "Laplasjan 8-spójny odwrócony"};
+    public static final int[][][] MASKS_SHARPENING_LINEAR = { MASK_LAPLACEBASED_LINEAR_SAMPLE, MASK_LAPLACEBASED_LINEAR_NEG_SAMPLE, MASK_LAPLACE8BASED_LINEAR_SAMPLE, MASK_LAPLACE8BASED_LINEAR_NEG_SAMPLE };
+
     public static final String[]  MASK_GEO_DIRECTIONS = { "N", "NE", "E", "SE", "S", "SW", "W", "NW" };
 
     public static final int[][][]  MASKS_PREWITT = { MASK_PREWITT_N_SAMPLE, MASK_PREWITT_NE_SAMPLE, MASK_PREWITT_E_SAMPLE, MASK_PREWITT_SE_SAMPLE, MASK_PREWITT_S_SAMPLE, MASK_PREWITT_SW_SAMPLE, MASK_PREWITT_W_SAMPLE, MASK_PREWITT_NW_SAMPLE };
@@ -146,8 +185,8 @@ public final class OperationConstants {
     // według OperationLinearSmoothing
     public static final String[] MASKS_NAMES_SMOOTHING = { "Uśrednienie", "Filtr krzyżyzowy", "Filtr piramidalny", "4-spójna"};
 
-    public static final String[] MASKS_NAMES_SHARPENING = { "Gradient poziomy", "Gradient pionowy", "Laplasjan" };
-    public static final int[][][] MASKS_SHARPENING = { MASK_GRADIENT_X_SAMPLE, MASK_GRADIENT_Y_SAMPLE, MASK_LAPLACE_SAMPLE };
+    public static final String[] MASKS_NAMES_SHARPENING = { "Gradient poziomy", "Gradient pionowy", "Laplasjan", "Laplasjan odwrócony", "Laplasjan 8-spójny", "Laplasjan 8-spójny odwrócony" };
+    public static final int[][][] MASKS_SHARPENING = { MASK_GRADIENT_X_SAMPLE, MASK_GRADIENT_Y_SAMPLE, MASK_LAPLACE_SAMPLE, MASK_LAPLACE_NEG_SAMPLE, MASK_LAPLACE8_SAMPLE, MASK_LAPLACE8_NEG_SAMPLE };
 
     private OperationConstants() {
         throw new AssertionError();

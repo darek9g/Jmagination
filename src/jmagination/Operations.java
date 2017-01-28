@@ -45,6 +45,7 @@ public class Operations {
         availableOperations.add(new OperationGradientSpecialSobel());
         availableOperations.add(new OperationGradientEdgeConvolution());
         availableOperations.add(new OperationMaskCombination());
+        availableOperations.add(new OperationLinearSharpening());
 
         return availableOperations;
     }

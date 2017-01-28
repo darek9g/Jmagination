@@ -816,7 +816,9 @@ public class Workspace implements RunOperation {
     @Override
     public void discardOperation(Operation operation) {
         if(imagePanelCont.getImage() != originalBufferedImage) {
-            setImageServer(srcImageServer);
+            if(srcImageServer != null) {
+                setImageServer(srcImageServer);
+            }
         }
         operation.jButtonApply.setEnabled(true);
         operationsPanelCentralPane.updateControls(false);

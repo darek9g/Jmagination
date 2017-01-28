@@ -93,11 +93,12 @@ public class OperationSharpening extends Operation {
 
         jTableMask = new JTableFilterMask(380);
 
+
         updateMask();
 
     }
 
-    private void updateMask() {
+    protected void updateMask() {
 
         jTableMask.fillMask(parameters.maskValues[maskSelect.getSelectedIndex()].length, parameters.maskValues[maskSelect.getSelectedIndex()]);
         jTableMask.repaint();
@@ -372,8 +373,8 @@ public class OperationSharpening extends Operation {
 
 
 
-        public static final String[] maskStrings = MASKS_NAMES_SHARPENING;
-        public static final int[][][] maskValues = MASKS_SHARPENING;
+        public  String[] maskStrings = MASKS_NAMES_SHARPENING;
+        public  int[][][] maskValues = MASKS_SHARPENING;
 
         public static final String[] edgeModeStrings = ImageCursor.edgeModeStrings;
 

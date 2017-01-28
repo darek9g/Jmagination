@@ -29,7 +29,7 @@ public class AboutPanel extends JPanel {
 
         jTextArea = new JTextArea(description);
         Font font = jTextArea.getFont();
-        jTextArea.setFont(new Font(font.getName(), font.getStyle(), 12));
+        jTextArea.setFont(new Font(font.getName(), Font.BOLD, 12));
         jTextArea.setEditable(false);
         add(jTextArea);
 

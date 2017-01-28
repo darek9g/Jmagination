@@ -394,13 +394,13 @@ public class OperationMaskCombination extends Operation {
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 8;
-        JLabel jLabelSmoothMaskSelect = new JLabel("Maska etap I (wygładzanie):");
+        JLabel jLabelSmoothMaskSelect = new JLabel("Maska: etap I (wygładzanie):");
         panel.add(jLabelSmoothMaskSelect, c);
 
         c.gridx += c.gridwidth;
         c.gridy = 2;
         c.gridwidth = 8;
-        JLabel jLabelSharpMaskSelect = new JLabel("Maska etap II (wyostrzanie):");
+        JLabel jLabelSharpMaskSelect = new JLabel("etap II (wyostrzanie) według:");
         panel.add(jLabelSharpMaskSelect, c);
 
         c.gridx = 0;
@@ -626,8 +626,8 @@ public class OperationMaskCombination extends Operation {
         private static final int maskSize = 3;
 
         public static final String[] smooothMaskStrings = MASKS_NAMES_SMOOTHING;
-        public static final String[] sharpMaskStrings = MASKS_NAMES_SHARPENING;
-        public static final int[][][] sharpMaskValues = MASKS_SHARPENING;
+        public static final String[] sharpMaskStrings = MASKS_NAMES_SHARPENING_LINEAR;
+        public static final int[][][] sharpMaskValues = MASKS_SHARPENING_LINEAR;
 
         public static final String[] edgeModeStrings = ImageCursor.edgeModeStrings;
 
