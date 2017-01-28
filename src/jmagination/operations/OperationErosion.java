@@ -163,25 +163,27 @@ public class OperationErosion extends Operation {
 
         SimpleHSVBufferedImage outImage = duplicateImageFunction(inImage);
 
-        for(int b = 0; b<outImage.getRaster().getNumBands(); ++b) {
 
-            ImageCursor imageCursor = new ImageCursor(outImage);
-            PixelHood<int[]> pixelHood = new PixelHood<>(1, 1, new int[outImage.getRaster().getNumBands()]);
 
-            do {
-                if(parameters.edgeNeighborMode == ImageCursor.COMPLETE_SKIP) {
-                    int x = imageCursor.getPosX();
-                    int y = imageCursor.getPosY();
+        ImageCursor imageCursor = new ImageCursor(outImage);
+        PixelHood<int[]> pixelHood = new PixelHood<>(1, 1, new int[outImage.getRaster().getNumBands()]);
 
-                    if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight() - 1) {
-                        copyRGBPixelBand(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY(),b);
-                        continue;
-                    }
+        do {
+            if(parameters.edgeNeighborMode == ImageCursor.COMPLETE_SKIP) {
+                int x = imageCursor.getPosX();
+                int y = imageCursor.getPosY();
+
+                if(x==0 || x == outImage.getWidth() -1 || y == 0 || y == outImage.getHeight() - 1) {
+                    copyRGBPixel(outImage, 0, 1, imageCursor.getPosX(), imageCursor.getPosY());
+                    continue;
                 }
+            }
 
-                imageCursor.fillPixelHood(pixelHood, 0, parameters.edgeNeighborMode);
+            imageCursor.fillPixelHood(pixelHood, 0, parameters.edgeNeighborMode);
 
-                int[] pixel = pixelHood.getPixel(0,0);
+            int[] pixel = pixelHood.getPixel(0,0);
+
+            for(int b = 0; b<outImage.getRaster().getNumBands(); ++b) {
 
                 int newValue = pixel[b];
 
@@ -199,10 +201,10 @@ public class OperationErosion extends Operation {
 
                 pixel[b] = newValue;
 
-                outImage.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
+            }
+            outImage.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), pixel);
 
-            } while (imageCursor.forward());
-        }
+        } while (imageCursor.forward());
 
 
         outImage.normalize();

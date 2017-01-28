@@ -320,14 +320,6 @@ public class OperationMaskCombination extends Operation {
                 }
             }
         }
-/*        for(int i=0;i<retArr.length;i++) {
-            System.out.printf("|");
-            for(int j=0;j<retArr[i].length;j++) {
-                System.out.printf(" %d |", retArr[i][j]);
-            }
-            System.out.println();
-        }
-        System.out.println("Koniec wynikowej");*/
 
         return retArr;
     }
