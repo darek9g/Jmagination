@@ -30,7 +30,7 @@ public class OperationErosion extends Operation {
     {
         label = "Erozja";
         header = "Erozja";
-        description = "Foo" + BR + "bar.";
+        description = "Nadaje pikselowa wartość minimanlą z otoczenia.";
 
         parameters = new Parameters();
         parameters.promotingBrighter = false;

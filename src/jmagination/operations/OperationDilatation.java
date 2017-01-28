@@ -14,7 +14,7 @@ public class OperationDilatation extends OperationErosion {
     {
         label = "Dylatacja";
         header = "Dylatacja";
-        description = "Foo" + BR + "bar.";
+        description = "Nadaje pikselowa wartość maksymalną z otoczenia.";
 
         parameters = new Parameters();
         parameters.promotingBrighter = true;

@@ -14,7 +14,7 @@ public class OperationMorphOpenning extends OperationErosion {
     {
         label = "Otwarcie";
         header = "Otwarcie";
-        description = "Foo" + BR + "bar.";
+        description = "Aplikuje sekwencję operacji erozji i otwarcia";
 
         parameters = new Parameters();
         parameters.promotingBrighter = false;

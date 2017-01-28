@@ -14,7 +14,7 @@ public class OperationMorphClosing extends OperationMorphOpenning {
     {
         label = "Zamknięcie";
         header = "Zamknięcie";
-        description = "Foo" + BR + "bar.";
+        description = "Aplikuje sekwencję operacji otwarcia i zamknięcia";
 
         parameters = new Parameters();
         parameters.promotingBrighter = true;
