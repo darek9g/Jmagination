@@ -19,7 +19,6 @@ public class OperationDuplicate extends Operation {
     public OperationDuplicate() {
         super();
         this.label = "Zduplikuj obraz";
-        categories.add("LAB 1");
         categories.add("Ogólne");
 
         parameters = new Parameters();

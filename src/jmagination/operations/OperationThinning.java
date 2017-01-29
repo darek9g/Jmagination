@@ -52,7 +52,6 @@ public class OperationThinning extends Operation {
     public OperationThinning() {
         super();
         this.label = "Ścienianie";
-        categories.add("LAB 4");
         categories.add("Morfologiczne");
         methodSelect.setSelectedIndex(0);
 

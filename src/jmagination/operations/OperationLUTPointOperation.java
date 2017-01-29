@@ -37,7 +37,6 @@ public class OperationLUTPointOperation extends Operation {
 
     public OperationLUTPointOperation() {
         super();
-        categories.add("LAB 2");
         categories.add("Punktowe jednoargumentowe");
 
     }

@@ -796,7 +796,7 @@ public class Workspace implements RunOperation {
 
     @Override
     public void runOperation(Operation operation) {
-        if (imagePanelCont.getImage() == null) {
+        if (imagePanelCont.getImage() == null || srcImageServer == null) {
             return;
         }
 

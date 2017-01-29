@@ -46,7 +46,7 @@ public class OperationMaskCombination extends Operation {
     {
         label = "Liniowe złożenie dwóch masek";
         header = "Liniowe złożenie dwóch masek w jedną";
-        description = "Foo" + BR + "bar.";
+        description = "Wartości pikseli są modyfikowane według maski 5x5" + BR + "wyliczonej z podanych masek 3x3";
 
         hsvModeAllowed = true;
         hsvSpecificModeAllowed = true;
@@ -68,7 +68,6 @@ public class OperationMaskCombination extends Operation {
     public OperationMaskCombination() {
         super();
 
-        categories.add("LAB 4");
         categories.add("Sąsiedztwa");
         categories.add("Gradientowe");
         categories.add("Filtry górnoprzepustowe");

@@ -48,7 +48,6 @@ public class OperationSharpening extends Operation {
     public OperationSharpening() {
         super();
 
-        categories.add("LAB 3");
         categories.add("Sąsiedztwa");
         categories.add("Gradientowe");
         categories.add("Filtry górnoprzepustowe");

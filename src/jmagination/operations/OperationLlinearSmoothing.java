@@ -35,7 +35,6 @@ public class OperationLlinearSmoothing extends Operation {
     public OperationLlinearSmoothing() {
         super();
         this.label = "Wygładzanie";
-        categories.add("LAB 3");
         categories.add("Sąsiedztwa");
         categories.add("Filtry dolnoprzepustowe");
         ItemListener itemListener = new ItemListener() {

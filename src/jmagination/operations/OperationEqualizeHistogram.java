@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static jmagination.ConstantsInitializers.BR;
+import static util.SimpleHSVBufferedImage.NORMALIZATION_MODE_CUTTING;
 import static util.SimpleHSVBufferedImage.NORMALIZATION_MODE_PROPORTIONAL;
 
 /**
@@ -29,7 +30,7 @@ public class OperationEqualizeHistogram extends Operation {
 
 
     Parameters parameters;
-    String[] runModes = { "Średnich", "Losowa", "Według sąsiedztwa"};
+    String[] runModes = { "Średnich", "Losowa", "Według sąsiedztwa", "Własna"};
 
     JComboBox<String> methodSelect = new JComboBox<>(runModes);
     String[] neighborhoodSizesStrings = { "3x3", "5x5", "7x7", "9x9", "11x11", "13x13"};
@@ -38,7 +39,6 @@ public class OperationEqualizeHistogram extends Operation {
     public OperationEqualizeHistogram() {
         super();
         this.label = "Wyrównaj histogram";
-        categories.add("LAB 1");
         categories.add("Histogramowe");
 
         parameters = new Parameters();
@@ -165,10 +165,92 @@ public class OperationEqualizeHistogram extends Operation {
         ArrayList<Integer[]> leftLevelLimits = new ArrayList<>();
         ArrayList<Integer[]> rightLevelLimits = new ArrayList<>();
         ArrayList<Integer[]> newLevels = new ArrayList<>();
+        int[] histogramAverages = new int[raster.getNumBands()];
 
         //obliczanie statystyk
 
-        fillStatisticsTables(parameters.method, inImage, histogram, leftLevelLimits, rightLevelLimits, newLevels);
+        fillStatisticsTables(parameters.method, inImage, histogram, leftLevelLimits, rightLevelLimits, newLevels, histogramAverages);
+
+        if(parameters.method == "Własna") {
+            SimpleHSVBufferedImage firstImage = new SimpleHSVBufferedImage(width, height, inImage.getType());
+            SimpleHSVBufferedImage secondImage = new SimpleHSVBufferedImage(width, height, inImage.getType());
+
+            PixelHood<int[]> pixelHood = new PixelHood<>(0, 0, new int[raster.getNumBands()]);
+            ImageCursor imageCursor = new ImageCursor(inImage);
+            do {
+                imageCursor.fillPixelHood(pixelHood, ImageCursor.COMPLETE_COPY);
+
+                int[] pixel = pixelHood.getPixel(0,0);
+                int[] newFirstPixel = new int[pixel.length];
+                int[] newSecondPixel = new int[pixel.length];
+
+                for(int i = 0; i<pixel.length; ++i) {
+
+                    newSecondPixel[i] = 0;
+
+                    if(pixel[i] > histogramAverages[i]) {
+                        newFirstPixel[i] = 0;
+                        newSecondPixel[i] = pixel[i];
+                    } else {
+                        newFirstPixel[i] = pixel[i];
+                        newSecondPixel[i] = 0;
+                    }
+
+                    firstImage.getRaster().setPixel(imageCursor.getPosX(), imageCursor.getPosY(), newFirstPixel);
+                    secondImage.getRaster().setPixel(imageCursor.getPosX(), imageCursor.getPosY(), newSecondPixel);
+                }
+
+//            outRaster.setPixel(imageCursor.getPosX(), imageCursor.getPosY(), newPixel);
+
+            } while (imageCursor.forward());
+
+            parameters.method = "Średnich";
+
+            firstImage = normalizeHistogramFunction(firstImage, new Histogram(firstImage));
+            firstImage.normalize(NORMALIZATION_MODE_CUTTING);
+            secondImage = normalizeHistogramFunction(secondImage, new Histogram(secondImage));
+            secondImage.normalize(NORMALIZATION_MODE_CUTTING);
+
+            parameters.method = "Własna";
+
+            PixelHood<int[]> firstPixelHood = new PixelHood<>(0,0, new int[firstImage.getRaster().getNumBands()]);
+            PixelHood<int[]> secondPixelHood = new PixelHood<>(0,0, new int[secondImage.getRaster().getNumBands()]);
+            ImageCursor firstImageCursor = new ImageCursor(firstImage);
+            ImageCursor secondImageCursor = new ImageCursor(secondImage);
+            for(int i = 0; i<height; ++i) {
+                for(int j = 0; j < width; ++j) {
+
+                    try {
+                        firstImageCursor.goTo(j, i);
+                    } catch (Exception e)
+                    {
+                        throw new IllegalStateException("Współrzędne (" + j + "," + i + ") spoza zakresu obrazka leftImage");
+                    }
+                    firstImageCursor.fillPixelHood(firstPixelHood, ImageCursor.COMPLETE_COPY);
+                    int[] firstPixel = firstPixelHood.getPixel(0);
+
+                    try {
+                        secondImageCursor.goTo(j,i);
+                    } catch (Exception e)
+                    {
+                        throw new IllegalStateException("Współrzędne (" + j + "," + i + ") spoza zakresu obrazka rightImage");
+                    }
+                    secondImageCursor.fillPixelHood(secondPixelHood, ImageCursor.COMPLETE_COPY);
+                    int[] secondPixel = secondPixelHood.getPixel(0);
+
+                    int[] pixel = new int[firstPixel.length];
+                    for(int b=0; b<pixel.length; ++b) {
+                        pixel[b] = firstPixel[b] + secondPixel[b];
+                    }
+                    outImage.setPixel(j,i,pixel);
+                }
+            }
+
+            outImage.normalize(NORMALIZATION_MODE_PROPORTIONAL);
+
+            return outImage;
+
+        }
 
         int neighborhoodBorderSize = 0;
         switch(parameters.method) {
@@ -248,7 +330,7 @@ public class OperationEqualizeHistogram extends Operation {
         return outImage;
     }
 
-    private void fillStatisticsTables(String method, SimpleHSVBufferedImage inImage, Histogram histogram, ArrayList<Integer[]> leftLevelLimits, ArrayList<Integer[]> rightLevelLimits, ArrayList<Integer[]> newLevels) {
+    private void fillStatisticsTables(String method, SimpleHSVBufferedImage inImage, Histogram histogram, ArrayList<Integer[]> leftLevelLimits, ArrayList<Integer[]> rightLevelLimits, ArrayList<Integer[]> newLevels, int[] histogramAverages) {
         int width = inImage.getWidth();
         int height = inImage.getHeight();
 
@@ -256,7 +338,7 @@ public class OperationEqualizeHistogram extends Operation {
 
         ArrayList<Integer[]> srcHistogramData = histogram.getData();
 
-        int[] histogramAverages = new int[bands];
+//        int[] histogramAverages = new int[bands];
         for(int i=0; i<bands; ++i) {
             histogramAverages[i] = 0;
         }

@@ -24,7 +24,6 @@ public class OperationConvertToGray extends Operation {
     public OperationConvertToGray() {
         super();
         this.label = "Konwertuj na obraz w odcieniach szarości";
-        categories.add("LAB 1");
         categories.add("Konwersje");
 
         parameters = new Parameters();

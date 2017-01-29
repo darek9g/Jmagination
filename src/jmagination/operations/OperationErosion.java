@@ -40,7 +40,6 @@ public class OperationErosion extends Operation {
     public OperationErosion() {
         super();
 
-        categories.add("LAB 4");
         categories.add("Morfologiczne");
 
         methodSelect = new JComboBox<>(parameters.edgeModes);

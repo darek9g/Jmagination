@@ -43,7 +43,6 @@ public abstract class OperationTwoImagesAbstract extends Operation{
     public OperationTwoImagesAbstract() {
         super();
 
-        categories.add("LAB 2");
         categories.add("Dwuobrazowe");
 
         buttonGroupOperationMode = new ButtonGroup();
