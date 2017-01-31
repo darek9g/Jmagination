@@ -114,7 +114,7 @@ public class PresenterTabOperations extends PresenterTab {
         jButtonSaveOperationsOutcome.setEnabled(enabled);
     }
 
-    private void drawControls(ArrayList<Operation> availableOperations, RunOperation runOperation, JPanel panel) {
+    private void drawControls(final ArrayList<Operation> availableOperations, final RunOperation runOperation, final JPanel panel) {
 
         DefaultListModel catListModel = new DefaultListModel();
         JList categoriesList = new JList(catListModel);
@@ -122,12 +122,12 @@ public class PresenterTabOperations extends PresenterTab {
         choicePanelCategories.setViewportView(categoriesList);
 
 
-        DefaultListModel opListModel = new DefaultListModel();
-        JList operationsList = new JList(opListModel);
+        final DefaultListModel opListModel = new DefaultListModel();
+        final JList operationsList = new JList(opListModel);
         operationsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         choicePanelOperations.setViewportView(operationsList);
 
-        GUIStyler.JButtonJM jButtonSelect = new GUIStyler.JButtonJM("Wybierz");
+        final GUIStyler.JButtonJM jButtonSelect = new GUIStyler.JButtonJM("Wybierz");
         choicePanelContainer.add(jButtonSelect,BorderLayout.SOUTH);
 
 
@@ -137,7 +137,7 @@ public class PresenterTabOperations extends PresenterTab {
 
                 panel.removeAll();
 
-                Operation selectedOperation = (Operation) operationsList.getSelectedValue();
+                final Operation selectedOperation = (Operation) operationsList.getSelectedValue();
                 selectedOperation.setRunOperation(runOperation);
                 selectedOperation.drawConfigurationPanel(panel);
 
